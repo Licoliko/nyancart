@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#100b2b" />
+  <title>NYAN CART</title>
+  <link rel="stylesheet" href="style.css?v=6" />
+</head>
+<body>
+  <main id="app">
+    <canvas id="game" aria-label="NYAN CART レース画面"></canvas>
+
+    <section id="menu" class="screen active">
+      <div class="menu-glow"></div>
+      <div class="logo-wrap">
+        <p class="eyebrow">TWINKLE CIRCUIT GRAND PRIX</p>
+        <h1><span>NYAN</span><strong>CART</strong></h1>
+        <p class="tagline">きらめく夜を、駆けぬけろ！</p>
+      </div>
+      <button id="openSelect" class="primary-btn"><span>RACE START</span><small>キャラクターを選ぶ</small></button>
+      <button id="openSettings" class="secondary-btn menu-settings-btn"><span>⚙ SETTINGS</span><small>音量・操作設定</small></button>
+      <div class="menu-hints"><span>🏁 3 LAPS</span><span>⭐ 12 RACERS</span><span>⚡ DRIFT TURBO</span></div>
+    </section>
+
+    <section id="select" class="screen">
+      <header class="select-header">
+        <button id="backMenu" class="icon-btn" aria-label="戻る">‹</button>
+        <div><p class="eyebrow">CHOOSE YOUR RACER</p><h2>レーサーを選ぼう！</h2></div>
+        <div class="step-badge">01 / 02</div>
+      </header>
+      <div id="characterGrid" class="character-grid"></div>
+      <div class="selection-dock">
+        <div class="selected-mini"><img id="selectedThumb" alt="" /><div><small>YOUR RACER</small><strong id="selectedName">レイナ</strong></div></div>
+        <div class="stats"><span>スピード <i><b style="width:82%"></b></i></span><span>ハンドリング <i><b style="width:72%"></b></i></span></div>
+        <button id="startRace" class="primary-btn compact"><span>COURSE SELECT</span><small>ステージを選ぶ</small></button>
+      </div>
+    </section>
+
+    <section id="settings" class="screen settings-screen" aria-labelledby="settingsTitle">
+      <header class="select-header settings-header">
+        <button id="closeSettings" class="icon-btn" aria-label="設定を閉じる">‹</button>
+        <div><p class="eyebrow">GAME SETTINGS</p><h2 id="settingsTitle">設定</h2></div>
+      </header>
+      <div class="settings-layout">
+        <section class="settings-panel audio-settings">
+          <h3>音量設定</h3>
+          <label class="range-setting" for="masterVolume"><span>マスター音量</span><output id="masterVolumeValue">80</output><input id="masterVolume" type="range" min="0" max="100" step="1" value="80"></label>
+          <label class="range-setting" for="musicVolume"><span>BGM音量</span><output id="musicVolumeValue">55</output><input id="musicVolume" type="range" min="0" max="100" step="1" value="55"></label>
+          <button id="muteToggle" class="setting-toggle" type="button" aria-pressed="false">♫ サウンド ON</button>
+        </section>
+        <section class="settings-panel key-settings">
+          <div class="panel-title-row"><h3>キーコンフィグ</h3><button id="resetKeys" class="text-btn" type="button">初期設定へ戻す</button></div>
+          <div id="keyConfigList" class="key-config-list"></div>
+          <p id="keyCaptureHelp" class="settings-help">変更したい操作を選び、割り当てるキーを押してください。</p>
+        </section>
+        <section class="settings-panel controller-settings">
+          <div class="controller-title"><h3>コントローラー</h3><span id="controllerStatus" class="controller-status">接続待ち</span></div>
+          <div class="controller-map">
+            <span><b>左スティック / 十字キー</b>ステアリング</span>
+            <span><b>RT / A</b>アクセル</span>
+            <span><b>LT / B</b>ブレーキ</span>
+            <span><b>RB / LB</b>ドリフト</span>
+            <span><b>X</b>アイテム</span>
+            <span><b>START</b>ポーズ</span>
+          </div>
+        </section>
+      </div>
+      <button id="settingsDone" class="primary-btn compact settings-done"><span>設定を保存</span><small>ゲームへ戻る</small></button>
+    </section>
+
+    <section id="courseSelect" class="screen course-select-screen">
+      <header class="select-header">
+        <button id="backCourseSelect" class="icon-btn" aria-label="キャラクター選択へ戻る">‹</button>
+        <div><p class="eyebrow">CHOOSE YOUR CIRCUIT</p><h2>コースを選ぼう！</h2></div>
+        <div class="step-badge">02 / 02</div>
+      </header>
+      <div id="courseGrid" class="course-grid"></div>
+      <div class="course-dock">
+        <div><small>SELECTED CIRCUIT</small><strong id="selectedCourseName">きらめきスイーツサーキット</strong><span id="selectedCourseInfo">テクニカル＆トリッキー</span></div>
+        <button id="confirmCourse" class="primary-btn compact"><span>LET'S RACE!</span><small>グランプリに参加</small></button>
+      </div>
+    </section>
+
+    <section id="hud" class="hud hidden" aria-live="polite">
+      <div class="position-panel"><small>POSITION</small><strong id="currentPosition">6</strong><span>/12</span></div>
+      <div id="rankPanel" class="rank-panel"></div>
+      <div class="race-info">
+        <div class="lap-label">LAP <strong id="lap">1</strong><span>/3</span></div>
+        <div id="timer" class="timer">◷ 00:00.000</div>
+      </div>
+      <div class="minimap"><canvas id="courseMap" width="240" height="300" aria-label="コース全体マップ"></canvas><small>FULL COURSE</small></div>
+      <div class="bottom-left">
+        <div class="coin-pill">● <strong id="coins">00</strong></div>
+        <div class="item-box"><canvas id="itemIcon" width="92" height="92" aria-label="所持アイテム"></canvas><small id="itemKeyHint">SPACE</small></div>
+      </div>
+      <button id="musicToggle" class="music-toggle" aria-label="BGMの再生と停止">♫</button>
+      <button id="raceSettings" class="race-settings" aria-label="設定を開く">⚙</button>
+      <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
+      <div class="speedometer"><canvas id="speedGauge" width="240" height="240" aria-label="スピードメーター"></canvas><div class="speed-digital"><strong id="speed">0</strong><small>KM/H</small></div></div>
+      <div id="countdown" class="countdown"></div>
+      <div id="rankChange" class="rank-change"></div>
+      <div id="toast" class="toast"></div>
+    </section>
+
+    <section id="finish" class="screen finish-screen">
+      <p class="eyebrow">TWINKLE CIRCUIT</p>
+      <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
+      <h2 id="finishTitle">FINISH!</h2>
+      <p id="finishTime" class="finish-time">00:00.000</p>
+      <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
+    </section>
+
+    <div id="mobileControls" class="mobile-controls hidden">
+      <div class="steer"><button data-key="left">◀</button><button data-key="right">▶</button></div>
+      <div class="actions"><button data-key="brake" class="brake-touch">▼</button><button data-key="item" class="item-touch">⭐</button><button data-key="drift" class="boost-touch">R</button><button data-key="accel" class="accel-touch">▲</button></div>
+    </div>
+  </main>
+  <script src="assets/sprite-bounds.js"></script>
+  <script src="game.js?v=12"></script>
+</body>
+</html>
