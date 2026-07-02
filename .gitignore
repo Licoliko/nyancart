@@ -1,0 +1,38 @@
+# Codex workspace metadata
+.agents/
+.codex/
+
+# Source concepts and generation intermediates are not runtime dependencies
+コンセプトアート/
+キャラクターデザイン/
+assets/reference_cells/
+assets/sprites-cat/
+assets/**/*-source.png
+assets/**/*-key.png
+assets/GENERATION_PROMPTS.md
+assets/README.md
+assets/audio/.gitkeep
+assets/audio/README.md
+assets/sprite-analysis.json
+
+# Distribution builds duplicate the root runtime files
+output/
+
+# Keep only the active hyphenated cat-racer assets
+assets/sprites/*.png
+!assets/sprites/*-*.png
+assets/portraits/*.webp
+!assets/portraits/*-*.webp
+
+# Unused superseded runtime assets
+assets/environment/twinkle-circuit.png
+assets/ui/course-map.png
+assets/ui/course-map-v2-key.png
+assets/ui/course-map-key.png
+assets/trackside/course-props-*.png
+assets/trackside/spectators.png
+
+# Keep only the reproducible release/validation tools
+tools/*
+!tools/build_distribution.ps1
+!tools/validate_assets.py
