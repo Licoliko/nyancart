@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="style.css?v=13" />
 </head>
 <body>
   <main id="app">
@@ -18,22 +18,38 @@
         <h1><span>NYAN</span><strong>CART</strong></h1>
         <p class="tagline">きらめく夜を、駆けぬけろ！</p>
       </div>
-      <button id="openSelect" class="primary-btn"><span>RACE START</span><small>キャラクターを選ぶ</small></button>
+      <button id="openSelect" class="primary-btn"><span>RACE START</span><small>レーサーセットを選ぶ</small></button>
       <button id="openSettings" class="secondary-btn menu-settings-btn"><span>⚙ SETTINGS</span><small>音量・操作設定</small></button>
-      <div class="menu-hints"><span>🏁 3 LAPS</span><span>⭐ 12 RACERS</span><span>⚡ DRIFT TURBO</span></div>
+      <div class="menu-hints"><span>🏁 3 LAPS</span><span>⭐ 18 RACERS</span><span>⚡ DRIFT TURBO</span></div>
     </section>
 
-    <section id="select" class="screen">
-      <header class="select-header">
-        <button id="backMenu" class="icon-btn" aria-label="戻る">‹</button>
-        <div><p class="eyebrow">CHOOSE YOUR RACER</p><h2>レーサーを選ぼう！</h2></div>
+    <section id="kartSelect" class="screen set-select-screen" aria-labelledby="setSelectTitle">
+      <div class="set-screen-shade"></div>
+      <header class="select-header set-select-header">
+        <button id="backKartSelect" class="icon-btn" aria-label="タイトルへ戻る">‹</button>
+        <div><p class="eyebrow">RACER SET SELECT</p><h2 id="setSelectTitle">専用セットセレクト</h2></div>
         <div class="step-badge">01 / 02</div>
       </header>
-      <div id="characterGrid" class="character-grid"></div>
-      <div class="selection-dock">
-        <div class="selected-mini"><img id="selectedThumb" alt="" /><div><small>YOUR RACER</small><strong id="selectedName">レイナ</strong></div></div>
-        <div class="stats"><span>スピード <i><b style="width:82%"></b></i></span><span>ハンドリング <i><b style="width:72%"></b></i></span></div>
-        <button id="startRace" class="primary-btn compact"><span>COURSE SELECT</span><small>ステージを選ぶ</small></button>
+      <div class="set-select-body">
+        <section class="set-hero-stage" aria-label="選択中のレーサーセット">
+          <div class="set-stage-kicker"><span>EXCLUSIVE</span><strong id="setStageLabel">NYAN RACING SET</strong></div>
+          <div class="set-selection-meta"><span id="setPosition">01 / 18</span><span class="set-wallet">COINS <strong id="walletCoins">0</strong></span></div>
+          <img id="setHeroImage" class="set-hero-image" alt="選択中のレーサーと専用カート" draggable="false" />
+        </section>
+        <aside class="set-detail-panel">
+          <div class="set-panel-label">SELECTED SET</div>
+          <div class="set-title-row">
+            <div><h2 id="setName">アルカ・シャム &amp; プリズム・ロイヤル</h2><p id="setSubtitle">EXCLUSIVE SET</p></div>
+            <div class="set-rank"><small>RANK</small><strong id="setRank">S</strong></div>
+          </div>
+          <p id="setDescription" class="set-description">気品と瞬発力を両立した、きらめく専用レーシングセット。</p>
+          <div id="setStats" class="set-stat-list"></div>
+        </aside>
+      </div>
+      <div id="setGrid" class="set-card-rail" aria-label="レーサーセット一覧" role="listbox" tabindex="0"></div>
+      <div id="setNotice" class="set-notice" aria-live="polite"></div>
+      <div class="set-action-bar">
+        <button id="confirmSet" class="set-confirm-btn"><span>COURSE SELECT</span><small>このセットで決定</small></button>
       </div>
     </section>
 
@@ -71,7 +87,7 @@
 
     <section id="courseSelect" class="screen course-select-screen">
       <header class="select-header">
-        <button id="backCourseSelect" class="icon-btn" aria-label="キャラクター選択へ戻る">‹</button>
+        <button id="backCourseSelect" class="icon-btn" aria-label="セット選択へ戻る">‹</button>
         <div><p class="eyebrow">CHOOSE YOUR CIRCUIT</p><h2>コースを選ぼう！</h2></div>
         <div class="step-badge">02 / 02</div>
       </header>
@@ -83,7 +99,7 @@
     </section>
 
     <section id="hud" class="hud hidden" aria-live="polite">
-      <div class="position-panel"><small>POSITION</small><strong id="currentPosition">6</strong><span>/12</span></div>
+      <div class="position-panel"><small>POSITION</small><strong id="currentPosition">6</strong><span id="positionTotal">/18</span></div>
       <div id="rankPanel" class="rank-panel"></div>
       <div class="race-info">
         <div class="lap-label">LAP <strong id="lap">1</strong><span>/3</span></div>
@@ -96,6 +112,11 @@
       </div>
       <button id="musicToggle" class="music-toggle" aria-label="BGMの再生と停止">♫</button>
       <button id="raceSettings" class="race-settings" aria-label="設定を開く">⚙</button>
+      <button id="debugToggle" class="debug-toggle" type="button" aria-label="デバッグメニューを開く" aria-expanded="false">DBG</button>
+      <div id="debugPanel" class="debug-panel hidden">
+        <div><strong>DEBUG</strong><button id="debugClose" type="button" aria-label="デバッグメニューを閉じる">×</button></div>
+        <button id="debugCourseBounds" type="button" aria-pressed="false">コース枠 OFF</button>
+      </div>
       <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
       <div class="speedometer"><canvas id="speedGauge" width="240" height="240" aria-label="スピードメーター"></canvas><div class="speed-digital"><strong id="speed">0</strong><small>KM/H</small></div></div>
       <div id="countdown" class="countdown"></div>
@@ -108,15 +129,16 @@
       <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
       <h2 id="finishTitle">FINISH!</h2>
       <p id="finishTime" class="finish-time">00:00.000</p>
+      <p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p>
       <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
     </section>
 
     <div id="mobileControls" class="mobile-controls hidden">
-      <div class="steer"><button data-key="left">◀</button><button data-key="right">▶</button></div>
-      <div class="actions"><button data-key="brake" class="brake-touch">▼</button><button data-key="item" class="item-touch">⭐</button><button data-key="drift" class="boost-touch">R</button><button data-key="accel" class="accel-touch">▲</button></div>
+      <div class="steer"><button data-key="left" class="left-touch" aria-label="左へ曲がる"></button><button data-key="right" class="right-touch" aria-label="右へ曲がる"></button></div>
+      <div class="actions"><button data-key="brake" class="brake-touch" aria-label="ブレーキ"></button><button data-key="item" class="item-touch" aria-label="アイテムを使う"></button><button data-key="drift" class="boost-touch" aria-label="ドリフト"></button><button data-key="accel" class="accel-touch" aria-label="アクセル"></button></div>
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-  <script src="game.js?v=12"></script>
+<script src="game.js?v=30"></script>
 </body>
 </html>
