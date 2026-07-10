@@ -29,8 +29,13 @@ New-Item -ItemType Directory -Path $packageRoot | Out-Null
 $catSlugs = @(
     "aruka-sham", "kurone-night", "kohaku-taiga", "ghost-rex",
     "nerine-korat", "fumika-scotty", "bell-savanna", "popo-munch",
-    "marron-maine", "milfi-ragdoll", "yukine-silky", "rhythm-sphynx"
+    "marron-maine", "milfi-ragdoll", "yukine-silky", "rhythm-sphynx",
+    "tick-abyssinian", "flora-turkishvan", "reska-americancurl",
+    "cleo-mau", "ciel-norwegian", "sucre-persian",
+    "moka-oriental", "garnet-bengal", "rinka-somali",
+    "stella-russianblue", "honey-british", "liber-birman"
 )
+$portraitSlugs = $catSlugs[0..11]
 $spectators = @("pink-human", "blond-cookie", "cyan-cat", "purple-witch", "teal-glasses")
 
 $files = [Collections.Generic.List[string]]::new()
@@ -45,14 +50,23 @@ $files.AddRange([string[]]@(
     "assets/environment/course-neon.png",
     "assets/environment/course-rain.png",
     "assets/environment/course-royal.png",
+    "assets/environment/racer-set-garage.png",
     "assets/ui/course-map-v2.png",
     "assets/ui/items.png",
     "assets/ui/vfx.png",
+    "assets/ui/mobile-controls.png",
+    "assets/ui/driving-vfx-gpt2.png",
     "assets/trackside/candy-sign.png",
-    "assets/trackside/cupcake-tower.png"
+    "assets/trackside/cupcake-tower.png",
+    "assets/trackside/jump-ramps-angled-gpt2.png",
+    "assets/trackside/scenery-candy-houses.png",
+    "assets/trackside/scenery-forest.png"
 ))
 foreach ($slug in $catSlugs) {
     $files.Add("assets/sprites/$slug.png")
+    $files.Add("assets/select-heroes/$slug.png")
+}
+foreach ($slug in $portraitSlugs) {
     $files.Add("assets/portraits/$slug.webp")
 }
 foreach ($slug in $spectators) {
