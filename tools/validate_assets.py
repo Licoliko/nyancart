@@ -57,7 +57,7 @@ for path in sprites:
                         f"({content[0]}..{content[2]} inside width {cell_w})"
                     )
 
-for name, cols, rows in [("items.png",4,2),("vfx.png",4,2),("mobile-controls.png",3,2)]:
+for name, cols, rows in [("items.png",4,2),("vfx.png",4,2),("mobile-controls.png",3,2),("particle-bursts-gpt2.png",4,2)]:
     path=ROOT/"assets"/"ui"/name
     with Image.open(path).convert("RGBA") as image:
         alpha=image.getchannel("A");w,h=image.size
@@ -86,7 +86,18 @@ for name in ("scenery-candy-houses.png", "scenery-forest.png"):
 
 for folder, name, cols, rows in (
     ("ui", "driving-vfx-gpt2.png", 3, 2),
-    ("trackside", "jump-ramps-angled-gpt2.png", 7, 5),
+    ("trackside", "jump-ramps-angled-gpt2-v2.png", 7, 5),
+    ("trackside", "course-scenery-sweets-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-steam-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-neon-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-rain-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-royal-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-aurora-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-jungle-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-sakura-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-coral-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-phantom-gpt2.png", 4, 3),
+    ("trackside", "course-scenery-lunatic-gpt2.png", 4, 3),
 ):
     path = ROOT / "assets" / folder / name
     if not path.exists():

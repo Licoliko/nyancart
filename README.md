@@ -2,9 +2,17 @@
 
 Repository: https://github.com/Licoliko/nyancart
 
-Jump ramps now use a GPT Image 2.0 7-angle atlas (`assets/trackside/jump-ramps-angled-gpt2.png`): left, left 45, left 15, front, right 15, right 45, and right. The race renderer picks the ramp angle from the projected course curve, and jumps/elevation have been strengthened for clearer pseudo-3D airtime.
+Jump ramps now use a GPT Image 2.0 7-angle atlas (`assets/trackside/jump-ramps-angled-gpt2-v2.png`): left, left 45, left 15, front, right 15, right 45, and right. The race renderer picks the ramp angle from the projected course curve, and jumps/elevation have been strengthened for clearer pseudo-3D airtime.
 
 The roster now contains 24 cat-ear racer sets. The first 18 are available by default, and the 6 newly added GPT Image 2.0 racer sets are locked behind coin unlock costs. Jump-ramp angle selection has also been mirrored to better match the perceived course direction.
+
+Jump ramps now use a fixed-cell v2 atlas (`assets/trackside/jump-ramps-angled-gpt2-v2.png`, 7 x 5, 320 x 240 per cell) so animated/angled frames keep a consistent frame size without neighboring-cell bleed. Course-side scenery also has GPT Image 2.0 course-specific atlases rendered as far/mid/near scenery layers.
+
+The stage roster has been expanded from 5 to 11 circuits. The six added concept-art circuits are now selectable and have matching pseudo-3D route data, course themes, elevation profiles, tunnels, and GPT Image 2.0 far/mid/near scenery atlases.
+
+Settings now include a rich scenery toggle. When enabled, course-side scenery draws more densely with distance fog: far props are softened and faded, while near props remain crisp. Turning it off reduces scenery density for lighter rendering.
+
+Course start/finish rendering was stabilized on circuits where the start line sat on a sharp route seam. Gear Clock, Emerald Ruins, and Twinkle Sweets now use smoother internal start-line placement. Course scenery props now favor opaque rendering with a separate fog layer instead of semi-transparent prop bodies, and newly added circuits no longer reuse unrelated legacy prop sets.
 
 きらめきスイーツサーキットを舞台にした、3周制のブラウザ・カートレースゲームです。GPT Image 2.0で制作した18人分の14方向スプライト、スイーツコース背景、アイテム、VFXを使用しています。
 
