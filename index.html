@@ -129,12 +129,30 @@
       <div id="toast" class="toast"></div>
     </section>
 
-    <section id="finish" class="screen finish-screen">
+    <section id="finish" class="screen finish-screen result-screen">
       <p class="eyebrow">TWINKLE CIRCUIT</p>
       <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
       <h2 id="finishTitle">FINISH!</h2>
       <p id="finishTime" class="finish-time">00:00.000</p>
       <p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p>
+      <div class="result-board">
+        <div class="result-panel">
+          <p class="eyebrow">RESULT BOARD</p>
+          <div id="resultRows" class="result-rows"></div>
+        </div>
+        <div class="podium-show">
+          <div class="result-ribbon"><span id="resultCourseName">TWINKLE CIRCUIT</span></div>
+          <div id="podiumSlot2" class="podium-racer second"></div>
+          <div id="podiumSlot1" class="podium-racer first"></div>
+          <div id="podiumSlot3" class="podium-racer third"></div>
+          <div class="podium-base">
+            <div class="podium-step second"><b>2</b></div>
+            <div class="podium-step first"><b>1</b></div>
+            <div class="podium-step third"><b>3</b></div>
+          </div>
+          <div id="awardCard" class="award-card"><small>表彰状</small><strong>RACE CLEAR</strong><span>すばらしい走りを見せてくれました！</span></div>
+        </div>
+      </div>
       <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
     </section>
 
@@ -144,6 +162,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=36"></script>
+<script src="game.js?v=40"></script>
 </body>
 </html>

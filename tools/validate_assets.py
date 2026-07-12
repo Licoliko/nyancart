@@ -68,6 +68,15 @@ for name, cols, rows in [("items.png",4,2),("vfx.png",4,2),("mobile-controls.png
                 box=(round(w*col/cols),round(h*row/rows),round(w*(col+1)/cols),round(h*(row+1)/rows))
                 if not alpha.crop(box).getbbox():errors.append(f"{name}: empty cell {row},{col}")
 
+result_ceremony = ROOT / "assets" / "ui" / "result-ceremony-gpt2.png"
+if not result_ceremony.exists():
+    errors.append("missing result ceremony background: result-ceremony-gpt2.png")
+else:
+    with Image.open(result_ceremony) as image:
+        w, h = image.size
+        if w < 1280 or h < 720 or not 1.7 < w / h < 1.9:
+            errors.append(f"result-ceremony-gpt2.png: expected a 16:9 HD image, got {w}x{h}")
+
 for name in ("scenery-candy-houses.png", "scenery-forest.png"):
     path = ROOT / "assets" / "trackside" / name
     if not path.exists():

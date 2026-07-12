@@ -63,6 +63,7 @@ $files.AddRange([string[]]@(
     "assets/ui/mobile-controls.png",
     "assets/ui/driving-vfx-gpt2.png",
     "assets/ui/particle-bursts-gpt2.png",
+    "assets/ui/result-ceremony-gpt2.png",
     "assets/trackside/candy-sign.png",
     "assets/trackside/cupcake-tower.png",
     "assets/trackside/jump-ramps-angled-gpt2-v2.png",
