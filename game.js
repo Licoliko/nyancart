@@ -289,6 +289,105 @@ function resetRace(){
   }
   drawHeldItem();updateHud();buildRank();
 }
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+function pickIntroRivals(){
+  return racers
+    .map((r,i)=>({r,i,score:r.set.stats.speed*1.05+r.set.stats.boost*.8+r.set.stats.handling*.55+Math.sin((i+1)*(state.selectedCourse+3))*7}))
+    .filter(x=>x.i!==state.selected)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,3)
+    .map(x=>x.r);
+}
+function drawIntroCourseMap(){
+  const canvas=$('introCourseMap');if(!canvas)return;
+  const g=canvas.getContext('2d'),theme=activeCourse.theme;
+  const drawPath=()=>{
+    g.beginPath();
+    for(let i=0;i<=220;i++){
+      const [px,py]=mapPoint(i/220),x=30+px*(canvas.width-60),y=20+py*(canvas.height-40);
+      i?g.lineTo(x,y):g.moveTo(x,y);
+    }
+  };
+  g.clearRect(0,0,canvas.width,canvas.height);
+  g.save();
+  const bg=g.createLinearGradient(0,0,canvas.width,canvas.height);
+  bg.addColorStop(0,'rgba(13,12,46,.96)');
+  bg.addColorStop(1,'rgba(52,19,82,.88)');
+  g.fillStyle=bg;g.fillRect(0,0,canvas.width,canvas.height);
+  g.lineJoin='round';g.lineCap='round';
+  drawPath();g.strokeStyle='rgba(0,0,0,.72)';g.lineWidth=30;g.stroke();
+  drawPath();g.strokeStyle=theme.curbA;g.lineWidth=22;g.stroke();
+  drawPath();g.strokeStyle=theme.roadA;g.lineWidth=15;g.stroke();
+  drawPath();g.strokeStyle=theme.accent;g.lineWidth=4;g.stroke();
+  const start=trackSample(0),sx=30+start.x*(canvas.width-60),sy=20+start.y*(canvas.height-40);
+  g.shadowColor=theme.lightB;g.shadowBlur=16;g.fillStyle='#fff';g.strokeStyle=theme.accent;g.lineWidth=3;
+  g.beginPath();g.arc(sx,sy,9,0,7);g.fill();g.stroke();
+  g.restore();
+}
+function drawIntroRacerCanvas(canvas,racer,frameIndex=3){
+  if(!canvas||!racer)return;
+  const frame=racer.frames?.[frameIndex]||racer.frames?.[10]||racer.frames?.[0],g=canvas.getContext('2d');
+  g.clearRect(0,0,canvas.width,canvas.height);
+  if(!frame)return;
+  const scale=Math.min(canvas.width/frame.sw*.9,canvas.height/frame.sh*.96),w=frame.sw*scale,h=frame.sh*scale,x=(canvas.width-w)/2,y=canvas.height-h+5;
+  g.imageSmoothingEnabled=true;
+  g.shadowColor='rgba(0,0,0,.55)';g.shadowBlur=18;g.shadowOffsetY=10;
+  g.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,x,y,w,h);
+}
+function renderIntroCourse(){
+  const course=activeCourse;
+  $('introCourseArt').src=course.art;
+  $('introCourseArt').alt=course.name;
+  $('introCourseName').textContent=course.name;
+  $('introCourseStyle').textContent=`${course.style}  /  DIFFICULTY ${course.difficulty}`;
+  drawIntroCourseMap();
+}
+function renderIntroRivals(rivals){
+  $('introRivals').innerHTML=rivals.map((r,i)=>`<article class="intro-rival-card" data-index="0${i+1}"><img src="${r.portrait}" alt="${r.name}"><strong>${r.name}</strong><span>${r.set.rank} RANK / ${r.set.kart}</span></article>`).join('');
+}
+function renderIntroGrid(rivals){
+  const player=racers[state.selected],pool=[],push=r=>{if(r&&!pool.includes(r))pool.push(r)};
+  push(player);rivals.forEach(push);
+  for(let offset=1;pool.length<12&&offset<racers.length*2;offset++)push(racers[(state.selected+state.selectedCourse*3+offset)%racers.length]);
+  $('introGridTrack').innerHTML=pool.map(r=>`<div class="intro-grid-racer ${r===player?'player':''}"><canvas width="240" height="260" aria-label="${r.name}"></canvas><b>${r===player?'YOU · ':''}${r.name}</b></div>`).join('');
+  $('introGridTrack').querySelectorAll('.intro-grid-racer').forEach((card,i)=>drawIntroRacerCanvas(card.querySelector('canvas'),pool[i],3));
+}
+async function playRaceIntroSequence(){
+  const overlay=$('raceIntro'),counter=$('introCount'),rivals=pickIntroRivals();
+  overlay.className='race-intro course-phase';
+  counter.textContent='';
+  counter.className='intro-count';
+  renderIntroCourse();
+  await sleep(1450);
+  overlay.className='race-intro rivals-phase';
+  renderIntroRivals(rivals);
+  await sleep(1650);
+  overlay.className='race-intro grid-phase';
+  renderIntroGrid(rivals);
+  await sleep(1180);
+  for(const label of ['3','2','1','GO!']){
+    $('countdown').textContent=label;
+    counter.textContent=label;
+    counter.className=`intro-count show ${label==='GO!'?'go':''}`;
+    await sleep(label==='GO!'?620:760);
+    counter.className='intro-count';
+  }
+  overlay.className='race-intro hidden';
+  $('countdown').textContent='';
+  state.countdownActive=false;
+  state.running=true;
+  state.last=performance.now();
+  if(state.startPenalty){
+    state.speed=0;
+    toast('TOO EARLY!');
+  }else if(state.startCharge>=2){
+    state.speed=115;
+    state.turbo=1.25;
+    toast('START DASH!');
+    spawnVfx(0,innerWidth/2,innerHeight*.8,.8);
+  }
+  burst(innerWidth/2,innerHeight*.72,18,'#6feaff');
+}
 async function startRace(){
   playRaceMusic();
   const button=$('confirmCourse'),small=button.querySelector('small');button.disabled=true;small.textContent='SPRITES LOADING...';
@@ -296,8 +395,7 @@ async function startRace(){
   button.disabled=false;small.textContent='グランプリに参加';activateCourse(state.selectedCourse);
   resetRace();$('finish').querySelector('.eyebrow').textContent=activeCourse.short;state.mode='race';showScreen(null);$('hud').classList.remove('hidden');
   if(matchMedia('(pointer:coarse)').matches)$('mobileControls').classList.remove('hidden');
-  let n=3;$('countdown').textContent='3';
-  const timer=setInterval(()=>{n--;if(n>0)$('countdown').textContent=n;else if(n===0){$('countdown').textContent='GO!';state.countdownActive=false;state.running=true;state.last=performance.now();if(state.startPenalty){state.speed=0;toast('TOO EARLY!')}else if(state.startCharge>=2){state.speed=115;state.turbo=1.25;toast('START DASH!');spawnVfx(0,innerWidth/2,innerHeight*.8,.8)}burst(innerWidth/2,innerHeight*.72,18,'#6feaff')}else{$('countdown').textContent='';clearInterval(timer)}},850);
+  await playRaceIntroSequence();
 }
 
 function buildRank(){

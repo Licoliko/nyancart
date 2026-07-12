@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=14" />
+  <link rel="stylesheet" href="style.css?v=15" />
 </head>
 <body>
   <main id="app">
@@ -129,6 +129,29 @@
       <div id="toast" class="toast"></div>
     </section>
 
+    <section id="raceIntro" class="race-intro hidden" aria-live="polite">
+      <div class="intro-scan"></div>
+      <div class="intro-panel intro-course-panel">
+        <div class="intro-course-art"><img id="introCourseArt" alt=""></div>
+        <div class="intro-course-copy">
+          <p class="eyebrow">NEXT CIRCUIT</p>
+          <h2 id="introCourseName">TWINKLE SWEETS CIRCUIT</h2>
+          <p id="introCourseStyle">TECHNICAL / TWINKLE</p>
+          <canvas id="introCourseMap" width="420" height="260" aria-label="course overview"></canvas>
+        </div>
+      </div>
+      <div class="intro-panel intro-rivals-panel">
+        <p class="eyebrow">RIVAL SPOTLIGHT</p>
+        <h2>WATCH THESE RACERS</h2>
+        <div id="introRivals" class="intro-rivals"></div>
+      </div>
+      <div class="intro-panel intro-grid-panel">
+        <p class="eyebrow">STARTING GRID</p>
+        <div class="intro-grid-window"><div id="introGridTrack" class="intro-grid-track"></div></div>
+      </div>
+      <div id="introCount" class="intro-count"></div>
+    </section>
+
     <section id="finish" class="screen finish-screen result-screen">
       <p class="eyebrow">TWINKLE CIRCUIT</p>
       <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
@@ -162,6 +185,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=41"></script>
+<script src="game.js?v=42"></script>
 </body>
 </html>
