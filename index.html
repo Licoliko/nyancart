@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=15" />
+  <link rel="stylesheet" href="style.css?v=19" />
 </head>
 <body>
   <main id="app">
@@ -20,7 +20,7 @@
       </div>
       <button id="openSelect" class="primary-btn"><span>RACE START</span><small>レーサーセットを選ぶ</small></button>
       <button id="openSettings" class="secondary-btn menu-settings-btn"><span>⚙ SETTINGS</span><small>音量・操作設定</small></button>
-      <div class="menu-hints"><span>🏁 3 LAPS</span><span>⭐ 18 RACERS</span><span>⚡ DRIFT TURBO</span></div>
+      <div class="menu-hints"><span>🏁 2 LAPS</span><span>⭐ 18 RACERS</span><span>⚡ DRIFT TURBO</span></div>
     </section>
 
     <section id="kartSelect" class="screen set-select-screen" aria-labelledby="setSelectTitle">
@@ -43,11 +43,21 @@
             <div class="set-rank"><small>RANK</small><strong id="setRank">S</strong></div>
           </div>
           <p id="setDescription" class="set-description">気品と瞬発力を両立した、きらめく専用レーシングセット。</p>
+          <p id="setTrait" class="set-trait">TRAIT</p>
           <div id="setStats" class="set-stat-list"></div>
         </aside>
       </div>
       <div id="setGrid" class="set-card-rail" aria-label="レーサーセット一覧" role="listbox" tabindex="0"></div>
       <div id="setNotice" class="set-notice" aria-live="polite"></div>
+      <div id="unlockFx" class="unlock-fx hidden" aria-live="polite">
+        <div id="unlockConfetti" class="unlock-confetti"></div>
+        <div class="unlock-card">
+          <p class="eyebrow">NEW RACER UNLOCKED</p>
+          <img id="unlockHero" alt="">
+          <h2 id="unlockName">NYAN RACER</h2>
+          <p id="unlockCopy">専用セットが開放されました！</p>
+        </div>
+      </div>
       <div class="set-action-bar">
         <button id="confirmSet" class="set-confirm-btn"><span>COURSE SELECT</span><small>このセットで決定</small></button>
       </div>
@@ -107,7 +117,7 @@
       <div class="position-panel"><small>POSITION</small><strong id="currentPosition">6</strong><span id="positionTotal">/18</span></div>
       <div id="rankPanel" class="rank-panel"></div>
       <div class="race-info">
-        <div class="lap-label">LAP <strong id="lap">1</strong><span>/3</span></div>
+        <div class="lap-label">LAP <strong id="lap">1</strong><span id="lapTotal">/2</span></div>
         <div id="timer" class="timer">◷ 00:00.000</div>
       </div>
       <div class="minimap"><canvas id="courseMap" width="240" height="300" aria-label="コース全体マップ"></canvas><small>FULL COURSE</small></div>
@@ -127,6 +137,10 @@
       <div id="countdown" class="countdown"></div>
       <div id="rankChange" class="rank-change"></div>
       <div id="toast" class="toast"></div>
+      <div id="goalFx" class="goal-fx hidden" aria-live="polite">
+        <div id="goalConfetti" class="goal-confetti"></div>
+        <div id="goalStamp" class="goal-stamp">FINISH!</div>
+      </div>
     </section>
 
     <section id="raceIntro" class="race-intro hidden" aria-live="polite">
@@ -185,6 +199,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=42"></script>
+<script src="game.js?v=46"></script>
 </body>
 </html>
