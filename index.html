@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=19" />
+  <link rel="stylesheet" href="style.css?v=22" />
 </head>
 <body>
   <main id="app">
@@ -28,7 +28,7 @@
       <header class="select-header set-select-header">
         <button id="backKartSelect" class="icon-btn" aria-label="タイトルへ戻る">‹</button>
         <div><p class="eyebrow">RACER SET SELECT</p><h2 id="setSelectTitle">専用セットセレクト</h2></div>
-        <div class="step-badge">01 / 02</div>
+        <div class="step-badge">01 / 03</div>
       </header>
       <div class="set-select-body">
         <section class="set-hero-stage" aria-label="選択中のレーサーセット">
@@ -104,13 +104,48 @@
       <header class="select-header">
         <button id="backCourseSelect" class="icon-btn" aria-label="セット選択へ戻る">‹</button>
         <div><p class="eyebrow">CHOOSE YOUR CIRCUIT</p><h2>コースを選ぼう！</h2></div>
-        <div class="step-badge">02 / 02</div>
+        <div class="step-badge">02 / 03</div>
       </header>
       <div id="courseGrid" class="course-grid"></div>
       <div class="course-dock">
         <div><small>SELECTED CIRCUIT</small><strong id="selectedCourseName">きらめきスイーツサーキット</strong><span id="selectedCourseInfo">テクニカル＆トリッキー</span></div>
-        <button id="confirmCourse" class="primary-btn compact"><span>LET'S RACE!</span><small>グランプリに参加</small></button>
+        <button id="confirmCourse" class="primary-btn compact"><span>DIFFICULTY SELECT</span><small>難易度を選ぶ</small></button>
       </div>
+    </section>
+
+    <section id="difficultySelect" class="screen difficulty-select-screen" aria-labelledby="difficultySelectTitle">
+      <div class="difficulty-backdrop"><img id="difficultyCourseArt" alt=""><i></i></div>
+      <header class="select-header difficulty-header">
+        <button id="backDifficultySelect" class="icon-btn" aria-label="コース選択へ戻る">‹</button>
+        <div><p class="eyebrow">CHOOSE RACE LEVEL</p><h2 id="difficultySelectTitle">難易度を選ぼう！</h2></div>
+        <div class="step-badge">03 / 03</div>
+      </header>
+      <div class="difficulty-layout">
+        <section class="difficulty-course-summary">
+          <p class="eyebrow">SELECTED CIRCUIT</p>
+          <h3 id="difficultyCourseName">きらめきスイーツサーキット</h3>
+          <p id="difficultyCourseStyle">テクニカル＆トリッキー</p>
+          <div class="difficulty-warning"><span>!</span><p>難易度は通常NPCだけでなく、乱入ボス「ミア・シャルム」の速さと粘り強さにも影響します。</p></div>
+        </section>
+        <div class="difficulty-main">
+          <div class="difficulty-cards" role="radiogroup" aria-label="レース難易度">
+            <button class="difficulty-card easy" type="button" data-difficulty="easy" role="radio" aria-checked="false"><span class="difficulty-number">01</span><small>RELAXED RACE</small><strong>EASY</strong><em>気軽にドライブ</em></button>
+            <button class="difficulty-card normal" type="button" data-difficulty="normal" role="radio" aria-checked="true"><span class="difficulty-number">02</span><small>GRAND PRIX</small><strong>NORMAL</strong><em>手強いライバル</em></button>
+            <button class="difficulty-card hard" type="button" data-difficulty="hard" role="radio" aria-checked="false"><span class="difficulty-number">03</span><small>BOSS CHALLENGE</small><strong>HARD</strong><em>本気のボスレース</em></button>
+          </div>
+          <section class="difficulty-detail" aria-live="polite">
+            <div class="difficulty-detail-title"><div><small id="difficultyKicker">GRAND PRIX</small><h3 id="difficultyName">NORMAL / ノーマル</h3></div><span id="difficultyBadge">RECOMMENDED</span></div>
+            <p id="difficultySummary">通常NPCもミアも手強く、追い抜き合いを楽しめる標準難易度です。</p>
+            <div class="difficulty-metrics">
+              <div><small>NPC SPEED</small><strong id="difficultyNpcSpeed">106%</strong></div>
+              <div><small>CHASE POWER</small><strong id="difficultyChase">±28</strong><em>km/h</em></div>
+              <div><small>MIA LEAD</small><strong id="difficultyMiaLead">11</strong><em>m</em></div>
+            </div>
+            <ul id="difficultyDifferences" class="difficulty-differences"></ul>
+          </section>
+        </div>
+      </div>
+      <div class="difficulty-dock"><div><small>CURRENT LEVEL</small><strong id="difficultyDockName">NORMAL</strong><span id="difficultyDockCopy">手強いライバルとのグランプリ</span></div><button id="confirmDifficulty" class="primary-btn compact"><span>START GRAND PRIX!</span><small>この難易度でスタート</small></button></div>
     </section>
 
     <section id="hud" class="hud hidden" aria-live="polite">
@@ -161,9 +196,21 @@
       </div>
       <div class="intro-panel intro-grid-panel">
         <p class="eyebrow">STARTING GRID</p>
-        <div class="intro-grid-window"><div id="introGridTrack" class="intro-grid-track"></div></div>
       </div>
       <div id="introCount" class="intro-count"></div>
+    </section>
+
+    <section id="miaIntrusion" class="mia-intrusion hidden" aria-live="assertive" aria-label="ミア・シャルム乱入">
+      <div class="mia-intrusion-card">
+        <img src="assets/ui/mia-charme-intrusion-gpt2.png" alt="空中からカートで乱入するミア・シャルム">
+        <div class="mia-intrusion-copy">
+          <small>BOSS CHALLENGER</small>
+          <h2>ミア・シャルム</h2>
+          <strong>乱入！</strong>
+          <p>黒猫の迷夢姫、参戦！</p>
+        </div>
+        <div class="mia-freeze-label">RACE TIME FREEZE</div>
+      </div>
     </section>
 
     <section id="finish" class="screen finish-screen result-screen">
@@ -199,6 +246,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=46"></script>
+<script src="game.js?v=49"></script>
 </body>
 </html>
