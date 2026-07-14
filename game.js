@@ -157,7 +157,7 @@ function applyAudioSettings(){const volume=settings.muted?0:(settings.masterVolu
 function applyVisualSettings(){const button=$('richSceneryToggle');if(!button)return;button.setAttribute('aria-pressed',String(!!settings.richScenery));button.textContent=`豪華なコース外 ${settings.richScenery?'ON':'OFF'}`}
 function difficultyProfile(){return DIFFICULTY_PROFILES[settings.raceDifficulty]||DIFFICULTY_PROFILES.normal}
 function applyDifficultySettings(){const profile=difficultyProfile();document.querySelectorAll('[data-difficulty]').forEach(button=>{const active=button.dataset.difficulty===settings.raceDifficulty;button.classList.toggle('active',active);button.setAttribute('aria-checked',String(active))});if(!$('difficultyName'))return;$('difficultyKicker').textContent=profile.kicker;$('difficultyName').textContent=`${profile.label} / ${profile.jp}`;$('difficultyBadge').textContent=profile.badge;$('difficultySummary').textContent=profile.summary;$('difficultyNpcSpeed').textContent=`${Math.round(profile.aiSpeed*100)}%`;$('difficultyChase').textContent=`±${profile.rubberLimit}`;$('difficultyMiaLead').textContent=String(profile.miaTargetGap);$('difficultyDifferences').innerHTML=profile.differences.map(text=>`<li>${text}</li>`).join('');$('difficultyDockName').textContent=profile.label;$('difficultyDockCopy').textContent=profile.dock}
-function selectRaceDifficulty(key){if(!DIFFICULTY_PROFILES[key])return;settings.raceDifficulty=key;applyDifficultySettings();saveSettings()}
+function selectRaceDifficulty(key){if(!DIFFICULTY_PROFILES[key])return;settings.raceDifficulty=key;applyDifficultySettings();saveSettings();if(state.mode==='difficulty')syncControllerFocus()}
 function setupDifficultySelection(){document.querySelectorAll('.difficulty-card[data-difficulty]').forEach(button=>button.onclick=()=>selectRaceDifficulty(button.dataset.difficulty));applyDifficultySettings()}
 function updateControlHints(){$('itemKeyHint').textContent=keyLabel(settings.bindings.item);$('driftKeyHint').textContent=settings.bindings.drift.startsWith('Shift')?'SHIFT':keyLabel(settings.bindings.drift)}
 function renderKeyConfig(){const list=$('keyConfigList');list.innerHTML=Object.entries(ACTION_LABELS).map(([action,label])=>`<div class="key-bind"><span>${label}</span><button type="button" data-bind-action="${action}">${keyLabel(settings.bindings[action])}</button></div>`).join('');list.querySelectorAll('[data-bind-action]').forEach(button=>button.onclick=()=>beginKeyCapture(button.dataset.bindAction))}
@@ -170,15 +170,33 @@ const state = {
   distance:0, speed:0, x:0, steer:0, boosting:false, turbo:0, drift:0, driftLevel:0,
   item:null, shield:0, invincible:0, coins:0, raceWalletEarned:0, shake:0, rank:6, last:0,
   objects:[], particles:[], collectFx:[], projectiles:[], trackCurve:0, centrifugal:0, surface:'road', offroadAmount:0, suspension:0, suspensionVelocity:0, jumpY:0, jumpVelocity:0, jumpView:0, landingBounce:0, landingBounceVelocity:0, airborne:false, cameraHeading:0, flash:0, collisionCooldown:0,
-  countdownActive:false, startCharge:0, startPenalty:false, finish:false, finishTime:0, finishCoast:0, finishOrder:null, lastRank:6, debug:{showCourseLimits:false}
+  countdownActive:false, startCharge:0, startPenalty:false, finish:false, finishTime:0, finishCoast:0, finishOrder:null, lastRank:6,
+  raceDifficulty:'normal',raceRewards:[],debug:{showCourseLimits:false}
 };
 const keyboardActions={},touchActions={},gamepadInput={accelerate:false,brake:false,left:false,right:false,drift:false,steer:0};
-let gamepadPrevious={item:false,pause:false,accelerate:false},activeGamepadIndex=null;
+let gamepadPrevious={item:false,pause:false,accelerate:false,confirm:false,back:false},activeGamepadIndex=null;
+const controllerUi={indexes:{menu:0,settings:0,finish:0},activeElement:null,repeat:{left:0,right:0,up:0,down:0}};
 function actionForCode(code){return Object.keys(settings.bindings).find(action=>settings.bindings[action]===code)}
 function actionDown(action){return!!(keyboardActions[action]||touchActions[action]||gamepadInput[action])}
 function handleStartCharge(){if(!state.countdownActive)return;const count=$('countdown').textContent;if(count==='3')state.startPenalty=true;if(count==='2')state.startCharge=Math.max(state.startCharge,1);if(count==='1')state.startCharge=2}
 function togglePause(){if(state.mode!=='race'||miaNpc.cutInActive)return;state.paused=!state.paused;state.paused?pauseRaceMusic():resumeRaceMusic();toast(state.paused?'PAUSE':'RACE ON!')}
-function pollGamepad(){const pads=navigator.getGamepads?.()||[],pad=[...pads].find(Boolean),status=$('controllerStatus');if(!pad){activeGamepadIndex=null;Object.assign(gamepadInput,{accelerate:false,brake:false,left:false,right:false,drift:false,steer:0});if(status){status.textContent='接続待ち';status.classList.remove('connected')}return}activeGamepadIndex=pad.index;if(status){status.textContent=pad.id.replace(/\s*\([^)]*\)\s*/g,' ').trim().slice(0,30)||'接続済み';status.classList.add('connected')}const axis=Math.abs(pad.axes[0]||0)>.16?(pad.axes[0]||0):0,left=axis<0||!!pad.buttons[14]?.pressed,right=axis>0||!!pad.buttons[15]?.pressed,accelerate=(pad.buttons[7]?.value||0)>.16||!!pad.buttons[0]?.pressed||!!pad.buttons[12]?.pressed,brake=(pad.buttons[6]?.value||0)>.16||!!pad.buttons[1]?.pressed||!!pad.buttons[13]?.pressed,drift=!!pad.buttons[4]?.pressed||!!pad.buttons[5]?.pressed,item=!!pad.buttons[2]?.pressed,pause=!!pad.buttons[9]?.pressed;Object.assign(gamepadInput,{accelerate,brake,left,right,drift,steer:axis});if(accelerate&&!gamepadPrevious.accelerate)handleStartCharge();if(item&&!gamepadPrevious.item)useItem();if(pause&&!gamepadPrevious.pause)togglePause();gamepadPrevious={item,pause,accelerate}}
+function gamepadDirectionPulse(direction,active,now){if(!active){controllerUi.repeat[direction]=0;return false}const next=controllerUi.repeat[direction];if(!next){controllerUi.repeat[direction]=now+330;return true}if(now>=next){controllerUi.repeat[direction]=now+125;return true}return false}
+function setControllerConnected(connected){document.body.classList.toggle('controller-connected',connected);const hint=$('controllerMenuHint');if(hint){const visible=connected&&state.mode!=='race';hint.classList.toggle('hidden',!visible);hint.setAttribute('aria-hidden',String(!visible))}}
+function pollGamepad(){
+  const pads=navigator.getGamepads?.()||[],pad=[...pads].find(Boolean),status=$('controllerStatus');
+  if(!pad){activeGamepadIndex=null;Object.assign(gamepadInput,{accelerate:false,brake:false,left:false,right:false,drift:false,steer:0});Object.keys(controllerUi.repeat).forEach(key=>controllerUi.repeat[key]=0);gamepadPrevious={item:false,pause:false,accelerate:false,confirm:false,back:false};setControllerConnected(false);if(status){status.textContent='接続待ち';status.classList.remove('connected')}return}
+  activeGamepadIndex=pad.index;setControllerConnected(true);if(status){status.textContent=pad.id.replace(/\s*\([^)]*\)\s*/g,' ').trim().slice(0,30)||'接続済み';status.classList.add('connected')}
+  const rawX=pad.axes[0]||0,rawY=pad.axes[1]||0,axis=Math.abs(rawX)>.16?rawX:0,left=rawX<-.52||!!pad.buttons[14]?.pressed,right=rawX>.52||!!pad.buttons[15]?.pressed,up=rawY<-.52||!!pad.buttons[12]?.pressed,down=rawY>.52||!!pad.buttons[13]?.pressed;
+  const confirm=!!pad.buttons[0]?.pressed,back=!!pad.buttons[1]?.pressed,accelerate=(pad.buttons[7]?.value||0)>.16||confirm||up,brake=(pad.buttons[6]?.value||0)>.16||back||down,drift=!!pad.buttons[4]?.pressed||!!pad.buttons[5]?.pressed,item=!!pad.buttons[2]?.pressed,pause=!!pad.buttons[9]?.pressed;
+  Object.assign(gamepadInput,{accelerate,brake,left,right,drift,steer:axis});
+  if(state.mode==='race'){
+    if(accelerate&&!gamepadPrevious.accelerate)handleStartCharge();if(item&&!gamepadPrevious.item)useItem();if(pause&&!gamepadPrevious.pause)togglePause();
+  }else{
+    const now=performance.now();for(const [direction,active] of Object.entries({left,right,up,down}))if(gamepadDirectionPulse(direction,active,now))navigateController(direction);
+    if(confirm&&!gamepadPrevious.confirm)activateControllerSelection();if(back&&!gamepadPrevious.back)controllerBack();if(pause&&!gamepadPrevious.pause&&state.mode==='settings')closeSettings();
+  }
+  gamepadPrevious={item,pause,accelerate,confirm,back};
+}
 const TRACK_LENGTH=1800;
 const TOTAL_LAPS=2;
 const DEV_COURSES_ENABLED=new URLSearchParams(location.search).has('debugCourses')||localStorage.getItem('nyan-cart-debug-courses')==='1';
@@ -268,7 +286,7 @@ addEventListener('resize',resize);resize();
 
 const SET_STAT_LABELS=[['speed','SPEED'],['accel','ACCEL'],['handling','HANDLING'],['boost','BOOST'],['technique','TECHNIQUE']];
 const PROGRESS_KEY='nyan-cart-progress-v1',INITIAL_FREE_RACER_COUNT=18;
-function loadProgress(){try{const saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}');return{coins:Math.max(0,Math.floor(Number(saved.coins)||0)),unlocked:Array.isArray(saved.unlocked)?saved.unlocked.filter(value=>typeof value==='string'):[]}}catch{return{coins:0,unlocked:[]}}}
+function loadProgress(){try{const saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}');return{coins:Math.max(0,Math.floor(Number(saved.coins)||0)),unlocked:Array.isArray(saved.unlocked)?saved.unlocked.filter(value=>typeof value==='string'):[],hardClears:Array.isArray(saved.hardClears)?saved.hardClears.filter(value=>typeof value==='string'):[],miaDefeats:Array.isArray(saved.miaDefeats)?saved.miaDefeats.filter(value=>typeof value==='string'):[]}}catch{return{coins:0,unlocked:[],hardClears:[],miaDefeats:[]}}}
 const playerProgress=loadProgress();
 function saveProgress(){try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(playerProgress))}catch{}}
 function racerUnlockCost(index){return index<INITIAL_FREE_RACER_COUNT?0:100+(index-INITIAL_FREE_RACER_COUNT)*50}
@@ -318,15 +336,43 @@ function updateSetUI(){
   document.querySelectorAll('.set-card').forEach(card=>{const index=Number(card.dataset.setIndex),active=Number(card.dataset.virtualIndex)===setCarousel.virtualIndex,cardLocked=!isRacerUnlocked(index);card.classList.toggle('selected',active);card.classList.toggle('locked',cardLocked);card.setAttribute('aria-selected',String(active));card.querySelector('.set-card-badge').textContent=cardLocked?'LOCKED':active?'EQUIPPED':'SELECT'});
   const confirm=$('confirmSet');confirm.classList.toggle('unlock',locked);confirm.querySelector('span').textContent=locked?'UNLOCK':'COURSE SELECT';confirm.querySelector('small').textContent=locked?`${cost} COINS で開放`:'このセットで決定';updateWalletUI();
 }
-function selectRacerSet(i,center=true,virtualIndex=null){const count=racers.length;state.selected=((i%count)+count)%count;if(virtualIndex===null){const candidates=[state.selected,state.selected+count,state.selected+count*2];virtualIndex=candidates.reduce((best,value)=>Math.abs(value-setCarousel.virtualIndex)<Math.abs(best-setCarousel.virtualIndex)?value:best,candidates[1])}setCarousel.virtualIndex=virtualIndex;updateSetUI();ensureRacerSprite(state.selected);if(center)centerSelectedSetCard(true,virtualIndex);updateSetCarousel()}
+function selectRacerSet(i,center=true,virtualIndex=null){const count=racers.length;state.selected=((i%count)+count)%count;if(virtualIndex===null){const candidates=[state.selected,state.selected+count,state.selected+count*2];virtualIndex=candidates.reduce((best,value)=>Math.abs(value-setCarousel.virtualIndex)<Math.abs(best-setCarousel.virtualIndex)?value:best,candidates[1])}setCarousel.virtualIndex=virtualIndex;updateSetUI();ensureRacerSprite(state.selected);if(center)centerSelectedSetCard(true,virtualIndex);updateSetCarousel();if(state.mode==='kart')syncControllerFocus()}
 function openKartSelect(){state.mode='kart';showScreen('kartSelect');updateSetUI();requestAnimationFrame(()=>{centerSelectedSetCard(false,setCarousel.virtualIndex);updateSetCarousel()})}
 function confirmRacerSet(){if(isRacerUnlocked(state.selected)){openCourseSelect();return}const cost=racerUnlockCost(state.selected);if(playerProgress.coins<cost){showSetNotice(`開放まであと ${cost-playerProgress.coins} COINS`);return}const racer=racers[state.selected];playerProgress.coins-=cost;playerProgress.unlocked.push(racer.slug);saveProgress();updateSetUI();showSetNotice('レーサーセットを開放しました！');playUnlockAnimation(racer,cost)}
 function setupCourseGrid(){const grid=$('courseGrid');grid.innerHTML='';courseData.forEach((course,i)=>{if(course.debugOnly&&!DEV_COURSES_ENABLED)return;const button=document.createElement('button');button.className='course-card'+(i===state.selectedCourse?' selected':'')+(course.debugOnly?' debug-course':'');button.dataset.courseIndex=String(i);button.innerHTML=`<img src="${course.art}" alt="${course.name}"><span class="course-number">${course.debugOnly?'DBG':i+1}</span><span class="course-copy"><strong>${course.name}</strong><small>${course.style}</small></span>`;button.onclick=()=>selectCourse(i);grid.appendChild(button)})}
-function selectCourse(i){state.selectedCourse=i;document.querySelectorAll('.course-card').forEach(card=>card.classList.toggle('selected',Number(card.dataset.courseIndex)===i));$('selectedCourseName').textContent=courseData[i].name;$('selectedCourseInfo').textContent=`${courseData[i].style}  ・  難易度 ${courseData[i].difficulty}`;activateCourse(i)}
+function selectCourse(i){state.selectedCourse=i;document.querySelectorAll('.course-card').forEach(card=>card.classList.toggle('selected',Number(card.dataset.courseIndex)===i));$('selectedCourseName').textContent=courseData[i].name;$('selectedCourseInfo').textContent=`${courseData[i].style}  ・  難易度 ${courseData[i].difficulty}`;activateCourse(i);if(state.mode==='course')syncControllerFocus()}
 function activateCourse(i){const course=courseData[i];activeCourse=course;trackNodes=course.nodes;trackArc=buildTrackArc();trackHeights=course.heights;tunnelSections=course.tunnels;environment=courseImages[i]||menuEnvironment;environmentCrop=course.crop;drawMinimap()}
 function openCourseSelect(){state.mode='course';showScreen('courseSelect');selectCourse(state.selectedCourse)}
 function openDifficultySelect(){activateCourse(state.selectedCourse);const course=activeCourse;$('difficultyCourseArt').src=course.art;$('difficultyCourseArt').alt=course.name;$('difficultyCourseName').textContent=course.name;$('difficultyCourseStyle').textContent=`${course.style} ・ コース難易度 ${course.difficulty}`;state.mode='difficulty';applyDifficultySettings();showScreen('difficultySelect')}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));if(id)$(id).classList.add('active')}
+function controllerFocusElement(element,scroll=false){document.querySelectorAll('.controller-focus').forEach(node=>node.classList.remove('controller-focus'));controllerUi.activeElement=element||null;if(!element)return;element.classList.add('controller-focus');try{element.focus({preventScroll:true})}catch{}if(scroll)element.scrollIntoView?.({block:'nearest',inline:'nearest',behavior:'smooth'})}
+function visibleControllerElements(selector,root=document){return[...root.querySelectorAll(selector)].filter(element=>!element.disabled&&element.getClientRects().length&&getComputedStyle(element).visibility!=='hidden')}
+function controllerList(mode=state.mode){if(mode==='menu')return[$('openSelect'),$('openSettings')].filter(Boolean);if(mode==='settings')return visibleControllerElements('button,input[type="range"]',$('settings'));if(mode==='finish')return[$('retry'),$('toMenu')].filter(Boolean);return[]}
+function syncControllerFocus(){
+  if(activeGamepadIndex===null){controllerFocusElement(null);setControllerConnected(false);return}
+  if(state.mode==='kart'){controllerFocusElement($('setGrid')?.querySelector(`[data-virtual-index="${setCarousel.virtualIndex}"]`));return}
+  if(state.mode==='course'){controllerFocusElement($('courseGrid')?.querySelector(`[data-course-index="${state.selectedCourse}"]`),true);return}
+  if(state.mode==='difficulty'){controllerFocusElement(document.querySelector(`[data-difficulty="${settings.raceDifficulty}"]`),true);return}
+  const list=controllerList(),index=Math.max(0,Math.min(list.length-1,controllerUi.indexes[state.mode]||0));controllerUi.indexes[state.mode]=index;controllerFocusElement(list[index],state.mode==='settings')
+}
+function adjustControllerRange(input,direction){const step=Number(input.step)||1,min=Number(input.min)||0,max=Number(input.max)||100;input.value=String(Math.max(min,Math.min(max,Number(input.value)+(direction==='right'?step*5:-step*5))));input.dispatchEvent(new Event('input',{bubbles:true}))}
+function spatialControllerMove(list,direction,current){if(!list.length)return null;if(!current||!list.includes(current))return list[0];const rect=current.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,vector={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[direction];let best=null,bestScore=Infinity;for(const candidate of list){if(candidate===current)continue;const box=candidate.getBoundingClientRect(),dx=box.left+box.width/2-cx,dy=box.top+box.height/2-cy,primary=dx*vector[0]+dy*vector[1];if(primary<=4)continue;const cross=Math.abs(dx*vector[1]-dy*vector[0]),score=primary+cross*1.7;if(score<bestScore){best=candidate;bestScore=score}}return best}
+function moveControllerList(mode,direction){const list=controllerList(mode);if(!list.length)return;let index=controllerUi.indexes[mode]||0,current=list[index];if(mode==='settings'&&current?.matches('input[type="range"]')&&(direction==='left'||direction==='right')){adjustControllerRange(current,direction);return}const next=mode==='settings'?spatialControllerMove(list,direction,current):list[(index+(direction==='left'||direction==='up'?-1:1)+list.length)%list.length];if(!next)return;index=list.indexOf(next);controllerUi.indexes[mode]=index;controllerFocusElement(next,mode==='settings')}
+function moveCourseController(direction){const cards=visibleControllerElements('.course-card',$('courseGrid')),current=cards.find(card=>Number(card.dataset.courseIndex)===state.selectedCourse)||cards[0],next=spatialControllerMove(cards,direction,current);if(next){selectCourse(Number(next.dataset.courseIndex));next.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'})}}
+function navigateController(direction){
+  if(state.mode==='menu'||state.mode==='settings'||state.mode==='finish'){moveControllerList(state.mode,direction);return}
+  if(state.mode==='kart'&&(direction==='left'||direction==='right')){const step=direction==='right'?1:-1,virtualIndex=setCarousel.virtualIndex+step,index=((virtualIndex%racers.length)+racers.length)%racers.length;selectRacerSet(index,true,virtualIndex);return}
+  if(state.mode==='course'){moveCourseController(direction);return}
+  if(state.mode==='difficulty'){const keys=Object.keys(DIFFICULTY_PROFILES),current=Math.max(0,keys.indexOf(settings.raceDifficulty)),step=direction==='left'||direction==='up'?-1:1;selectRaceDifficulty(keys[(current+step+keys.length)%keys.length])}
+}
+function activateControllerSelection(){
+  if(state.mode==='kart'){confirmRacerSet();return}if(state.mode==='course'){openDifficultySelect();return}if(state.mode==='difficulty'){$('confirmDifficulty')?.click();return}
+  const list=controllerList(),element=controllerUi.activeElement&&list.includes(controllerUi.activeElement)?controllerUi.activeElement:list[controllerUi.indexes[state.mode]||0];if(element&&!element.matches('input[type="range"]'))element.click()
+}
+function controllerBack(){
+  if(captureAction){captureAction=null;renderKeyConfig();$('keyCaptureHelp').textContent='キー変更をキャンセルしました。';requestAnimationFrame(syncControllerFocus);return}
+  if(state.mode==='kart')$('backKartSelect')?.click();else if(state.mode==='course')$('backCourseSelect')?.click();else if(state.mode==='difficulty')$('backDifficultySelect')?.click();else if(state.mode==='settings')closeSettings();else if(state.mode==='finish')$('toMenu')?.click()
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));if(id)$(id).classList.add('active');setControllerConnected(activeGamepadIndex!==null);requestAnimationFrame(syncControllerFocus)}
 function openSettings(){settingsReturnMode=state.mode;settingsReturnPaused=state.paused;if(state.mode==='race'){state.paused=true;pauseRaceMusic()}state.mode='settings';captureAction=null;renderKeyConfig();applyAudioSettings();applyVisualSettings();showScreen('settings')}
 function closeSettings(){captureAction=null;saveSettings();const returnMode=settingsReturnMode;state.mode=returnMode;if(returnMode==='race'){showScreen(null);state.paused=settingsReturnPaused;if(!state.paused)resumeRaceMusic()}else showScreen(returnMode==='kart'?'kartSelect':returnMode==='course'?'courseSelect':returnMode==='difficulty'?'difficultySelect':returnMode==='finish'?'finish':'menu')}
 function updateDebugUI(){const enabled=state.debug.showCourseLimits,button=$('debugCourseBounds');button.setAttribute('aria-pressed',String(enabled));button.textContent=`コース枠 ${enabled?'ON':'OFF'}`;$('debugToggle').classList.toggle('active',enabled)}
@@ -354,7 +400,7 @@ function resetMiaNpc(){
 function resetRace(){
   clearTimeout(finishRace.timer);
   resetMiaNpc();
-  Object.assign(state,{running:false,paused:false,finish:false,finishTime:0,finishCoast:0,finishOrder:null,elapsed:0,lap:1,progress:0,distance:0,speed:0,x:0,steer:0,boosting:false,turbo:0,drift:0,driftLevel:0,item:null,shield:0,invincible:0,coins:0,raceWalletEarned:0,shake:0,rank:6,lastRank:6,trackCurve:0,centrifugal:0,surface:'road',offroadAmount:0,suspension:0,suspensionVelocity:0,jumpY:0,jumpVelocity:0,jumpView:0,landingBounce:0,landingBounceVelocity:0,airborne:false,cameraHeading:trackSample(0).heading,flash:0,collisionCooldown:3,objects:[],particles:[],collectFx:[],projectiles:[],countdownActive:true,startCharge:0,startPenalty:false});
+  Object.assign(state,{running:false,paused:false,finish:false,finishTime:0,finishCoast:0,finishOrder:null,elapsed:0,lap:1,progress:0,distance:0,speed:0,x:0,steer:0,boosting:false,turbo:0,drift:0,driftLevel:0,item:null,shield:0,invincible:0,coins:0,raceWalletEarned:0,shake:0,rank:6,lastRank:6,trackCurve:0,centrifugal:0,surface:'road',offroadAmount:0,suspension:0,suspensionVelocity:0,jumpY:0,jumpVelocity:0,jumpView:0,landingBounce:0,landingBounceVelocity:0,airborne:false,cameraHeading:trackSample(0).heading,flash:0,collisionCooldown:3,objects:[],particles:[],collectFx:[],projectiles:[],countdownActive:true,startCharge:0,startPenalty:false,raceDifficulty:settings.raceDifficulty,raceRewards:[]});
   Object.assign(itemRoulette,{active:false,time:0,final:null});$('itemIcon')?.closest('.item-box')?.classList.remove('rolling');$('goalFx')?.classList.add('hidden');$('app').classList.remove('goal-slow');
   const lanePattern=[-1.62,-.58,.08,1.46,.58,-.3,.34,-1.82,.02,.62,-.35,1.72,.31,0],length=raceLength(),laps=raceLaps();let ai=0;
   racers.forEach((r,i)=>{const player=i===state.selected,trait=r.trait;r.distance=player?0:42-ai*5.5;r.progress=r.distance/length;r.lane=player?0:lanePattern[ai%lanePattern.length];r.aiTargetLane=r.lane;r.laneTimer=.8+(ai%4)*.55;r.hit=0;r.spin=0;r.aiSpeed=(136+r.set.stats.speed*.26+(ai%6)*2.2)*trait.topSpeed;r.aiAcceleration=trait.acceleration;r.aiVelocity=0;r.aiCoins=0;r.aiItem=null;r.aiBoost=0;r.jumpY=0;r.jumpVelocity=0;r.airborne=false;ai+=player?0:1});
@@ -802,6 +848,14 @@ function burstAnimationFrame(p,progress){
 }
 function ordinal(n){return`${n}<sup>${n===1?'st':n===2?'nd':n===3?'rd':'th'}</sup>`}
 function racerResultTime(rank){return fmt((state.finishTime||state.elapsed)+Math.max(0,rank-state.rank)*1700+rank*420)}
+function raceRewardCourseKey(){return `${state.selectedCourse}:${activeCourse?.short||'course'}`}
+function calculateRaceRewards(sorted){
+  if(state.raceDifficulty!=='hard'||activeCourse?.debugOnly)return[];
+  const key=raceRewardCourseKey(),player=racers[state.selected],playerRank=sorted.indexOf(player),miaRank=sorted.indexOf(miaNpc),rewards=[];
+  const firstHard=!playerProgress.hardClears.includes(key);if(firstHard)playerProgress.hardClears.push(key);rewards.push({type:'hard',label:'HARD CLEAR',detail:firstHard?'初回制覇ボーナス':'ハード完走報酬',coins:30,new:firstHard});
+  if(miaNpc.active&&miaRank>=0&&playerRank>=0&&playerRank<miaRank){const firstMia=!playerProgress.miaDefeats.includes(key);if(firstMia)playerProgress.miaDefeats.push(key);rewards.push({type:'mia',label:'MIA DEFEATED',detail:firstMia?'初回撃破ボーナス':'ミア撃破報酬',coins:50,new:firstMia})}
+  saveProgress();return rewards;
+}
 const podiumFrameBoundsCache=new Map();
 function podiumVisibleBounds(frame){
   if(!frame)return frame;
@@ -853,7 +907,10 @@ function renderResultCeremony(){
   rows.innerHTML=topRows.map((r,i)=>{const rank=i+1,isPlayer=r===racers[state.selected],isMia=r===miaNpc;return`<div class="result-row ${isPlayer?'player':''}${isMia?' boss':''}" style="--delay:${Math.max(0,6-rank)*70}ms"><strong>${ordinal(rank)}</strong><canvas class="result-face" width="72" height="72" aria-label="${r.name}"></canvas><span>${r.name}${isMia?' · BOSS':''}</span><b>${racerResultTime(rank)}</b></div>`}).join('');
   rows.querySelectorAll('.result-face').forEach((canvas,i)=>{const racer=topRows[i],draw=()=>{try{drawResultFaceSprite(canvas,racer)}catch(error){console.warn(`Result face failed: ${racer.slug}`,error)}};if(racer.frames)draw();else ensureContestantSprite(racer).then(draw).catch(error=>console.warn(`Result face load failed: ${racer.slug}`,error))});
   [1,2,3].forEach(rank=>renderPodiumRacer($(`podiumSlot${rank}`),sorted[rank-1],rank));
-  $('resultCourseName').textContent=activeCourse.short;$('awardCard').innerHTML=`<small>表彰状</small><strong>${racers[state.selected].name}</strong><span>第 ${state.rank} 位　${state.rank<=3?'見事な表彰台です！':'最後までよく走り切りました！'}</span>`;
+  const profile=DIFFICULTY_PROFILES[state.raceDifficulty]||DIFFICULTY_PROFILES.normal,badge=$('clearDifficultyBadge'),defeatedMia=state.raceRewards.some(reward=>reward.type==='mia');
+  badge.className=`clear-difficulty-badge ${state.raceDifficulty}`;badge.innerHTML=`<small>${profile.kicker}</small><strong>${profile.label} CLEAR</strong><span>${state.raceDifficulty==='hard'?'CHALLENGE COMPLETE':'DIFFICULTY BADGE'}</span>`;
+  $('resultRewards').innerHTML=state.raceRewards.length?state.raceRewards.map(reward=>`<div class="reward-chip ${reward.type}"><span>${reward.new?'NEW':''}</span><div><strong>${reward.label}</strong><small>${reward.detail}</small></div><b>+${reward.coins}</b></div>`).join(''):`<div class="reward-empty"><strong>${profile.label} CLEAR</strong><span>${state.raceDifficulty==='hard'?'ミアより上位でゴールすると撃破報酬 +50 COINS':'HARDでは制覇報酬とミア撃破報酬を獲得できます'}</span></div>`;
+  $('resultCourseName').textContent=activeCourse.short;$('awardCard').innerHTML=`<small>${profile.label} GRAND PRIX 表彰状</small><strong>${racers[state.selected].name}</strong><span>第 ${state.rank} 位　${defeatedMia?'ミア・シャルム撃破！':state.rank<=3?'見事な表彰台です！':'最後までよく走り切りました！'}</span>`;
 }
 function showGoalFx(rank){
   const fx=$('goalFx');if(!fx)return;
@@ -865,8 +922,8 @@ function showGoalFx(rank){
   clearTimeout(showGoalFx.t);showGoalFx.t=setTimeout(()=>{fx.classList.add('hidden');fx.classList.remove('show');$('goalConfetti').innerHTML='';$('app').classList.remove('goal-slow')},1500);
 }
 function finishRace(){
-  if(state.finish)return;state.finish=true;state.finishTime=state.elapsed;state.finishCoast=0;state.finishOrder=[...raceContestants()].sort((a,b)=>b.distance-a.distance);state.running=true;
-  const bonus=state.rank===1?20:state.rank===2?15:state.rank===3?12:Math.max(3,11-state.rank);state.raceWalletEarned+=bonus;addWalletCoins(bonus);pauseRaceMusic();setDebugPanel(false);$('mobileControls').classList.add('hidden');showGoalFx(state.rank);
+  if(state.finish)return;state.finish=true;state.finishTime=state.elapsed;state.finishCoast=0;state.finishOrder=[...raceContestants()].sort((a,b)=>b.distance-a.distance);state.rank=state.finishOrder.indexOf(racers[state.selected])+1;state.running=true;
+  const bonus=state.rank===1?20:state.rank===2?15:state.rank===3?12:Math.max(3,11-state.rank);state.raceRewards=calculateRaceRewards(state.finishOrder);const challengeBonus=state.raceRewards.reduce((sum,reward)=>sum+reward.coins,0),totalBonus=bonus+challengeBonus;state.raceWalletEarned+=totalBonus;addWalletCoins(totalBonus);pauseRaceMusic();setDebugPanel(false);$('mobileControls').classList.add('hidden');showGoalFx(state.rank);
   $('finishRank').innerHTML=ordinal(state.rank);$('finishTitle').textContent=state.rank===1?'VICTORY!':'RACE CLEAR!';$('finishTime').textContent=fmt(state.finishTime);$('finishCoins').textContent=`+${state.raceWalletEarned} COINS · TOTAL ${playerProgress.coins}`;
   clearTimeout(finishRace.timer);finishRace.timer=setTimeout(()=>{try{renderResultCeremony()}catch(error){console.error('Result ceremony render failed',error)}finally{state.running=false;state.mode='finish';$('hud').classList.add('hidden');showScreen('finish')}},1350)
 }
