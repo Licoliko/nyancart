@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=22" />
+  <link rel="stylesheet" href="style.css?v=23" />
 </head>
 <body>
   <main id="app">
@@ -83,6 +83,8 @@
         <section class="settings-panel controller-settings">
           <div class="controller-title"><h3>コントローラー</h3><span id="controllerStatus" class="controller-status">接続待ち</span></div>
           <div class="controller-map">
+            <span><b>MENU · 左スティック / 十字キー</b>項目を選択</span>
+            <span><b>MENU · A / B</b>決定 / 戻る</span>
             <span><b>左スティック / 十字キー</b>ステアリング</span>
             <span><b>RT / A</b>アクセル</span>
             <span><b>LT / B</b>ブレーキ</span>
@@ -214,15 +216,23 @@
     </section>
 
     <section id="finish" class="screen finish-screen result-screen">
-      <p class="eyebrow">TWINKLE CIRCUIT</p>
-      <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
-      <h2 id="finishTitle">FINISH!</h2>
-      <p id="finishTime" class="finish-time">00:00.000</p>
-      <p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p>
+      <div class="result-summary">
+        <div id="finishRank" class="finish-rank">1<sup>st</sup></div>
+        <div class="result-summary-copy">
+          <p class="eyebrow">TWINKLE CIRCUIT</p>
+          <h2 id="finishTitle">FINISH!</h2>
+          <div class="result-summary-meta"><p id="finishTime" class="finish-time">00:00.000</p><p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p></div>
+        </div>
+      </div>
       <div class="result-board">
         <div class="result-panel">
           <p class="eyebrow">RESULT BOARD</p>
           <div id="resultRows" class="result-rows"></div>
+          <div class="result-accolades">
+            <div id="clearDifficultyBadge" class="clear-difficulty-badge normal"><small>GRAND PRIX</small><strong>NORMAL CLEAR</strong><span>DIFFICULTY BADGE</span></div>
+            <div id="resultRewards" class="result-rewards" aria-live="polite"></div>
+          </div>
+          <div id="awardCard" class="award-card"><small>表彰状</small><strong>RACE CLEAR</strong><span>すばらしい走りを見せてくれました！</span></div>
         </div>
         <div class="podium-show">
           <div class="result-ribbon"><span id="resultCourseName">TWINKLE CIRCUIT</span></div>
@@ -234,11 +244,12 @@
             <div class="podium-step first"><b>1</b></div>
             <div class="podium-step third"><b>3</b></div>
           </div>
-          <div id="awardCard" class="award-card"><small>表彰状</small><strong>RACE CLEAR</strong><span>すばらしい走りを見せてくれました！</span></div>
         </div>
       </div>
       <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
     </section>
+
+    <div id="controllerMenuHint" class="controller-menu-hint hidden" aria-hidden="true"><span><b>LS / D-PAD</b> 選択</span><span><b>A</b> 決定</span><span><b>B</b> 戻る</span></div>
 
     <div id="mobileControls" class="mobile-controls hidden">
       <div class="steer"><button data-key="left" class="left-touch" aria-label="左へ曲がる"></button><button data-key="right" class="right-touch" aria-label="右へ曲がる"></button></div>
@@ -246,6 +257,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=49"></script>
+<script src="game.js?v=50"></script>
 </body>
 </html>
