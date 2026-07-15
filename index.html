@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=23" />
+  <link rel="stylesheet" href="style.css?v=25" />
 </head>
 <body>
   <main id="app">
@@ -96,6 +96,10 @@
         <section class="settings-panel visual-settings">
           <h3>VISUAL</h3>
           <button id="richSceneryToggle" class="setting-toggle" type="button" aria-pressed="true">豪華なコース外 ON</button>
+          <button id="performancePresetToggle" class="setting-toggle" type="button" aria-pressed="true">描画品質 AUTO</button>
+          <button id="reducedEffectsToggle" class="setting-toggle" type="button" aria-pressed="false">エフェクト軽量化 OFF</button>
+          <button id="preloadAssetsToggle" class="setting-toggle" type="button" aria-pressed="true">レース素材先読み ON</button>
+          <p id="performanceDescription" class="settings-help">端末に合わせて解像度・描画量を自動調整します。</p>
           <p class="settings-help">遠くは霞ませ、近くの装飾だけくっきり表示します。重い場合はOFFにできます。</p>
         </section>
       </div>
@@ -128,6 +132,7 @@
           <h3 id="difficultyCourseName">きらめきスイーツサーキット</h3>
           <p id="difficultyCourseStyle">テクニカル＆トリッキー</p>
           <div class="difficulty-warning"><span>!</span><p>難易度は通常NPCだけでなく、乱入ボス「ミア・シャルム」の速さと粘り強さにも影響します。</p></div>
+          <div id="assetPreloadStatus" class="asset-preload-status idle" aria-live="polite"><i><b></b></i><span>コース素材は選択後に先読みします</span></div>
         </section>
         <div class="difficulty-main">
           <div class="difficulty-cards" role="radiogroup" aria-label="レース難易度">
@@ -257,6 +262,6 @@
     </div>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=50"></script>
+<script src="game.js?v=52"></script>
 </body>
 </html>
