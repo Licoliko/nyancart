@@ -36,3 +36,5 @@ assets/trackside/spectators.png
 tools/*
 !tools/build_distribution.ps1
 !tools/validate_assets.py
+!tools/quality_browser_audit.mjs
+!tools/optimize_runtime_images.py

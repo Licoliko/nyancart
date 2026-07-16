@@ -12,6 +12,12 @@ The stage roster has been expanded from 5 to 11 circuits. The six added concept-
 
 Settings now include a rich scenery toggle. When enabled, course-side scenery draws more densely with distance fog: far props are softened and faded, while near props remain crisp. Turning it off reduces scenery density for lighter rendering.
 
+Settings also open the **24 MACHINE SOUND LAB**. Every racer/kart profile can be selected independently and compared at STOP/IDLE, LOW (65 km/h), HIGH (175 km/h), and FULL BOOST while keeping the same effects-volume mix. The screen supports mouse, touch, keyboard back, and controller navigation.
+
+During a race, the nearest three regular rivals reuse those machine profiles as lightweight positional voices. Volume and high-frequency detail fall with distance, lane separation controls stereo pan, and a short selection hysteresis prevents engines from popping when two rivals exchange places.
+
+Twinkle Sweets, Gear Clock, and Aurora Glacier now corner-cut their single-point hairpins into short Catmull-Rom arcs. Their maximum raw heading step is 8.29°, 7.99°, and 5.61° respectively, so all 11 release courses pass the curve-continuity product check.
+
 Course start/finish rendering was stabilized on circuits where the start line sat on a sharp route seam. Gear Clock, Emerald Ruins, and Twinkle Sweets now use smoother internal start-line placement. Course scenery props now favor opaque rendering with a separate fog layer instead of semi-transparent prop bodies, and newly added circuits no longer reuse unrelated legacy prop sets.
 
 きらめきスイーツサーキットを舞台にした、3周制のブラウザ・カートレースゲームです。GPT Image 2.0で制作した18人分の14方向スプライト、スイーツコース背景、アイテム、VFXを使用しています。
@@ -24,11 +30,17 @@ Course start/finish rendering was stabilized on circuits where the start line sa
 
 コース外の森とお菓子の家はGPT Image 2.0で制作した3×2アトラスを使用し、約118m間隔の遠景LODとして必要な枚数だけ描画します。5コース専用ジャンプ台と、排気煙・ターボ煙・ドリフト煙・オフロード土煙・着地煙もGPT Image 2.0製アトラスを使用します。ジャンプ台を踏むとカートが実際に浮上し、着地時にサスペンション、カメラ振動、土煙、短い着地ブーストが発生します。
 
-メニューまたはレース画面の歯車ボタンから設定画面を開けます。マスター音量・BGM音量・ミュート・キー割り当てはブラウザに保存されます。
+メニューまたはレース画面の歯車ボタンから設定画面を開けます。マスター音量・BGM音量・マシン／効果音音量・ミュート・キー割り当てはブラウザに保存されます。24台の専用カートは、プリズムタービン、蒸気ピストン、時計仕掛け、ドリル、蜂型ブースターなど、車体設定に合わせた固有のプロシージャルエンジン音を持ちます。
+
+レース中は近いライバル最大3台の固有エンジン音が距離と左右位置に連動します。追い越し・追い越される瞬間には相対速度に応じた軽いドップラー効果がかかり、トンネル内部ではカート音だけに短いステレオ反響と高音の減衰が加わります。入口・出口は約22mのフェードで切り替わります。
+
+配布版は115枚の実行時画像をWebPで読み込みます。キャラシート・選択立ち絵・透明UIはセル寸法と全画素を維持する可逆圧縮、コース背景と遠景は高品質圧縮です。元PNGは編集用として残し、配布画像容量は142.69MiBから63.31MiBへ55.63%削減しています。`tools/optimize_runtime_images.py`で同じ変換と検証を再実行できます。
+
+描画品質AUTOは端末情報からHIGH・BALANCED・LIGHTを選んで開始し、レース中の実測FPSとフレーム時間を約2.6秒単位で監視します。負荷が続く場合は背景物量・エフェクト・道路セグメント・内部解像度を段階的に下げ、安定が続けば段階的に戻します。LIGHTでも内部解像度は74%を下回りません。手動のHIGH・BALANCED・LIGHTではレース中の自動変更を行いません。
 
 レーサーセットはドラッグ／スワイプに加えて、左右のカードを直接選ぶとそのカードまで自動スクロールします。18番の右は1番、1番の左は18番につながる循環カルーセルです。現在の18セットは初期開放済みで、今後19人目以降に追加するセットはレースで獲得したコインを使って開放します。所持コインと開放状態はブラウザに保存されます。
 
-レース中の小さな `DBG` ボタンでは、走行確認用のコース境界線を表示・非表示にできます。通常プレイでは境界線は非表示です。
+レース中の小さな `DBG` ボタンでは、走行確認用のコース境界線を表示・非表示にできます。`品質チェック` または `F8` から、全11コース、24キャラの14方向シート、ジャンプ台方向、画面幅、専用音響、FPS・フレーム時間・粒子数・NPCコースアウト数をまとめて検査できます。通常プレイでは境界線と品質レポートは非表示です。
 
 ## 遊び方
 

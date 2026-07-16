@@ -73,7 +73,9 @@
           <h3>音量設定</h3>
           <label class="range-setting" for="masterVolume"><span>マスター音量</span><output id="masterVolumeValue">80</output><input id="masterVolume" type="range" min="0" max="100" step="1" value="80"></label>
           <label class="range-setting" for="musicVolume"><span>BGM音量</span><output id="musicVolumeValue">55</output><input id="musicVolume" type="range" min="0" max="100" step="1" value="55"></label>
+          <label class="range-setting" for="effectsVolume"><span>マシン・効果音</span><output id="effectsVolumeValue">72</output><input id="effectsVolume" type="range" min="0" max="100" step="1" value="72"></label>
           <button id="muteToggle" class="setting-toggle" type="button" aria-pressed="false">♫ サウンド ON</button>
+          <button id="openSoundTest" class="sound-test-open" type="button"><span>24 MACHINE SOUND LAB</span><small>停止・低速・高速・ブーストを聴き比べる</small></button>
         </section>
         <section class="settings-panel key-settings">
           <div class="panel-title-row"><h3>キーコンフィグ</h3><button id="resetKeys" class="text-btn" type="button">初期設定へ戻す</button></div>
@@ -104,6 +106,46 @@
         </section>
       </div>
       <button id="settingsDone" class="primary-btn compact settings-done"><span>設定を保存</span><small>ゲームへ戻る</small></button>
+    </section>
+
+    <section id="soundTest" class="screen sound-test-screen" aria-labelledby="soundTestTitle">
+      <div class="sound-test-backdrop"><i></i><i></i><i></i></div>
+      <header class="select-header sound-test-header">
+        <button id="closeSoundTest" class="icon-btn" type="button" aria-label="設定へ戻る">‹</button>
+        <div><p class="eyebrow">NYAN CART AUDIO GARAGE</p><h2 id="soundTestTitle">24 MACHINE SOUND LAB</h2></div>
+        <div id="soundTestCounter" class="step-badge">01 / 24</div>
+      </header>
+      <div class="sound-test-layout">
+        <aside class="sound-test-roster">
+          <div class="sound-test-roster-title"><strong>SELECT MACHINE</strong><small>24 UNIQUE ENGINES</small></div>
+          <div id="soundTestGrid" class="sound-test-grid" role="listbox" aria-label="試聴するマシン"></div>
+        </aside>
+        <main class="sound-test-console">
+          <div class="sound-test-visual" id="soundTestVisual">
+            <div class="sound-test-speed-lines"></div>
+            <div class="sound-test-floor"></div>
+            <img id="soundTestHero" alt="試聴中のレーサーとマシン" draggable="false">
+            <div class="sound-test-state"><span>NOW PLAYING</span><strong id="soundTestStateLabel">STOP / IDLE</strong></div>
+          </div>
+          <div class="sound-test-readout">
+            <div class="sound-test-machine-copy">
+              <p class="eyebrow">SELECTED ENGINE PROFILE</p>
+              <h3 id="soundTestMachineName">PRISM TURBINE</h3>
+              <strong id="soundTestSetName">アルカ・シャム / プリズム・ロイヤル</strong>
+              <p id="soundTestConcept">クリスタルタービンの透明感ある回転音。</p>
+            </div>
+            <div id="soundTestTach" class="sound-test-tach" style="--sound-power:.12"><small>ENGINE</small><strong id="soundTestSpeed">0</strong><span>KM/H</span></div>
+          </div>
+          <div id="soundTestMeter" class="sound-test-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div id="soundTestModes" class="sound-test-modes" role="radiogroup" aria-label="試聴状態">
+            <button type="button" data-sound-mode="idle" class="active" role="radio" aria-checked="true"><small>01</small><strong>STOP</strong><span>アイドリング</span></button>
+            <button type="button" data-sound-mode="low" role="radio" aria-checked="false"><small>02</small><strong>LOW</strong><span>低速 65 km/h</span></button>
+            <button type="button" data-sound-mode="high" role="radio" aria-checked="false"><small>03</small><strong>HIGH</strong><span>高速 175 km/h</span></button>
+            <button type="button" data-sound-mode="boost" role="radio" aria-checked="false"><small>04</small><strong>BOOST</strong><span>最高負荷＋ターボ</span></button>
+          </div>
+          <p class="sound-test-help">マスター音量と「マシン・効果音」の設定が反映されます。マシンを切り替えると同じ状態のまま比較できます。</p>
+        </main>
+      </div>
     </section>
 
     <section id="courseSelect" class="screen course-select-screen">
@@ -173,6 +215,8 @@
       <div id="debugPanel" class="debug-panel hidden">
         <div><strong>DEBUG</strong><button id="debugClose" type="button" aria-label="デバッグメニューを閉じる">×</button></div>
         <button id="debugCourseBounds" type="button" aria-pressed="false">コース枠 OFF</button>
+        <button id="debugQualityCheck" type="button">品質チェック F8</button>
+        <small id="debugLiveMetrics">FPS -- / P95 --</small>
       </div>
       <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
       <div class="speedometer"><canvas id="speedGauge" width="240" height="240" aria-label="スピードメーター"></canvas><div class="speed-digital"><strong id="speed">0</strong><small>KM/H</small></div></div>
@@ -209,7 +253,7 @@
 
     <section id="miaIntrusion" class="mia-intrusion hidden" aria-live="assertive" aria-label="ミア・シャルム乱入">
       <div class="mia-intrusion-card">
-        <img src="assets/ui/mia-charme-intrusion-gpt2.png" alt="空中からカートで乱入するミア・シャルム">
+        <img src="assets/ui/mia-charme-intrusion-gpt2.webp" alt="空中からカートで乱入するミア・シャルム">
         <div class="mia-intrusion-copy">
           <small>BOSS CHALLENGER</small>
           <h2>ミア・シャルム</h2>
@@ -260,8 +304,23 @@
       <div class="steer"><button data-key="left" class="left-touch" aria-label="左へ曲がる"></button><button data-key="right" class="right-touch" aria-label="右へ曲がる"></button></div>
       <div class="actions"><button data-key="brake" class="brake-touch" aria-label="ブレーキ"></button><button data-key="item" class="item-touch" aria-label="アイテムを使う"></button><button data-key="drift" class="boost-touch" aria-label="ドリフト"></button><button data-key="accel" class="accel-touch" aria-label="アクセル"></button></div>
     </div>
+
+    <section id="qualityReport" class="quality-report hidden" aria-hidden="true" aria-labelledby="qualityTitle">
+      <header>
+        <div><p class="eyebrow">NYAN CART PRODUCT CHECK</p><h2 id="qualityTitle">品質チェックレポート</h2><p id="qualityProgress">検査を開始します</p></div>
+        <div class="quality-actions"><button id="qualityExportCsv" type="button">CSV</button><button id="qualityExportJson" type="button">JSON</button><button id="qualityClose" type="button" aria-label="品質チェックを閉じる">×</button></div>
+      </header>
+      <div class="quality-body">
+        <div id="qualitySummary" class="quality-summary"></div>
+        <section class="quality-section"><h3>LIVE PERFORMANCE</h3><div id="qualityRuntime" class="quality-runtime"></div></section>
+        <section class="quality-section"><h3>COURSE / RACER / LAYOUT / AUDIO</h3><div id="qualityRows" class="quality-rows"></div></section>
+        <section class="quality-section sprite-audit"><h3>14-DIRECTION VISUAL CONTACT SHEETS</h3><p>後方7方向・前方7方向の順序、反対向きの混入、隣セルの映り込みを目視確認できます。</p><div id="qualitySpriteGallery" class="quality-sprite-gallery"></div></section>
+      </div>
+    </section>
   </main>
   <script src="assets/sprite-bounds.js"></script>
-<script src="game.js?v=52"></script>
+  <script src="audio.js?v=1"></script>
+  <script src="game.js?v=53"></script>
+  <script src="quality.js?v=1"></script>
 </body>
 </html>

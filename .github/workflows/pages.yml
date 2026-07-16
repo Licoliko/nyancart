@@ -28,10 +28,14 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Build optimized release package
+        shell: pwsh
+        run: ./tools/build_distribution.ps1
+
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: '.'
+          path: './output/NYAN_CART'
 
       - name: Deploy to GitHub Pages
         id: deployment
