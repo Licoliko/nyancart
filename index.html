@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=25" />
+  <link rel="stylesheet" href="style.css?v=32" />
 </head>
 <body>
   <main id="app">
@@ -216,12 +216,22 @@
         <div><strong>DEBUG</strong><button id="debugClose" type="button" aria-label="デバッグメニューを閉じる">×</button></div>
         <button id="debugCourseBounds" type="button" aria-pressed="false">コース枠 OFF</button>
         <button id="debugQualityCheck" type="button">品質チェック F8</button>
+        <button id="debugBalanceCheck" type="button">NORMALバランステスト</button>
         <small id="debugLiveMetrics">FPS -- / P95 --</small>
       </div>
       <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
       <div class="speedometer"><canvas id="speedGauge" width="240" height="240" aria-label="スピードメーター"></canvas><div class="speed-digital"><strong id="speed">0</strong><small>KM/H</small></div></div>
       <div id="countdown" class="countdown"></div>
       <div id="rankChange" class="rank-change"></div>
+      <div id="lockOnWarning" class="lock-on-warning" aria-live="assertive">
+        <i class="lock-direction left">‹</i>
+        <div><small>MISSILE LOCK</small><strong>ROCKET INCOMING</strong><span id="lockOnDetail">BEHIND</span></div>
+        <i class="lock-direction right">›</i>
+      </div>
+      <div id="overtakeCallout" class="overtake-callout" aria-live="polite">
+        <img alt="">
+        <div><small>OVERTAKE!</small><strong></strong><span></span></div>
+      </div>
       <div id="toast" class="toast"></div>
       <div id="goalFx" class="goal-fx hidden" aria-live="polite">
         <div id="goalConfetti" class="goal-confetti"></div>
@@ -308,19 +318,25 @@
     <section id="qualityReport" class="quality-report hidden" aria-hidden="true" aria-labelledby="qualityTitle">
       <header>
         <div><p class="eyebrow">NYAN CART PRODUCT CHECK</p><h2 id="qualityTitle">品質チェックレポート</h2><p id="qualityProgress">検査を開始します</p></div>
-        <div class="quality-actions"><button id="qualityExportCsv" type="button">CSV</button><button id="qualityExportJson" type="button">JSON</button><button id="qualityClose" type="button" aria-label="品質チェックを閉じる">×</button></div>
+        <div class="quality-actions"><button id="qualityRunBalance" type="button">NORMAL TEST</button><button id="qualityExportCsv" type="button">CSV</button><button id="qualityExportJson" type="button">JSON</button><button id="qualityClose" type="button" aria-label="品質チェックを閉じる">×</button></div>
       </header>
       <div class="quality-body">
         <div id="qualitySummary" class="quality-summary"></div>
         <section class="quality-section"><h3>LIVE PERFORMANCE</h3><div id="qualityRuntime" class="quality-runtime"></div></section>
+        <section id="balanceAudit" class="quality-section balance-audit">
+          <header><div><h3>NORMAL RACE BALANCE</h3><p id="balanceProgress">未実行 — 11コース×24キャラ×5シードを高速集計します。</p></div><div><button id="balanceExportCsv" type="button" disabled>CSV</button><button id="balanceExportJson" type="button" disabled>JSON</button></div></header>
+          <div id="balanceSummary" class="balance-summary"><div><strong>--</strong><span>RUNS</span></div><div><strong>--</strong><span>WIN RATE</span></div><div><strong>--</strong><span>PODIUM</span></div><div><strong>--</strong><span>AVG RANK</span></div></div>
+          <div id="balanceWarnings" class="balance-warnings"></div>
+          <div class="balance-tables"><div><h4>COURSE RESULTS</h4><div id="balanceCourseRows" class="balance-rows"></div></div><div><h4>RACER RESULTS</h4><div id="balanceRacerRows" class="balance-rows racer"></div></div></div>
+        </section>
         <section class="quality-section"><h3>COURSE / RACER / LAYOUT / AUDIO</h3><div id="qualityRows" class="quality-rows"></div></section>
         <section class="quality-section sprite-audit"><h3>14-DIRECTION VISUAL CONTACT SHEETS</h3><p>後方7方向・前方7方向の順序、反対向きの混入、隣セルの映り込みを目視確認できます。</p><div id="qualitySpriteGallery" class="quality-sprite-gallery"></div></section>
       </div>
     </section>
   </main>
-  <script src="assets/sprite-bounds.js"></script>
-  <script src="audio.js?v=1"></script>
-  <script src="game.js?v=53"></script>
-  <script src="quality.js?v=1"></script>
+  <script src="assets/sprite-bounds.js?v=2"></script>
+  <script src="audio.js?v=2"></script>
+  <script src="game.js?v=62"></script>
+  <script src="quality.js?v=12"></script>
 </body>
 </html>

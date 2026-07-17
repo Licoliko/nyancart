@@ -146,6 +146,7 @@
         case'land':this.tone({frequency:96,to:42,duration:.22,gain:.16*k,type:'sine'});this.noise({duration:.23,gain:.13*k,frequency:520,to:100});break;
         case'collision':if(!this.allowed(name,180))return;this.noise({duration:.17,gain:.16*k,frequency:1150,to:180,Q:.7});this.tone({frequency:130,to:55,duration:.16,gain:.12*k,type:'square'});break;
         case'rocket':this.noise({duration:.42,gain:.14*k,frequency:1700,to:230});this.tone({frequency:180,to:72,duration:.36,gain:.08*k,type:'sawtooth'});break;
+        case'lockWarning':if(!this.allowed(name,variant>1?210:390))return;this.tone({frequency:variant>1?1160:880,to:variant>1?1440:1080,duration:.085,gain:.075*k,type:'square'});this.tone({frequency:variant>1?820:620,to:variant>1?1040:780,duration:.075,gain:.052*k,delay:.09,type:'square'});break;
         case'shield':this.tone({frequency:420,to:1260,duration:.35,gain:.09*k,type:'sine'});this.tone({frequency:690,to:1840,duration:.28,gain:.055*k,delay:.035});break;
         case'star':for(let i=0;i<4;i++)this.tone({frequency:[660,830,990,1320][i],to:[830,990,1320,1660][i],duration:.14,gain:.06*k,delay:i*.055,type:'triangle'});break;
         case'lightning':this.noise({duration:.48,gain:.18*k,frequency:3400,to:190,Q:.5});for(let i=0;i<5;i++)this.tone({frequency:1600-i*170,to:320+i*60,duration:.06,gain:.035*k,delay:i*.035,type:'square'});break;
