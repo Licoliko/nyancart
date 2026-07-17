@@ -165,7 +165,7 @@ const DIFFICULTY_PROFILES={
   normal:{label:'NORMAL',jp:'ノーマル',kicker:'GRAND PRIX',badge:'RECOMMENDED',dock:'競り合いながら勝利を狙えるグランプリ',summary:'NPCはプレイヤーより少し控えめ。ミスを立て直しながら勝利を狙える標準難易度です。',differences:['NPCの最高速を99%に抑え、丁寧に走れば前へ出られる','追走補正を18km/hまでに抑え、理不尽な追い上げを軽減','ミアは22m先へ乱入し、同速域で直接競り合う'],aiSpeed:.99,rubberGain:.11,rubberLimit:18,aiAccel:.96,aiBoost:.94,miaBase:174,miaOffset:0,miaTargetGap:0,miaCatchup:.8,miaCatchLimit:20,miaHitFactor:.5,miaSpawnGap:22},
   hard:{label:'HARD',jp:'ハード',kicker:'BOSS CHALLENGE',badge:'EXPERT',dock:'最速NPCとミアに挑むボスレース',summary:'NPCが最速ラインを維持し、ミアも本気で勝利を奪いに来る上級者向け難易度です。',differences:['NPCの最高速は基準の114%。加速とアイテムブーストも強化','最大40km/hの強い追走補正で、終盤まで順位が入れ替わる','ミアは約18mのリードを狙い、被弾しても速度を維持しやすい'],aiSpeed:1.14,rubberGain:.23,rubberLimit:40,aiAccel:1.22,aiBoost:1.2,miaBase:202,miaOffset:26,miaTargetGap:18,miaCatchup:2.35,miaCatchLimit:64,miaHitFactor:.74,miaSpawnGap:38}
 };
-const DEFAULT_SETTINGS={masterVolume:80,musicVolume:55,effectsVolume:72,muted:false,richScenery:true,performancePreset:'auto',reducedEffects:false,preloadCourseAssets:true,raceDifficulty:'normal',bindings:{accelerate:'ArrowUp',brake:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',drift:'ShiftLeft',item:'Space',pause:'Escape'}};
+const DEFAULT_SETTINGS={masterVolume:80,musicVolume:55,effectsVolume:72,muted:false,richScenery:true,performancePreset:'auto',reducedEffects:false,preloadCourseAssets:true,cameraMotion:1,screenShake:1,speedLines:1,screenFlash:1,raceDifficulty:'normal',bindings:{accelerate:'ArrowUp',brake:'ArrowDown',left:'ArrowLeft',right:'ArrowRight',drift:'ShiftLeft',item:'Space',pause:'Escape'}};
 const ACTION_LABELS={accelerate:'アクセル',brake:'ブレーキ',left:'左へ曲がる',right:'右へ曲がる',drift:'ドリフト',item:'アイテム',pause:'ポーズ'};
 const KEY_LABELS={ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',ShiftLeft:'左 SHIFT',ShiftRight:'右 SHIFT',Space:'SPACE',Escape:'ESC',Enter:'ENTER',Backspace:'BACKSPACE'};
 function loadSettings(){try{const saved=JSON.parse(localStorage.getItem('nyan-cart-settings')||'{}');return{...DEFAULT_SETTINGS,...saved,bindings:{...DEFAULT_SETTINGS.bindings,...(saved.bindings||{})}}}catch{return{...DEFAULT_SETTINGS,bindings:{...DEFAULT_SETTINGS.bindings}}}}
@@ -183,6 +183,10 @@ function activePerformanceKey(){return settings.performancePreset==='auto'?autoP
 function performanceProfile(){return PERFORMANCE_PROFILES[activePerformanceKey()]}
 function effectDensity(){return performanceProfile().effects*(settings.reducedEffects?.55:1)}
 function effectiveRichScenery(){return!!settings.richScenery&&activePerformanceKey()!=='light'}
+const MOTION_LEVELS=[1,.45,0];
+function motionLevel(value){const n=Number(value);return Number.isFinite(n)?Math.max(0,Math.min(1,n)):1}
+function motionLabel(value){const level=motionLevel(value);return level>.75?'標準':level>.1?'ひかえめ':'OFF'}
+function cycleMotionSetting(key){const current=motionLevel(settings[key]),index=MOTION_LEVELS.findIndex(value=>Math.abs(value-current)<.08);settings[key]=MOTION_LEVELS[(index+1+MOTION_LEVELS.length)%MOTION_LEVELS.length];applyVisualSettings();saveSettings()}
 function resetAdaptiveQualitySamples(useHardware=false){if(useHardware){adaptiveQuality.key=hardwarePerformanceKey();adaptiveQuality.reason='device';adaptiveQuality.lastChanged=performance.now();adaptiveQuality.upgradeBlockedUntil=0}Object.assign(adaptiveQuality,{lastFrame:0,windowStart:0,samples:[],lowWindows:0,highWindows:0})}
 function changeAdaptiveQuality(next,reason,now=performance.now()){
   if(!PERFORMANCE_PROFILES[next]||next===adaptiveQuality.key)return;const previous=adaptiveQuality.key,upgrade=PERFORMANCE_ORDER.indexOf(next)>PERFORMANCE_ORDER.indexOf(previous);if(!upgrade)adaptiveQuality.upgradeBlockedUntil=now+30000;adaptiveQuality.key=next;adaptiveQuality.reason=reason;adaptiveQuality.lastChanged=now;resetAdaptiveQualitySamples();applyVisualSettings();canvas.dataset.autoQuality=next;canvas.dataset.autoQualityReason=reason;
@@ -202,6 +206,8 @@ function applyVisualSettings(){
   preset.setAttribute('aria-pressed',String(settings.performancePreset!=='light'));preset.textContent=`描画品質 ${settings.performancePreset==='auto'?`AUTO / ${profile.label}`:profile.label}`;
   effects.setAttribute('aria-pressed',String(!!settings.reducedEffects));effects.textContent=`エフェクト軽量化 ${settings.reducedEffects?'ON':'OFF'}`;
   preload.setAttribute('aria-pressed',String(!!settings.preloadCourseAssets));preload.textContent=`レース素材先読み ${settings.preloadCourseAssets?'ON':'OFF'}`;
+  const motionButtons=[['cameraMotionToggle','cameraMotion','カメラ上下'],['screenShakeToggle','screenShake','画面揺れ'],['speedLinesToggle','speedLines','速度流線'],['screenFlashToggle','screenFlash','白フラッシュ']];for(const [id,key,label] of motionButtons){const button=$(id);if(!button)continue;const value=motionLevel(settings[key]);button.textContent=`${label} ${motionLabel(value)}`;button.setAttribute('aria-pressed',String(value>0));button.dataset.level=value>.75?'full':value>.1?'low':'off'}
+  document.body.dataset.cameraMotion=motionLabel(settings.cameraMotion);document.body.dataset.screenShake=motionLabel(settings.screenShake);document.body.dataset.speedLines=motionLabel(settings.speedLines);document.body.dataset.screenFlash=motionLabel(settings.screenFlash);
   const measured=settings.performancePreset==='auto'&&adaptiveQuality.fps?`・実測 ${Math.round(adaptiveQuality.fps)} FPS`:'',autoCopy=settings.performancePreset==='auto'?'端末性能から開始し、実測FPSで自動調整します。':'手動設定を固定します。';$('performanceDescription').textContent=`内部解像度 ${Math.round(profile.renderScale*100)}%・道路 ${profile.segments} セグメント${measured}。${autoCopy}`;
   ROAD_SEGMENTS=profile.segments;ROAD_SEGMENT_LENGTH=DRAW_DISTANCE/ROAD_SEGMENTS;if(canvas.width)resize();
 }
@@ -213,7 +219,7 @@ function updateControlHints(){$('itemKeyHint').textContent=keyLabel(settings.bin
 function renderKeyConfig(){const list=$('keyConfigList');list.innerHTML=Object.entries(ACTION_LABELS).map(([action,label])=>`<div class="key-bind"><span>${label}</span><button type="button" data-bind-action="${action}">${keyLabel(settings.bindings[action])}</button></div>`).join('');list.querySelectorAll('[data-bind-action]').forEach(button=>button.onclick=()=>beginKeyCapture(button.dataset.bindAction))}
 function beginKeyCapture(action){captureAction=action;renderKeyConfig();const button=document.querySelector(`[data-bind-action="${action}"]`);button?.classList.add('capturing');if(button)button.textContent='キーを押す';$('keyCaptureHelp').textContent='割り当てるキーを押してください（BACKSPACEでキャンセル）'}
 function finishKeyCapture(action,code){const previous=settings.bindings[action],conflict=Object.keys(settings.bindings).find(other=>other!==action&&settings.bindings[other]===code);if(conflict)settings.bindings[conflict]=previous;settings.bindings[action]=code;captureAction=null;saveSettings();renderKeyConfig();updateControlHints();$('keyCaptureHelp').textContent='変更したい操作を選び、割り当てるキーを押してください。'}
-function setupSettings(){renderKeyConfig();applyAudioSettings();applyVisualSettings();updateControlHints();$('masterVolume').oninput=e=>{settings.masterVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('musicVolume').oninput=e=>{settings.musicVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('effectsVolume').oninput=e=>{settings.effectsVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('muteToggle').onclick=()=>{settings.muted=!settings.muted;applyAudioSettings();saveSettings()};$('richSceneryToggle').onclick=()=>{settings.richScenery=!settings.richScenery;applyVisualSettings();saveSettings()};$('performancePresetToggle').onclick=()=>{const order=['auto','high','balanced','light'],i=order.indexOf(settings.performancePreset);settings.performancePreset=order[(i+1)%order.length];if(settings.performancePreset==='auto')resetAdaptiveQualitySamples(true);applyVisualSettings();saveSettings()};$('reducedEffectsToggle').onclick=()=>{settings.reducedEffects=!settings.reducedEffects;applyVisualSettings();saveSettings()};$('preloadAssetsToggle').onclick=()=>{settings.preloadCourseAssets=!settings.preloadCourseAssets;applyVisualSettings();saveSettings()};$('resetKeys').onclick=()=>{settings.bindings={...DEFAULT_SETTINGS.bindings};captureAction=null;renderKeyConfig();updateControlHints();saveSettings()}}
+function setupSettings(){renderKeyConfig();applyAudioSettings();applyVisualSettings();updateControlHints();$('masterVolume').oninput=e=>{settings.masterVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('musicVolume').oninput=e=>{settings.musicVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('effectsVolume').oninput=e=>{settings.effectsVolume=Number(e.target.value);applyAudioSettings();saveSettings()};$('muteToggle').onclick=()=>{settings.muted=!settings.muted;applyAudioSettings();saveSettings()};$('richSceneryToggle').onclick=()=>{settings.richScenery=!settings.richScenery;applyVisualSettings();saveSettings()};$('performancePresetToggle').onclick=()=>{const order=['auto','high','balanced','light'],i=order.indexOf(settings.performancePreset);settings.performancePreset=order[(i+1)%order.length];if(settings.performancePreset==='auto')resetAdaptiveQualitySamples(true);applyVisualSettings();saveSettings()};$('reducedEffectsToggle').onclick=()=>{settings.reducedEffects=!settings.reducedEffects;applyVisualSettings();saveSettings()};$('preloadAssetsToggle').onclick=()=>{settings.preloadCourseAssets=!settings.preloadCourseAssets;applyVisualSettings();saveSettings()};$('cameraMotionToggle').onclick=()=>cycleMotionSetting('cameraMotion');$('screenShakeToggle').onclick=()=>cycleMotionSetting('screenShake');$('speedLinesToggle').onclick=()=>cycleMotionSetting('speedLines');$('screenFlashToggle').onclick=()=>cycleMotionSetting('screenFlash');$('resetKeys').onclick=()=>{settings.bindings={...DEFAULT_SETTINGS.bindings};captureAction=null;renderKeyConfig();updateControlHints();saveSettings()}}
 
 const SOUND_TEST_MODES={
   idle:{label:'STOP / IDLE',speed:0,power:.12,accelerating:false,boosting:false,turbo:0},
@@ -321,8 +327,9 @@ const OFFROAD_PALETTES=[
 let roadProjection=[];
 
 function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
-function surfaceAtLane(lane){
+function surfaceAtLane(lane,distance=state.distance){
   const a=Math.abs(lane);
+  const route=routeGeometryAt(distance);if(route?.fork>.08){const nearest=Math.min(...Object.values(route.branches).map(path=>Math.abs(lane-path.laneCenter))),edge=route.laneHalf;if(nearest<=edge)return SURFACE_PROFILES.road;if(nearest<=edge+.18)return SURFACE_PROFILES.shoulder;if(nearest<=edge+.62)return SURFACE_PROFILES.grass;return SURFACE_PROFILES.deep}
   if(a<=.98)return SURFACE_PROFILES.road;
   if(a<=1.18)return SURFACE_PROFILES.shoulder;
   if(a<=1.72)return SURFACE_PROFILES.grass;
@@ -507,34 +514,36 @@ addEventListener('click',event=>{const button=event.target.closest?.('button');i
 
 function resetMiaNpc(){
   clearTimeout(miaNpc.cutInTimer);
-  Object.assign(miaNpc,{active:false,triggered:false,cutInActive:false,leaderTime:0,distance:0,progress:0,lane:0,aiTargetLane:0,aiVelocity:0,hit:0,spin:0,shield:0,invincible:0,aiItem:null,aiItemAge:0,jumpY:0,jumpVelocity:0,airborne:false,landed:false});
+  Object.assign(miaNpc,{active:false,triggered:false,cutInActive:false,leaderTime:0,distance:0,progress:0,lane:0,aiTargetLane:0,aiVelocity:0,hit:0,spin:0,shield:0,invincible:0,aiItem:null,aiItemAge:0,jumpY:0,jumpVelocity:0,airborne:false,landed:false,routeChoice:null,routeLap:-1,routeMerged:false,routePhysicalProgress:0,routeNormalizedProgress:0,routeComparableDistance:0});
   const overlay=$('miaIntrusion');if(overlay)overlay.className='mia-intrusion hidden';
   if($('positionTotal'))$('positionTotal').textContent=`/${racers.length}`;
   delete canvas.dataset.miaBoss;delete canvas.dataset.miaGap;delete canvas.dataset.miaAirborne;delete canvas.dataset.miaFreezeDelta;
+}
+function addGimmickObject(type,z,lane,meta={}){const object={type,z,lane,...meta};if(type==='ramp')object.hitBy=new Set();else object.taken=false;state.objects.push(object);return object}
+function addGimmickRow(base,row,layoutId,lap){const[z,type,patternName]=row,lanes=GIMMICK_LANE_PATTERNS[patternName]||GIMMICK_LANE_PATTERNS.center;for(let i=0;i<lanes.length;i++)addGimmickObject(type,base+z,lanes[i],{layoutId,layoutLap:lap,row:z,rowIndex:i})}
+function spawnCourseGimmicks(length,laps){
+  const layout=activeCourse?.gimmicks,graph=activeCourse?.routeGraph;if(!layout){for(let lap=0;lap<laps;lap++){const base=lap*length;addGimmickObject('coin',base+length*.32,0,{layoutId:'debug',layoutLap:lap});if(length>70)addGimmickObject('ramp',base+length*.58,0,{layoutId:'debug',layoutLap:lap})}return}
+  for(let lap=0;lap<laps;lap++){
+    const base=lap*length;for(const row of layout.rows)addGimmickRow(base,row,layout.id,lap);for(const[at,lane]of layout.ramps)if(at>24&&at<length-24)addGimmickObject('ramp',base+at,lane,{layoutId:layout.id,layoutLap:lap,row:at});
+    if(graph){const branchZ=graph.start+(graph.end-graph.start)*.38,exitZ=graph.start+(graph.end-graph.start)*.7;for(const lane of[-1.08,-.86,-.64])addGimmickObject('item',base+branchZ,lane,{layoutId:layout.id,layoutLap:lap,route:'left',graphId:graph.id});for(const lane of[.64,.86,1.08])addGimmickObject('pad',base+branchZ,lane,{layoutId:layout.id,layoutLap:lap,route:'right',graphId:graph.id});for(const lane of[-1.02,-.72,.72,1.02])addGimmickObject('coin',base+exitZ,lane,{layoutId:layout.id,layoutLap:lap,route:lane<0?'left':'right',graphId:graph.id})}
+  }
+  canvas.dataset.gimmickLayout=layout.id;canvas.dataset.gimmickRows=String(layout.rows.length);canvas.dataset.gimmickRamps=String(layout.ramps.length);canvas.dataset.routeGraph=graph?.id||'none';
 }
 function resetRace(){
   clearTimeout(finishRace.timer);
   resetMiaNpc();
   resetAdaptiveQualitySamples();
   nearbyRivalAudioSlugs=new Set();canvas.dataset.rivalAudioCount='0';canvas.dataset.rivalAudio='';canvas.dataset.rivalAudioPan='';
-  Object.assign(state,{running:false,paused:false,finish:false,finishTime:0,finishCoast:0,finishOrder:null,elapsed:0,lap:1,progress:0,distance:0,speed:0,x:0,steer:0,boosting:false,turbo:0,drift:0,driftLevel:0,item:null,shield:0,invincible:0,coins:0,raceWalletEarned:0,shake:0,rank:6,lastRank:6,trackCurve:0,centrifugal:0,surface:'road',offroadAmount:0,suspension:0,suspensionVelocity:0,jumpY:0,jumpVelocity:0,jumpView:0,landingBounce:0,landingBounceVelocity:0,airborne:false,cameraHeading:trackSample(0).heading,flash:0,collisionCooldown:3,objects:[],particles:[],collectFx:[],projectiles:[],countdownActive:true,startCharge:0,startPenalty:false,raceDifficulty:settings.raceDifficulty,raceRewards:[],overtakeUiCooldown:0,rocketWarningCooldown:0});
+  Object.assign(state,{running:false,paused:false,finish:false,finishTime:0,finishCoast:0,finishOrder:null,elapsed:0,lap:1,progress:0,distance:0,speed:0,x:0,steer:0,boosting:false,turbo:0,drift:0,driftLevel:0,item:null,shield:0,invincible:0,coins:0,raceWalletEarned:0,shake:0,rank:6,lastRank:6,trackCurve:0,centrifugal:0,surface:'road',offroadAmount:0,suspension:0,suspensionVelocity:0,jumpY:0,jumpVelocity:0,jumpView:0,landingBounce:0,landingBounceVelocity:0,airborne:false,cameraHeading:trackSample(0).heading,flash:0,collisionCooldown:3,objects:[],particles:[],collectFx:[],projectiles:[],countdownActive:true,startCharge:0,startPenalty:false,raceDifficulty:settings.raceDifficulty,raceRewards:[],overtakeUiCooldown:0,rocketWarningCooldown:0,routeChoice:null,routeLap:-1,routeMerged:false,routeCameraElevation:0});
   const overtake=$('overtakeCallout'),lockWarning=$('lockOnWarning');if(overtake)overtake.className='overtake-callout';if(lockWarning)lockWarning.className='lock-on-warning';$('hud')?.classList.remove('rocket-locked');
   Object.assign(itemRoulette,{active:false,time:0,final:null});$('itemIcon')?.closest('.item-box')?.classList.remove('rolling');$('goalFx')?.classList.add('hidden');$('app').classList.remove('goal-slow');
   const lanePattern=[-.62,.62,-.31,.31,0,-.7,.7,-.18,.18],length=raceLength(),laps=raceLaps();let ai=0;
-  racers.forEach((r,i)=>{const player=i===state.selected,trait=r.trait,personality=r.aiPersonality;r.distance=player?0:38-ai*5.8;r.progress=r.distance/length;r.lane=player?0:lanePattern[ai%lanePattern.length];r.aiTargetLane=r.lane;r.laneTimer=(.48+(ai%4)*.16)*personality.rhythm;r.aiDecisionSeed=(i*7+state.selectedCourse*3)%11;r.aiBoostCooldown=1.1+(i%5)*.23;r.aiPassCommit=0;r.aiPassTarget=null;r.hit=0;r.spin=0;r.shield=0;r.invincible=0;r.aiSpeed=(136+r.set.stats.speed*.26+(ai%6)*2.2)*trait.topSpeed;r.aiAcceleration=trait.acceleration;r.aiVelocity=0;r.aiCoins=0;r.aiItem=null;r.aiItemAge=0;r.aiBoost=0;r.jumpY=0;r.jumpVelocity=0;r.airborne=false;r.lastPlayerGap=r.distance;ai+=player?0:1});
+  racers.forEach((r,i)=>{const player=i===state.selected,trait=r.trait,personality=r.aiPersonality;r.distance=player?0:38-ai*5.8;r.progress=r.distance/length;r.lane=player?0:lanePattern[ai%lanePattern.length];r.aiTargetLane=r.lane;r.laneTimer=(.48+(ai%4)*.16)*personality.rhythm;r.aiDecisionSeed=(i*7+state.selectedCourse*3)%11;r.aiBoostCooldown=1.1+(i%5)*.23;r.aiPassCommit=0;r.aiPassTarget=null;r.hit=0;r.spin=0;r.shield=0;r.invincible=0;r.aiSpeed=(136+r.set.stats.speed*.26+(ai%6)*2.2)*trait.topSpeed;r.aiAcceleration=trait.acceleration;r.aiVelocity=0;r.aiCoins=0;r.aiItem=null;r.aiItemAge=0;r.aiBoost=0;r.jumpY=0;r.jumpVelocity=0;r.airborne=false;r.lastPlayerGap=r.distance;r.routeChoice=null;r.routeLap=-1;r.routeMerged=false;r.routePhysicalProgress=0;r.routeNormalizedProgress=0;r.routeComparableDistance=r.distance;ai+=player?0:1});
   canvas.dataset.aiPersonalities=[...new Set(racers.map(r=>r.aiPersonality.key))].join(',');
   canvas.dataset.rocketLaunches='0';canvas.dataset.rocketHits='0';canvas.dataset.rocketOwner='';canvas.dataset.rocketTarget='';canvas.dataset.rocketHitOwner='';canvas.dataset.rocketHitTarget='';canvas.dataset.rocketHitBlocked='false';
   canvas.dataset.rocketWarning='none';canvas.dataset.aiItemUses='0';canvas.dataset.aiLastItem='';canvas.dataset.aiLastItemUser='';
-  for(let lap=0;lap<laps;lap++){
-    const base=lap*length;
-    for(let z=130+state.selectedCourse*17;z<length;z+=155){
-      const n=Math.floor(z/155)+lap*17;
-      if(n%4===1){for(let k=-2;k<=2;k++)state.objects.push({type:'coin',z:base+z+k*20,lane:[-.62,-.31,0,.31,.62][k+2],taken:false})}
-      else if(n%5===2){state.objects.push({type:'pad',z:base+z,lane:[-.48,0,.48][n%3],taken:false})}
-      else state.objects.push({type:'item',z:base+z,lane:[-.58,-.29,0,.29,.58][n%5],taken:false});
-    }
-    const rampA=92+state.selectedCourse*19,rampB=790+state.selectedCourse*37;state.objects.push({type:'ramp',z:base+rampA,lane:0,hitBy:new Set()});if(rampB<length)state.objects.push({type:'ramp',z:base+rampB,lane:((state.selectedCourse+1)%3-1)*.28,hitBy:new Set()});
-  }
+  spawnCourseGimmicks(length,laps);
+  const routeGuide=$('routeGuide');if(routeGuide)routeGuide.className='route-guide';
   drawHeldItem();updateHud();buildRank();
 }
 function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
@@ -642,8 +651,10 @@ async function startRace(){
   await playRaceIntroSequence();
 }
 
+function raceComparableDistance(racer){return Number(racer?.distance)||0}
+function raceOrder(){return[...raceContestants()].sort((a,b)=>raceComparableDistance(b)-raceComparableDistance(a))}
 function buildRank(){
-  const sorted=[...raceContestants()].sort((a,b)=>b.distance-a.distance),player=racers[state.selected],playerIndex=sorted.indexOf(player);let shown=sorted.slice(0,6);
+  const sorted=raceOrder(),player=racers[state.selected],playerIndex=sorted.indexOf(player);let shown=sorted.slice(0,6);
   if(!shown.includes(player)){shown=sorted.slice(0,4);shown.push(sorted[Math.max(4,playerIndex-1)],player);shown=[...new Set(shown)]}
   $('rankPanel').innerHTML=shown.map(r=>{const pos=sorted.indexOf(r)+1,gap=Math.round(r.distance-player.distance),label=player===r?'YOU':r===miaNpc?'BOSS':`${gap>0?'+':''}${gap}m`;return `<div class="rank-row ${player===r?'player':''}${r===miaNpc?' boss':''}"><span class="pos">${pos}</span><img src="${r.portrait}"><span class="rname">${r.name}</span><b>${label}</b></div>`}).join('');
 }
@@ -770,6 +781,41 @@ const debugPodiumNodes=[
 ];
 const debugCourseData={debugOnly:true,autoDrive:true,name:'表彰台テストサーキット',short:'PODIUM TEST',style:'DEBUG / 超短距離',difficulty:'TEST',art:'assets/environment/course-sweets.webp',crop:{x:.47,y:.12,w:.52,h:.50},nodes:debugPodiumNodes,startLine:28,finishDistance:50,totalLaps:1,heights:[0,.08,.18,.1,-.02,.06,0],tunnels:[],useCandyProps:true,propTheme:'sweets',rampRow:0,theme:{...courseData[0].theme,accent:'#ffe85d',lane:'rgba(255,255,255,.86)'}};
 courseData.push(...addedCourseData,debugCourseData);
+const GIMMICK_LANE_PATTERNS={wide:[-.62,-.31,0,.31,.62],triple:[-.5,0,.5],split:[-.58,-.26,.26,.58],left:[-.72,-.5,-.28],right:[.28,.5,.72],center:[0]};
+const COURSE_GIMMICK_LAYOUTS=[
+  {id:'sweets',ramps:[[230,-.18],[1040,.32]],rows:[[140,'coin','wide'],[360,'item','triple'],[520,'pad','split'],[790,'coin','right'],[930,'item','split'],[1170,'pad','triple'],[1510,'coin','wide'],[1680,'item','triple']]},
+  {id:'steam',ramps:[[210,.2],[890,-.3]],rows:[[140,'coin','wide'],[300,'item','triple'],[560,'pad','split'],[710,'coin','left'],[980,'item','split'],[1080,'coin','right'],[1305,'pad','triple'],[1540,'item','wide'],[1700,'coin','wide']]},
+  {id:'neon',ramps:[[220,-.22],[820,.28]],rows:[[150,'coin','wide'],[330,'item','triple'],[650,'pad','split'],[750,'coin','right'],[900,'item','split'],[1230,'coin','left'],[1450,'pad','triple'],[1650,'item','wide']]},
+  {id:'rain',ramps:[[240,.18],[1040,-.3]],rows:[[150,'coin','wide'],[350,'item','triple'],[560,'pad','split'],[870,'coin','left'],[1010,'item','split'],[1220,'pad','triple'],[1450,'coin','wide'],[1660,'item','wide']]},
+  {id:'royal',ramps:[[230,-.2],[900,.3]],rows:[[150,'coin','wide'],[350,'item','triple'],[700,'pad','split'],[820,'coin','right'],[1040,'item','split'],[1160,'coin','left'],[1400,'pad','triple'],[1600,'item','wide']]},
+  {id:'aurora',ramps:[[230,.2],[900,-.3]],rows:[[150,'coin','wide'],[350,'item','triple'],[660,'pad','split'],[810,'coin','left'],[1010,'item','split'],[1120,'coin','right'],[1360,'pad','triple'],[1600,'item','wide']]},
+  {id:'jungle',ramps:[[180,-.18],[850,.3]],rows:[[130,'coin','wide'],[270,'item','triple'],[510,'pad','split'],[680,'coin','right'],[900,'item','split'],[990,'coin','left'],[1260,'pad','triple'],[1510,'item','wide'],[1690,'coin','wide']]},
+  {id:'sakura',ramps:[[240,.2],[1050,-.28]],rows:[[150,'coin','wide'],[350,'item','triple'],[560,'pad','split'],[820,'coin','left'],[980,'item','split'],[1180,'pad','triple'],[1450,'coin','wide'],[1650,'item','wide']]},
+  {id:'coral',ramps:[[240,-.2],[990,.3]],rows:[[150,'coin','wide'],[360,'item','triple'],[500,'pad','split'],[740,'coin','right'],[900,'item','split'],[1120,'pad','triple'],[1260,'coin','left'],[1480,'item','wide'],[1680,'coin','wide']]},
+  {id:'phantom',ramps:[[220,.2],[760,-.3]],rows:[[150,'coin','wide'],[350,'item','triple'],[630,'pad','split'],[790,'coin','left'],[860,'item','split'],[1110,'coin','right'],[1300,'pad','triple'],[1540,'item','wide'],[1700,'coin','wide']]},
+  {id:'lunatic',ramps:[[210,-.2],[1080,.3]],rows:[[140,'coin','wide'],[300,'item','triple'],[570,'pad','split'],[700,'coin','right'],[960,'item','split'],[1120,'coin','left'],[1420,'pad','triple'],[1600,'item','wide'],[1720,'coin','wide']]}
+];
+const ROUTE_EDGE_PROFILES=[
+  {left:[1.12,-.16,.22],right:[.91,.11,-.08]},
+  {left:[1.08,.13,.18],right:[.93,-.18,-.12]},
+  {left:[1.15,-.2,-.08],right:[.89,.16,.2]},
+  {left:[1.1,.18,.14],right:[.92,-.12,-.18]},
+  {left:[1.13,-.14,.24],right:[.9,.2,-.06]},
+  {left:[1.11,.16,.28],right:[.92,-.17,-.16]},
+  {left:[1.16,-.22,.2],right:[.88,.13,-.2]},
+  {left:[1.09,.2,.16],right:[.94,-.15,-.1]},
+  {left:[1.14,-.18,-.12],right:[.9,.18,.22]},
+  {left:[1.12,.14,-.2],right:[.91,-.2,.12]},
+  {left:[1.17,-.2,.26],right:[.87,.17,-.14]}
+];
+function makeRouteGraph(id,start,end,leftLabel,rightLabel,profileIndex=0){
+  const span=end-start,profile=ROUTE_EDGE_PROFILES[profileIndex]||ROUTE_EDGE_PROFILES[0],makeBranch=(route,side,label,perk)=>{const [lengthScale,curveBias,hillBias]=profile[route];return{id:route,side,label,perk,lengthScale,physicalLength:span*lengthScale,curveBias,hillBias,timeDelta:Math.round(span*(lengthScale-1))}};
+  return{id,start,end,geometry:{model:'independent-route-edges-v3',visualGap:.31,visualSpread:.25,laneGap:.36,laneSpread:.34},nodes:[{id:`${id}-entry`,type:'entry',at:start},{id:`${id}-left`,type:'branch',side:-1,at:(start+end)/2},{id:`${id}-right`,type:'branch',side:1,at:(start+end)/2},{id:`${id}-merge`,type:'merge',at:end}],edges:[{from:`${id}-entry`,to:`${id}-left`,route:'left',length:span*profile.left[0]*.5},{from:`${id}-entry`,to:`${id}-right`,route:'right',length:span*profile.right[0]*.5},{from:`${id}-left`,to:`${id}-merge`,route:'left',length:span*profile.left[0]*.5},{from:`${id}-right`,to:`${id}-merge`,route:'right',length:span*profile.right[0]*.5}],branches:{left:makeBranch('left',-1,leftLabel,'ITEM / SCENIC'),right:makeBranch('right',1,rightLabel,'SHORT / BOOST')}}
+}
+const COURSE_ROUTE_GRAPHS=[
+  makeRouteGraph('sugar-split',820,1010,'SUGAR ARC','CREAM DASH',0),makeRouteGraph('gear-split',690,900,'GEAR LINE','STEAM BOOST',1),makeRouteGraph('neon-split',690,880,'LASER ARC','NITRO LANE',2),makeRouteGraph('rain-split',900,1090,'AQUA CURVE','RAIN DASH',3),makeRouteGraph('royal-split',760,950,'CROWN ARC','GOLD BOOST',4),makeRouteGraph('aurora-split',740,930,'CRYSTAL ARC','AURORA DASH',5),makeRouteGraph('jungle-split',620,820,'RUINS PATH','VINE BOOST',6),makeRouteGraph('sakura-split',900,1090,'SAKURA ARC','ONSEN DASH',7),makeRouteGraph('coral-split',810,1010,'CORAL ARC','BUBBLE DASH',8),makeRouteGraph('phantom-split',630,830,'GHOST PATH','NIGHT BOOST',9),makeRouteGraph('lunatic-split',970,1160,'MOON ARC','ORBIT DASH',10)
+];
+for(let i=0;i<Math.min(11,courseData.length);i++){courseData[i].gimmicks=COURSE_GIMMICK_LAYOUTS[i];courseData[i].routeGraph=COURSE_ROUTE_GRAPHS[i]}
 // The jungle loop has back-to-back S bends.  Give its distant projection a
 // slightly longer look-ahead than the standard courses so the road reads as
 // one continuous curve instead of twitching at the horizon.
@@ -787,11 +833,35 @@ function mapPoint(progress){return rawTrackPoint(trackParam(progress))}
 function trackSample(progress){const e=.00035,p=mapPoint(progress),a=mapPoint(progress-e),b=mapPoint(progress+e),l=Math.hypot(b[0]-a[0],b[1]-a[1])||1;return{x:p[0],y:p[1],tx:(b[0]-a[0])/l,ty:(b[1]-a[1])/l,heading:Math.atan2(b[1]-a[1],b[0]-a[0])}}
 function angleDelta(a,b){return Math.atan2(Math.sin(a-b),Math.cos(a-b))}
 function trackBend(progress){return Math.max(-1,Math.min(1,angleDelta(trackSample(progress+.006).heading,trackSample(progress-.006).heading)*3.2))}
+function routeDistanceInfo(distance){const graph=activeCourse?.routeGraph,length=raceLength();if(!graph||length<=0)return null;const lap=Math.max(0,Math.floor(Math.max(0,distance)/length)),phase=distance-lap*length;return{graph,lap,phase,start:lap*length+graph.start,end:lap*length+graph.end}}
+function routeGeometryAt(distance){
+  const info=routeDistanceInfo(distance);if(!info||info.phase<info.graph.start||info.phase>info.graph.end)return null;
+  const t=clamp((info.phase-info.graph.start)/Math.max(1,info.graph.end-info.graph.start),0,1),fork=Math.pow(Math.max(0,Math.sin(t*Math.PI)),.82),model=info.graph.geometry||{},visualInner=(model.visualGap??.31)*fork,visualOuter=1+(model.visualSpread??.25)*fork,laneInner=(model.laneGap??.36)*fork,laneOuter=1+(model.laneSpread??.34)*fork,visualHalf=(visualOuter-visualInner)*.5,laneHalf=(laneOuter-laneInner)*.5,visualCenter=(visualInner+visualOuter)*.5,laneCenter=(laneInner+laneOuter)*.5;
+  const branches={};for(const branch of Object.values(info.graph.branches)){const curveWave=branch.curveBias*fork*Math.sin(t*Math.PI*2),elevation=branch.hillBias*Math.pow(Math.sin(t*Math.PI),2);branches[branch.id]={...branch,visualCenter:branch.side*visualCenter+curveWave,laneCenter:branch.side*laneCenter+curveWave*.62,visualHalf,laneHalf,elevation,mapOffset:branch.side*fork*.065+curveWave*.025,normalizedProgress:t,physicalProgress:t*branch.physicalLength}}
+  return{...info,t,fork,visualInner,visualOuter,visualCenter,laneInner,laneOuter,laneCenter,visualHalf,laneHalf,branches}
+}
+function chooseRouteForRacer(racer,distance,player=false){const info=routeDistanceInfo(distance);if(!info||info.phase<info.graph.start-34||info.phase>info.graph.end)return null;if(racer.routeLap!==info.lap){let side;if(player){const lane=Math.abs(state.x)>.06?state.x:state.steer;side=lane<0?-1:1}else{const ai=racer.aiPersonality,key=ai?.key;side=key==='apex'||key==='tactician'?-1:key==='charger'||key==='booster'?1:((racer.aiDecisionSeed||0)+info.lap+state.selectedCourse)%2?-1:1}racer.routeChoice=side<0?'left':'right';racer.routeLap=info.lap;racer.routeMerged=false;if(player){state.routeChoice=racer.routeChoice;state.routeLap=info.lap;state.routeMerged=false;const branch=info.graph.branches[racer.routeChoice],delta=branch.timeDelta;toast(`${branch.label} / ${delta>0?`+${delta}m`:`${delta}m`}`);playSfx('uiMove',{intensity:.68})}}return info}
+function routeStateForRacer(racer,distance){const info=routeDistanceInfo(distance);if(!info)return null;chooseRouteForRacer(racer,distance,racer===racers[state.selected]);const geometry=routeGeometryAt(distance),branch=racer.routeLap===info.lap?info.graph.branches[racer.routeChoice]:null,path=branch&&geometry?geometry.branches[branch.id]:null,active=!!path&&info.phase>=info.graph.start&&info.phase<=info.graph.end,t=geometry?.t??clamp((info.phase-info.graph.start)/Math.max(1,info.graph.end-info.graph.start),0,1);return{...info,geometry,branch,path,active,t,center:path?.laneCenter||0,physicalProgress:path?.physicalProgress||0,comparableDistance:distance}}
+function advanceRouteDistance(racer,distance,physicalDelta,player=false){
+  if(!(physicalDelta>0))return distance;const info=routeDistanceInfo(distance);if(!info)return distance+physicalDelta;chooseRouteForRacer(racer,distance,player);const branch=racer.routeLap===info.lap?info.graph.branches[racer.routeChoice]:null;
+  let next=distance;if(info.phase<info.graph.start){const toFork=info.graph.start-info.phase;if(physicalDelta<=toFork)return distance+physicalDelta;next=info.start+(physicalDelta-toFork)/(branch?.lengthScale||1)}else if(info.phase<=info.graph.end&&branch){const toMergeCanonical=info.graph.end-info.phase,toMergePhysical=toMergeCanonical*branch.lengthScale;if(physicalDelta<=toMergePhysical)next=distance+physicalDelta/branch.lengthScale;else next=info.end+(physicalDelta-toMergePhysical)}else next=distance+physicalDelta;
+  const nextInfo=routeDistanceInfo(next),sameLap=nextInfo?.lap===info.lap;if(branch&&sameLap&&nextInfo.phase>=info.graph.start&&nextInfo.phase<=info.graph.end){const t=clamp((nextInfo.phase-info.graph.start)/(info.graph.end-info.graph.start),0,1);racer.routePhysicalProgress=t*branch.physicalLength;racer.routeNormalizedProgress=t;racer.routeComparableDistance=next}else if(branch&&next>=info.end){racer.routePhysicalProgress=branch.physicalLength;racer.routeNormalizedProgress=1;racer.routeComparableDistance=next;racer.routeMerged=true}
+  return next
+}
+function sameActiveRouteEdge(a,aDistance,b,bDistance){const ai=routeDistanceInfo(aDistance),bi=routeDistanceInfo(bDistance);if(!ai||!bi||ai.lap!==bi.lap||ai.graph!==bi.graph)return true;const aActive=ai.phase>=ai.graph.start&&ai.phase<=ai.graph.end,bActive=bi.phase>=bi.graph.start&&bi.phase<=bi.graph.end;if(!aActive||!bActive)return true;return a.routeLap===ai.lap&&b.routeLap===bi.lap&&a.routeChoice===b.routeChoice}
+function updateRouteGuide(){const guide=$('routeGuide'),info=routeDistanceInfo(state.distance);if(!guide||!info){guide?.classList.remove('show','active','choice-left','choice-right');return}const approach=info.graph.start-info.phase,show=approach<245&&info.phase<info.graph.end+22;if(!show){guide.classList.remove('show','active','choice-left','choice-right');return}const player=racers[state.selected],choice=player.routeLap===info.lap?player.routeChoice:null,left=info.graph.branches.left,right=info.graph.branches.right,metric=branch=>`${branch.timeDelta>0?'+':''}${branch.timeDelta}m`;guide.className=`route-guide show${choice?` active choice-${choice}`:''}`;guide.querySelector('.route-left').textContent=`‹ ${left.label} ${metric(left)}`;guide.querySelector('.route-right').textContent=`${right.label} ${metric(right)} ›`;guide.querySelector('strong').textContent=choice?`${info.graph.branches[choice].perk} · ${metric(info.graph.branches[choice])}`:approach>0?`${Math.ceil(approach)}m`:'CHOOSE'}
+function updatePlayerRoute(previousDistance,dt){
+  const player=racers[state.selected],route=routeStateForRacer(player,state.distance);if(!route){canvas.dataset.routeMerged=String(!!player.routeMerged);updateRouteGuide();return}
+  if(route.active&&route.path&&route.geometry?.fork>.035){const min=route.path.laneCenter-route.path.laneHalf+.025,max=route.path.laneCenter+route.path.laneHalf-.025,inner=route.branch.side<0?max:min;if(route.branch.side*state.x<route.branch.side*inner){const target=inner+route.branch.side*.045;state.x+=(target-state.x)*Math.min(1,dt*(5.8+route.geometry.fork*3.4))}state.x=clamp(state.x,min-.05,max+.05)}
+  if(player.routeLap===route.lap&&route.phase>route.graph.end&&!player.routeMerged){player.routeMerged=true;state.routeMerged=true;toast('ROUTE MERGE!')}
+  canvas.dataset.routeChoice=player.routeChoice||'none';canvas.dataset.routeLap=String(player.routeLap);canvas.dataset.routePhase=route.phase.toFixed(1);canvas.dataset.routeMerged=String(!!player.routeMerged);canvas.dataset.routeGap=(route.geometry?.fork||0).toFixed(3);canvas.dataset.routePhysicalProgress=(player.routePhysicalProgress||0).toFixed(1);canvas.dataset.routeComparableDistance=(player.routeComparableDistance??state.distance).toFixed(1);updateRouteGuide()
+}
 function drawMinimap(){
   const c=$('courseMap');if(!c)return;const m=c.getContext('2d');m.clearRect(0,0,c.width,c.height);
-  const theme=activeCourse?.theme||courseData[0].theme;m.save();m.lineJoin='round';m.lineCap='round';const drawPath=()=>{m.beginPath();for(let i=0;i<=180;i++){const [px,py]=mapPoint(i/180),x=12+px*(c.width-24),y=9+py*(c.height-18);i?m.lineTo(x,y):m.moveTo(x,y)}};drawPath();m.strokeStyle='rgba(25,12,35,.9)';m.lineWidth=18;m.stroke();drawPath();m.strokeStyle=theme.curbA;m.lineWidth=12;m.stroke();drawPath();m.strokeStyle=theme.accent;m.lineWidth=4;m.stroke();m.restore();
+  const theme=activeCourse?.theme||courseData[0].theme;m.save();m.lineJoin='round';m.lineCap='round';const drawPath=()=>{m.beginPath();for(let i=0;i<=180;i++){const [px,py]=mapPoint(i/180),x=12+px*(c.width-24),y=9+py*(c.height-18);i?m.lineTo(x,y):m.moveTo(x,y)}};drawPath();m.strokeStyle='rgba(25,12,35,.9)';m.lineWidth=18;m.stroke();drawPath();m.strokeStyle=theme.curbA;m.lineWidth=12;m.stroke();drawPath();m.strokeStyle=theme.accent;m.lineWidth=4;m.stroke();const graph=activeCourse?.routeGraph;if(graph){for(const branch of Object.values(graph.branches)){m.beginPath();for(let i=0;i<=32;i++){const t=i/32,distance=graph.start+(graph.end-graph.start)*t,progress=distance/raceLength(),sample=trackSample(progress),geometry=routeGeometryAt(distance),offset=geometry?.branches[branch.id]?.mapOffset??branch.side*Math.sin(t*Math.PI)*.065,px=sample.x-sample.ty*offset,py=sample.y+sample.tx*offset,x=12+px*(c.width-24),y=9+py*(c.height-18);i?m.lineTo(x,y):m.moveTo(x,y)}m.strokeStyle=branch.side<0?theme.lightA:theme.lightB;m.lineWidth=6;m.stroke()}}m.restore();
   const sorted=[...raceContestants()].sort((a,b)=>a.distance-b.distance);
-  for(const r of sorted){const [px,py]=mapPoint(r.progress),isPlayer=r===racers[state.selected],isMia=r===miaNpc,x=12+px*(c.width-24),y=9+py*(c.height-18);m.save();m.shadowColor=isPlayer?'#63eaff':isMia?'#ff3f9f':'#000';m.shadowBlur=isPlayer?12:isMia?16:4;m.fillStyle=isPlayer?'#54e8ff':r.color;m.strokeStyle=isMia?'#fff0fa':'#fff';m.lineWidth=isPlayer?3:isMia?2.5:1.5;m.beginPath();if(isMia){m.moveTo(x,y-8);m.lineTo(x+7,y+5);m.lineTo(x-7,y+5);m.closePath()}else m.arc(x,y,isPlayer?7:4,0,7);m.fill();m.stroke();m.restore()}
+  for(const r of sorted){const sample=trackSample(r.progress),geometry=routeGeometryAt(r.distance),routePath=geometry&&r.routeLap===geometry.lap?geometry.branches[r.routeChoice]:null,offset=routePath?.mapOffset||0,px=sample.x-sample.ty*offset,py=sample.y+sample.tx*offset,isPlayer=r===racers[state.selected],isMia=r===miaNpc,x=12+px*(c.width-24),y=9+py*(c.height-18);m.save();m.shadowColor=isPlayer?'#63eaff':isMia?'#ff3f9f':'#000';m.shadowBlur=isPlayer?12:isMia?16:4;m.fillStyle=isPlayer?'#54e8ff':r.color;m.strokeStyle=isMia?'#fff0fa':'#fff';m.lineWidth=isPlayer?3:isMia?2.5:1.5;m.beginPath();if(isMia){m.moveTo(x,y-8);m.lineTo(x+7,y+5);m.lineTo(x-7,y+5);m.closePath()}else m.arc(x,y,isPlayer?7:4,0,7);m.fill();m.stroke();m.restore()}
+  canvas.dataset.routeMinimapModel='independent-branches-v1';canvas.dataset.routeRankingModel='normalized-merge-v1';
 }
 function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').classList.remove('show'),900)}
 
@@ -850,7 +920,7 @@ function selectRocketTarget(owner,fromZ=owner?.distance||0){
 }
 function launchRocket(owner,options={}){
   if(!owner)return null;const player=racers[state.selected];if(owner===player){owner.distance=state.distance;owner.progress=state.progress;owner.lane=state.x}
-  const target=options.target||selectRocketTarget(owner),ownerKey=contestantKey(owner),targetKey=target?contestantKey(target):'',speed=Math.max(112,contestantVelocity(owner)/3.6+78),approachSide=target?Math.sign(owner.lane-target.lane)||(owner.aiPersonality?.passSide||0):0,shot={kind:'rocket',owner,ownerKey,shooter:owner,shooterKey:ownerKey,ownerName:owner.name||'RACER',target,targetKey,approachSide,z:owner.distance+18,lane:owner.lane,speed,life:6.5,age:0,turnRate:3.25};state.projectiles.push(shot);
+  const target=options.target||selectRocketTarget(owner),ownerKey=contestantKey(owner),targetKey=target?contestantKey(target):'',speed=Math.max(112,contestantVelocity(owner)/3.6+78),approachSide=target?Math.sign(owner.lane-target.lane)||(owner.aiPersonality?.passSide||0):0,shot={kind:'rocket',owner,ownerKey,shooter:owner,shooterKey:ownerKey,ownerName:owner.name||'RACER',target,targetKey,approachSide,z:owner.distance+18,lane:owner.lane,speed,life:6.5,age:0,turnRate:3.25,routeChoice:owner.routeChoice||null,routeLap:Number.isFinite(owner.routeLap)?owner.routeLap:-1,routeMerged:!!owner.routeMerged,routePhysicalProgress:owner.routePhysicalProgress||0};state.projectiles.push(shot);
   const launches=Number(canvas.dataset.rocketLaunches||0)+1;canvas.dataset.rocketLaunches=String(launches);canvas.dataset.rocketOwner=ownerKey;canvas.dataset.rocketTarget=targetKey||'none';
   const nearPlayer=Math.abs(owner.distance-state.distance)<300||target===player,anchor=owner===player?playerEffectAnchor():projectTrackEntity(owner.distance,owner.lane);if(nearPlayer){playSfx('rocket',{intensity:owner===player?1:.82});toast(owner===player?'ROCKET!':`${owner.name} ROCKET!`)}
   if(anchor&&Number.isFinite(anchor.x)){const y=owner===player?anchor.y-anchor.height*.24:anchor.y-40*Math.max(.5,anchor.scale||1);spawnVfx(1,anchor.x,y,.48,owner===player?170:115,'front',true);burst(anchor.x,y,5,owner.color||'#ffb13b',6)}
@@ -873,8 +943,8 @@ function updateRocketLockWarning(dt){
 }
 function updateRockets(dt){
   for(const shot of state.projectiles){shot.age=(shot.age||0)+dt;shot.life-=dt;let target=shot.target;if(!target||target===shot.owner||target.distance<shot.z-34){target=selectRocketTarget(shot.owner,shot.z-12);shot.target=target;shot.targetKey=target?contestantKey(target):'';if(target)canvas.dataset.rocketTarget=shot.targetKey}
-    if(target){shot.lane+=(target.lane-shot.lane)*Math.min(1,dt*(shot.turnRate||3.25));const gap=target.distance-shot.z;shot.speed+=clamp(118+Math.max(-10,Math.min(24,gap*.08))-shot.speed,-34*dt,42*dt)}
-    shot.z+=shot.speed*dt;if(shot.age<.11)continue;const collision=raceContestants().filter(racer=>racer!==shot.owner).map(racer=>({racer,dz:Math.abs(racer.distance-shot.z),lane:Math.abs(racer.lane-shot.lane)})).filter(hit=>hit.dz<22&&hit.lane<.24).sort((a,b)=>a.dz+a.lane*28-(b.dz+b.lane*28))[0];if(collision)applyRocketHit(shot,collision.racer)
+    if(target){const shared=sameActiveRouteEdge(shot,shot.z,target,target.distance),shotRoute=routeStateForRacer(shot,shot.z),mergeBlend=!shared&&shotRoute?.active?clamp((shotRoute.t-.72)/.28,0,1):1,targetLane=shared?target.lane:(shotRoute?.center||shot.lane)*(1-mergeBlend)+target.lane*mergeBlend;canvas.dataset.rocketRouteMode=shared?'direct':'merge-converge';shot.lane+=(targetLane-shot.lane)*Math.min(1,dt*(shot.turnRate||3.25));const gap=target.distance-shot.z;shot.speed+=clamp(118+Math.max(-10,Math.min(24,gap*.08))-shot.speed,-34*dt,42*dt)}
+    shot.z=advanceRouteDistance(shot,shot.z,shot.speed*dt);if(shot.age<.11)continue;const collision=raceContestants().filter(racer=>racer!==shot.owner&&sameActiveRouteEdge(shot,shot.z,racer,racer.distance)).map(racer=>({racer,dz:Math.abs(racer.distance-shot.z),lane:Math.abs(racer.lane-shot.lane)})).filter(hit=>hit.dz<22&&hit.lane<.24).sort((a,b)=>a.dz+a.lane*28-(b.dz+b.lane*28))[0];if(collision)applyRocketHit(shot,collision.racer)
   }
   state.projectiles=state.projectiles.filter(shot=>shot.life>0&&shot.z-state.distance<DRAW_DISTANCE);canvas.dataset.rocketActive=String(state.projectiles.length);updateRocketLockWarning(dt)
 }
@@ -884,7 +954,7 @@ function announceAiItemUse(racer,item){
 function useAiStar(racer){racer.invincible=4.2;racer.aiBoost=Math.max(racer.aiBoost||0,1.65);racer.aiVelocity=Math.max(racer.aiVelocity||0,205);racer.hit=0;racer.spin=0;racer.aiItem=null;racer.aiItemAge=0;announceAiItemUse(racer,'star')}
 function useAiShield(racer){racer.shield=7;racer.aiItem=null;racer.aiItemAge=0;announceAiItemUse(racer,'shield')}
 function updateAiItemUse(racer,dt){
-  if(!racer.aiItem)return;racer.aiItemAge=(racer.aiItemAge||0)+dt;const ai=racer.aiPersonality||{aggression:.82,key:'boss'},player=racers[state.selected],order=[...raceContestants()].sort((a,b)=>b.distance-a.distance),rank=order.indexOf(racer)+1,target=selectRocketTarget(racer,racer.distance),gap=target?target.distance-racer.distance:Infinity;
+  if(!racer.aiItem)return;racer.aiItemAge=(racer.aiItemAge||0)+dt;const ai=racer.aiPersonality||{aggression:.82,key:'boss'},player=racers[state.selected],order=raceOrder(),rank=order.indexOf(racer)+1,target=selectRocketTarget(racer,racer.distance),gap=target?target.distance-racer.distance:Infinity;
   if(racer.aiItem==='rocket'){const ready=racer.aiItemAge>.48+(1-ai.aggression)*.9,window=gap>17&&gap<290;if(ready&&window&&!racer.airborne){launchRocket(racer,{target});racer.aiItem=null;racer.aiItemAge=0;racer.aiBoostCooldown=Math.max(racer.aiBoostCooldown||0,.7)}return}
   if(racer.aiItem==='shield'){const incoming=state.projectiles.some(shot=>shot.target===racer&&shot.owner!==racer&&shot.z<racer.distance&&racer.distance-shot.z<220),rearThreat=raceContestants().some(other=>other!==racer&&racer.distance-other.distance>4&&racer.distance-other.distance<64&&Math.abs(other.lane-racer.lane)<.44),ready=racer.aiItemAge>.42,maxHold=racer.aiItemAge>4.8;if(ready&&(incoming||maxHold||(rank<=8&&rearThreat&&racer.aiItemAge>1.1)))useAiShield(racer);return}
   if(racer.aiItem==='star'){const emergency=(racer.hit||0)>.05||(racer.spin||0)>.05||Math.abs(racer.lane)>.96,slow=(racer.aiVelocity||0)<(racer.aiSpeed||150)*.76,attack=gap>12&&gap<175&&(ai.key==='booster'||ai.key==='sprinter'||ai.key==='charger'),maxHold=racer.aiItemAge>4.35;if(racer.aiItemAge>.38&&(emergency||maxHold||(racer.aiItemAge>.72&&(slow||attack||rank>12))))useAiStar(racer)}
@@ -933,7 +1003,7 @@ function startMiaIntrusion(){
 function spawnMiaNpc(){
   const difficulty=difficultyProfile();
   const side=Math.sin(state.elapsed*.0017)>0?-1:1;
-  const spawnGap=difficulty.miaSpawnGap??38;Object.assign(miaNpc,{active:true,distance:state.distance+spawnGap,progress:(state.distance+spawnGap)/raceLength(),lane:clamp(state.x+side*.5,-1.25,1.25),aiTargetLane:clamp(state.x-side*.18,-1.1,1.1),aiVelocity:Math.max(difficulty.miaBase,state.speed+difficulty.miaOffset),hit:0,spin:0,jumpY:255,jumpVelocity:-30,airborne:true,landed:false});
+  const spawnGap=difficulty.miaSpawnGap??38;Object.assign(miaNpc,{active:true,distance:state.distance+spawnGap,progress:(state.distance+spawnGap)/raceLength(),lane:clamp(state.x+side*.5,-1.25,1.25),aiTargetLane:clamp(state.x-side*.18,-1.1,1.1),aiVelocity:Math.max(difficulty.miaBase,state.speed+difficulty.miaOffset),hit:0,spin:0,jumpY:255,jumpVelocity:-30,airborne:true,landed:false,routeChoice:null,routeLap:-1,routeMerged:false,routePhysicalProgress:0,routeNormalizedProgress:0,routeComparableDistance:state.distance+spawnGap});
   if($('positionTotal'))$('positionTotal').textContent=`/${racers.length+1}`;
   state.flash=Math.max(state.flash,.5);state.shake=Math.max(state.shake,13);canvas.dataset.miaBoss='air-drop';toast('MIA CHALLENGER!');buildRank();
 }
@@ -956,8 +1026,8 @@ function updateMiaNpc(dt,length,laps){
   if(!miaNpc.active)return;
   miaNpc.hit=Math.max(0,miaNpc.hit-dt);miaNpc.spin=Math.max(0,miaNpc.spin-dt);
   const gap=miaNpc.distance-state.distance,targetGap=difficulty.miaTargetGap+Math.sin(state.elapsed*.0013)*5,targetSpeed=Math.max(difficulty.miaBase,state.speed+difficulty.miaOffset)+clamp((targetGap-gap)*difficulty.miaCatchup,-24,difficulty.miaCatchLimit),effectiveTarget=targetSpeed*(miaNpc.hit>0?difficulty.miaHitFactor:1);
-  miaNpc.aiVelocity+=clamp(effectiveTarget-miaNpc.aiVelocity,-70*dt,58*dt);miaNpc.distance+=Math.max(0,miaNpc.aiVelocity)/3.6*dt;miaNpc.progress=miaNpc.distance/length;
-  miaNpc.aiTargetLane=clamp(Math.sin(state.elapsed*.00145)*.72+trackBend(miaNpc.progress)*.22,-1.25,1.25);miaNpc.lane+=(miaNpc.aiTargetLane-miaNpc.lane)*dt*(miaNpc.airborne?1.2:2.05);
+  miaNpc.aiVelocity+=clamp(effectiveTarget-miaNpc.aiVelocity,-70*dt,58*dt);miaNpc.distance=advanceRouteDistance(miaNpc,miaNpc.distance,Math.max(0,miaNpc.aiVelocity)/3.6*dt);miaNpc.progress=miaNpc.distance/length;
+  const miaRoute=routeStateForRacer(miaNpc,miaNpc.distance);miaNpc.aiTargetLane=miaRoute?.active?miaRoute.center:clamp(Math.sin(state.elapsed*.00145)*.72+trackBend(miaNpc.progress)*.22,-1.25,1.25);miaNpc.lane+=(miaNpc.aiTargetLane-miaNpc.lane)*dt*(miaNpc.airborne?1.2:2.05);
   if(miaNpc.airborne){miaNpc.jumpVelocity-=520*dt;miaNpc.jumpY+=miaNpc.jumpVelocity*dt;if(miaNpc.jumpY<=0&&miaNpc.jumpVelocity<0){miaNpc.jumpY=0;miaNpc.jumpVelocity=0;miaNpc.airborne=false;miaNpc.landed=true;spawnMiaLandingFx();canvas.dataset.miaBoss='racing'}}
   canvas.dataset.miaGap=(miaNpc.distance-state.distance).toFixed(1);canvas.dataset.miaAirborne=String(miaNpc.airborne);
 }
@@ -966,9 +1036,9 @@ function updateRaceParticles(dt){
   state.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.kind==='shockwave'){p.vx*=Math.exp(-5*dt);p.vy*=Math.exp(-5*dt)}else if(p.kind==='smoke'){p.vx*=Math.exp(-1.8*dt);p.vy-=7*dt}else p.vy+=(p.kind==='dust'?58:90)*dt;p.life-=dt;p.rot+=dt*p.spin});state.particles=state.particles.filter(p=>p.life>0);state.shake*=Math.pow(.88,dt*60);
 }
 function updateFinishCoast(dt){
-  state.finishCoast+=dt;state.speed*=Math.exp(-.72*dt);state.distance+=state.speed/3.6*dt;state.progress=state.distance/raceLength();const player=racers[state.selected];player.distance=state.distance;player.progress=state.progress;player.lane=state.x;
-  racers.forEach((r,i)=>{if(i===state.selected)return;r.distance+=Math.max(0,r.aiVelocity||r.aiSpeed)/3.6*dt;r.progress=r.distance/raceLength()});
-  if(miaNpc.active){miaNpc.distance+=Math.max(0,miaNpc.aiVelocity)/3.6*dt;miaNpc.progress=miaNpc.distance/raceLength()}
+  state.finishCoast+=dt;state.speed*=Math.exp(-.72*dt);const player=racers[state.selected];state.distance=advanceRouteDistance(player,state.distance,state.speed/3.6*dt,true);state.progress=state.distance/raceLength();player.distance=state.distance;player.progress=state.progress;player.lane=state.x;
+  racers.forEach((r,i)=>{if(i===state.selected)return;r.distance=advanceRouteDistance(r,r.distance,Math.max(0,r.aiVelocity||r.aiSpeed)/3.6*dt);r.progress=r.distance/raceLength()});
+  if(miaNpc.active){miaNpc.distance=advanceRouteDistance(miaNpc,miaNpc.distance,Math.max(0,miaNpc.aiVelocity)/3.6*dt);miaNpc.progress=miaNpc.distance/raceLength()}
   state.collectFx.forEach(f=>f.life-=dt);state.collectFx=state.collectFx.filter(f=>f.life>0);updateRaceParticles(dt);updateHud();canvas.dataset.finishCoast=state.finishCoast.toFixed(2);
 }
 function update(dt){
@@ -1008,35 +1078,37 @@ function update(dt){
   state.boosting=state.turbo>0||state.invincible>0;
   updateJumpPhysics(state,dt,true);const jumpTarget=state.airborne?clamp(state.jumpY/145+Math.max(0,state.jumpVelocity)*.0012,0,1):0;state.jumpView+=(jumpTarget-state.jumpView)*Math.min(1,dt*(state.airborne?7.2:5.4));if(!state.airborne&&state.jumpView<.01)state.jumpView=0;const riseAhead=hillAt(state.distance+18)-hillAt(state.distance),riseBehind=hillAt(state.distance)-hillAt(state.distance-18),suspensionTarget=state.airborne?-4:-(riseAhead-riseBehind)*Math.min(1,state.speed/150)*78;state.suspensionVelocity+=(suspensionTarget-state.suspension)*38*dt;state.suspensionVelocity*=Math.exp(-8*dt);state.suspension+=state.suspensionVelocity*dt;state.suspension=Math.max(-13,Math.min(13,state.suspension));spawnDrivingFx(dt,surface,driftKey&&Math.abs(state.steer)>.18);
   const length=raceLength(),laps=raceLaps(),previousDistance=state.distance;
-  state.distance=Math.max(0,state.distance+state.speed/3.6*dt);state.progress=state.distance/length;racers[state.selected].distance=state.distance;racers[state.selected].progress=state.progress;
+  state.distance=Math.max(0,advanceRouteDistance(selectedRacer,state.distance,state.speed/3.6*dt,true));state.progress=state.distance/length;racers[state.selected].distance=state.distance;racers[state.selected].progress=state.progress;
   racers[state.selected].lane=state.x;
+  updatePlayerRoute(previousDistance,dt);racers[state.selected].lane=state.x;
   if(state.speed>1){const targetHeading=trackSample(state.progress+.008).heading,turn=angleDelta(targetHeading,state.cameraHeading),maxTurn=(.34+Math.min(1,state.speed/180)*.44)*dt;state.cameraHeading=Math.atan2(Math.sin(state.cameraHeading+Math.max(-maxTurn,Math.min(maxTurn,turn))),Math.cos(state.cameraHeading+Math.max(-maxTurn,Math.min(maxTurn,turn))))}
 
   racers.forEach((r,i)=>{if(i===state.selected)return;
     const aiTrait=r.trait,ai=r.aiPersonality,difficulty=difficultyProfile();r.hit=Math.max(0,r.hit-dt);r.spin=Math.max(0,r.spin-dt);r.shield=Math.max(0,(r.shield||0)-dt);r.invincible=Math.max(0,(r.invincible||0)-dt);r.aiBoost=Math.max(0,(r.aiBoost||0)-dt/aiTrait.boostDuration);r.aiBoostCooldown=Math.max(0,(r.aiBoostCooldown||0)-dt);r.aiPassCommit=Math.max(0,(r.aiPassCommit||0)-dt);updateJumpPhysics(r,dt,false);
-    const lookAhead=55+Math.min(95,r.aiVelocity*.36),bendAhead=trackBend((r.distance+lookAhead)/length),safeLimit=.86-Math.min(.16,Math.abs(bendAhead)*.13),raceLine=aiDesiredRaceLine(r,bendAhead,safeLimit),offRoad=Math.abs(r.lane)>.98;
-    const blockers=raceContestants().filter(o=>o!==r&&o.distance>=r.distance-3&&o.distance-r.distance<38).sort((a,b)=>a.distance-b.distance),blocker=blockers.find(o=>Math.abs(o.lane-r.lane)<.34)||blockers[0],blockerGap=blocker?blocker.distance-r.distance:Infinity;
+    const lookAhead=55+Math.min(95,r.aiVelocity*.36),bendAhead=trackBend((r.distance+lookAhead)/length),route=routeStateForRacer(r,r.distance),safeLimit=route?.active?1.34:.86-Math.min(.16,Math.abs(bendAhead)*.13),routeMin=route?.active?route.center-(route.path?.laneHalf||.42)+.07:-safeLimit,routeMax=route?.active?route.center+(route.path?.laneHalf||.42)-.07:safeLimit;let raceLine=route?.active?clamp(route.center,routeMin,routeMax):aiDesiredRaceLine(r,bendAhead,safeLimit);const offRoad=surfaceAtLane(r.lane,r.distance).id!=='road';
+    const blockers=raceContestants().filter(o=>o!==r&&sameActiveRouteEdge(r,r.distance,o,o.distance)&&o.distance>=r.distance-3&&o.distance-r.distance<38).sort((a,b)=>a.distance-b.distance),blocker=blockers.find(o=>Math.abs(o.lane-r.lane)<.34)||blockers[0],blockerGap=blocker?blocker.distance-r.distance:Infinity;
     if(blocker&&blockerGap>2&&blockerGap<31&&r.aiPassCommit<=0){r.aiTargetLane=aiOpenPassLane(r,blocker,bendAhead,safeLimit);r.aiPassTarget=blocker.slug||'player';r.aiPassCommit=.55+ai.aggression*.72}
     const passReady=blocker&&blockerGap>3&&blockerGap<30&&(Math.abs(bendAhead)<.34||ai.key==='apex'||ai.key==='booster');
     if(passReady&&r.aiBoostCooldown<=0&&r.aiVelocity>105){const trigger=ai.boostThreshold-(state.rank>8?.08:0);if(ai.aggression>=trigger){r.aiBoost=.46+r.set.stats.boost*.0065;r.aiBoostCooldown=2.25+(1-ai.aggression)*2.1;r.aiPassCommit=Math.max(r.aiPassCommit,.9);r.aiTargetLane=aiOpenPassLane(r,blocker,bendAhead,safeLimit)}}
     const gap=state.distance-r.distance,rubber=clamp(gap*difficulty.rubberGain,-difficulty.rubberLimit,difficulty.rubberLimit),personalityPace=ai.key==='charger'&&Math.abs(bendAhead)<.22?3.5:ai.key==='apex'&&Math.abs(bendAhead)>.42?2.8:0,aiTarget=r.aiSpeed*difficulty.aiSpeed+rubber+personalityPace+(r.aiBoost>0?34*difficulty.aiBoost:0),velocityStep=Math.max(-62*difficulty.aiAccel*dt,Math.min(54*aiTrait.acceleration*difficulty.aiAccel*dt,aiTarget-r.aiVelocity));r.aiVelocity=Math.max(0,r.aiVelocity+velocityStep);
-    const aiSurface=r.airborne||r.invincible>0?SURFACE_PROFILES.road:surfaceAtLane(r.lane),aiActual=r.aiVelocity*(r.hit>0&&r.invincible<=0?.46:1)*aiSurface.maxFactor;r.distance+=aiActual/3.6*dt;r.progress=r.distance/length;
+    const aiSurface=r.airborne||r.invincible>0?SURFACE_PROFILES.road:surfaceAtLane(r.lane,r.distance),aiActual=r.aiVelocity*(r.hit>0&&r.invincible<=0?.46:1)*aiSurface.maxFactor;r.distance=advanceRouteDistance(r,r.distance,aiActual/3.6*dt);r.progress=r.distance/length;
     r.laneTimer-=dt;if(r.laneTimer<=0&&r.aiPassCommit<=0){
       const choices=[-.7,-.36,0,.36,.7],phase=Math.abs(Math.floor(r.distance/(78+ai.decisionTempo*18))+(r.aiDecisionSeed||i*3))%choices.length;let target=raceLine+choices[phase]*(ai.key==='tactician'?.14:.24),best=null,bestScore=Infinity;
-      for(const object of state.objects){if(object.taken)continue;const dz=object.z-r.distance;if(dz<25||dz>155||Math.abs(object.lane)>safeLimit)continue;const interest=object.type==='ramp'?.82:object.type==='item'?ai.objectInterest:ai.objectInterest*.72,pattern=((i+Math.floor(object.z/(object.type==='ramp'?90:120)))%5)/4;if(pattern>interest*.72)continue;const traffic=aiTrafficScore(r,object.lane,62)*34/ai.trafficAvoidance,score=dz+traffic+(object.type==='ramp'?-24:0);if(score<bestScore){best=object;bestScore=score}}
-      if(best)target=best.lane*.76+raceLine*.24;else if(ai.key==='tactician'){const candidates=[-.62,-.31,0,.31,.62].map(lane=>clamp(lane+raceLine*.38,-safeLimit,safeLimit));candidates.sort((a,b)=>aiTrafficScore(r,a)-aiTrafficScore(r,b));target=candidates[0]}
-      r.aiTargetLane=clamp(target,-safeLimit,safeLimit);r.laneTimer=(.48+ai.decisionTempo*.32+(i%4)*.08)*ai.rhythm;
+      for(const object of state.objects){if(object.taken||object.route&&route?.active&&object.route!==r.routeChoice)continue;const dz=object.z-r.distance;if(dz<25||dz>155||Math.abs(object.lane)>safeLimit)continue;const interest=object.type==='ramp'?.82:object.type==='item'?ai.objectInterest:ai.objectInterest*.72,pattern=((i+Math.floor(object.z/(object.type==='ramp'?90:120)))%5)/4;if(pattern>interest*.72)continue;const traffic=aiTrafficScore(r,object.lane,62)*34/ai.trafficAvoidance,score=dz+traffic+(object.type==='ramp'?-24:0);if(score<bestScore){best=object;bestScore=score}}
+      if(best)target=best.lane*.76+raceLine*.24;else if(ai.key==='tactician'){const candidates=[-.62,-.31,0,.31,.62].map(lane=>clamp(lane+raceLine*.38,routeMin,routeMax));candidates.sort((a,b)=>aiTrafficScore(r,a)-aiTrafficScore(r,b));target=candidates[0]}
+      r.aiTargetLane=clamp(target,routeMin,routeMax);r.laneTimer=(.48+ai.decisionTempo*.32+(i%4)*.08)*ai.rhythm;
     }
-    if(offRoad){r.aiTargetLane=clamp(raceLine,-.44,.44);r.aiPassCommit=0}const laneResponse=offRoad?5.2:(1.55+r.set.stats.handling*.009)*(1.12/ai.decisionTempo);r.lane+=(r.aiTargetLane-r.lane)*Math.min(1,dt*laneResponse);if(!offRoad&&r.aiPassCommit<=0)r.lane+=Math.sin(state.elapsed*.0011+i*1.7)*dt*.006;r.lane=clamp(r.lane,-1.08,1.08);updateAiRocketUse(r,dt)
+    if(offRoad){r.aiTargetLane=route?.active?raceLine:clamp(raceLine,-.44,.44);r.aiPassCommit=0}const laneResponse=offRoad?5.2:(1.55+r.set.stats.handling*.009)*(1.12/ai.decisionTempo);r.lane+=(r.aiTargetLane-r.lane)*Math.min(1,dt*laneResponse);if(!offRoad&&r.aiPassCommit<=0)r.lane+=Math.sin(state.elapsed*.0011+i*1.7)*dt*.006;r.lane=clamp(r.lane,route?.active?routeMin:-1.08,route?.active?routeMax:1.08);updateAiRocketUse(r,dt)
   });
-  canvas.dataset.aiOffroad=String(racers.filter((r,i)=>i!==state.selected&&Math.abs(r.lane)>.98).length);
+  canvas.dataset.aiOffroad=String(racers.filter((r,i)=>i!==state.selected&&surfaceAtLane(r.lane,r.distance).id!=='road').length);
+  canvas.dataset.routeAiLeft=String(racers.filter((r,i)=>i!==state.selected&&r.routeChoice==='left').length);canvas.dataset.routeAiRight=String(racers.filter((r,i)=>i!==state.selected&&r.routeChoice==='right').length);
   updateMiaNpc(dt,length,laps);
   state.overtakeUiCooldown=Math.max(0,state.overtakeUiCooldown-dt);updatePlayerOvertakes();
-  for(const r of raceContestants().filter(r=>r!==racers[state.selected])){const rel=r.distance-state.distance;if(Math.abs(rel)<20&&Math.abs(r.lane-state.x)<.22&&state.collisionCooldown<=0){if(state.invincible>0||state.shield>0){r.hit=1.3;r.spin=1;toast('HIT!')}else{state.speed*=.72;toast(r===miaNpc?'MIA BUMP!':'BUMP!')}playSfx('collision',{intensity:r===miaNpc?1.2:1});state.shake=10;state.collisionCooldown=1;burst(innerWidth/2+state.x*130,innerHeight*.73,16,r===miaNpc?'#ff52ae':'#ff7abf')}}
+  for(const r of raceContestants().filter(r=>r!==racers[state.selected]&&sameActiveRouteEdge(selectedRacer,state.distance,r,r.distance))){const rel=r.distance-state.distance;if(Math.abs(rel)<20&&Math.abs(r.lane-state.x)<.22&&state.collisionCooldown<=0){if(state.invincible>0||state.shield>0){r.hit=1.3;r.spin=1;toast('HIT!')}else{state.speed*=.72;toast(r===miaNpc?'MIA BUMP!':'BUMP!')}playSfx('collision',{intensity:r===miaNpc?1.2:1});state.shake=10;state.collisionCooldown=1;burst(innerWidth/2+state.x*130,innerHeight*.73,16,r===miaNpc?'#ff52ae':'#ff7abf')}}
 
   updateRockets(dt);
 
-  state.rank=[...raceContestants()].sort((a,b)=>b.distance-a.distance).indexOf(racers[state.selected])+1;if(state.rank!==state.lastRank&&state.elapsed>1000){announceRank(state.lastRank,state.rank);state.lastRank=state.rank}state.lap=raceLapAt(state.distance);const finishAt=finishLineDistance();canvas.dataset.finishLineDistance=finishAt.toFixed(1);canvas.dataset.finishDistanceRemaining=Math.max(0,finishAt-state.distance).toFixed(1);if(previousDistance<finishAt&&state.distance>=finishAt){finishRace();return}
+  state.rank=raceOrder().indexOf(racers[state.selected])+1;if(state.rank!==state.lastRank&&state.elapsed>1000){announceRank(state.lastRank,state.rank);state.lastRank=state.rank}state.lap=raceLapAt(state.distance);const finishAt=finishLineDistance();canvas.dataset.finishLineDistance=finishAt.toFixed(1);canvas.dataset.finishDistanceRemaining=Math.max(0,finishAt-state.distance).toFixed(1);if(previousDistance<finishAt&&state.distance>=finishAt){finishRace();return}
   for(const ramp of state.objects.filter(o=>o.type==='ramp')){for(let i=0;i<racers.length;i++){if(ramp.hitBy.has(i))continue;const r=racers[i],dz=r.distance-ramp.z;if(dz>=-7&&dz<=13&&Math.abs(r.lane-ramp.lane)<.34){ramp.hitBy.add(i);launchRamp(i)}}}
   for(const o of state.objects){if(o.type==='ramp'||o.taken)continue;let best=null;for(let i=0;i<racers.length;i++){const r=racers[i],dz=Math.abs(r.distance-o.z),laneGap=Math.abs(r.lane-o.lane),reach=o.type==='pad'?.28:.22;if(dz<13&&laneGap<reach&&(!best||dz+laneGap*20<best.score))best={i,score:dz+laneGap*20}}if(best)collectObject(o,best.i)}
   state.collectFx.forEach(f=>f.life-=dt);state.collectFx=state.collectFx.filter(f=>f.life>0);
@@ -1105,14 +1177,17 @@ function podiumVisibleBounds(frame){
   podiumFrameBoundsCache.set(key,bounds);return bounds;
 }
 function drawPodiumRacerSprite(canvas,racer,rank){
-  if(!canvas||!racer)return;
+  if(!canvas||!racer)return false;
   const sourceFrame=racer.frames?.[10]||racer.frames?.[3]||racer.frames?.[0],frame=podiumVisibleBounds(sourceFrame),c=canvas.getContext('2d');
   c.clearRect(0,0,canvas.width,canvas.height);
-  if(!frame)return;
+  if(!frame||!frame.image||!frame.image.complete||!frame.image.naturalWidth)return false;
   const rankScale=rank===1?1.04:.94,scale=Math.min(canvas.width/frame.sw*.9,canvas.height/frame.sh*.97)*rankScale,w=frame.sw*scale,h=frame.sh*scale,x=(canvas.width-w)/2,y=canvas.height-h;
   c.imageSmoothingEnabled=true;c.shadowColor='rgba(0,0,0,.45)';c.shadowBlur=18;c.shadowOffsetY=12;
-  c.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,x,y,w,h);
+  c.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,x,y,w,h);canvas.dataset.painted='sprite';return true;
 }
+function podiumSpriteReady(racer){const frame=racer?.frames?.[10]||racer?.frames?.[3]||racer?.frames?.[0];return!!(frame?.image?.complete&&frame.image.naturalWidth&&frame.sw>0&&frame.sh>0)}
+async function ensurePodiumSprite(racer){if(!podiumSpriteReady(racer))await ensureContestantSprite(racer);if(!podiumSpriteReady(racer))throw new Error(`Podium frame unavailable: ${racer?.slug||'unknown'}`);return racer.frames}
+function drawPodiumPortraitFallback(canvas,racer,rank){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>{const c=canvas.getContext('2d'),scale=Math.min(canvas.width/image.naturalWidth*.88,canvas.height/image.naturalHeight*.95)*(rank===1?1.04:.94),w=image.naturalWidth*scale,h=image.naturalHeight*scale;c.clearRect(0,0,canvas.width,canvas.height);c.drawImage(image,(canvas.width-w)/2,canvas.height-h,w,h);canvas.dataset.painted='portrait-fallback';resolve(true)};image.onerror=reject;image.src=racer.portrait})}
 function drawResultFaceSprite(canvas,racer){
   if(!canvas||!racer)return;
   const frame=racer.frames?.[10]||racer.frames?.[3]||racer.frames?.[0],c=canvas.getContext('2d');
@@ -1129,16 +1204,20 @@ function drawResultFaceSprite(canvas,racer){
   c.strokeStyle='#fff';c.lineWidth=4;c.beginPath();c.arc(canvas.width/2,canvas.height/2,canvas.width*.45,0,Math.PI*2);c.stroke();
   c.restore();
 }
+function resetPodiumRacer(slot){
+  if(!slot)return;clearTimeout(slot._podiumTimer);clearTimeout(slot._podiumFallbackTimer);slot._podiumTimer=0;slot._podiumFallbackTimer=0;if(slot._podiumFinishHandler)slot.removeEventListener('animationend',slot._podiumFinishHandler);slot._podiumFinishHandler=null;slot.replaceChildren();slot.classList.remove('boss','podium-staged','podium-jumping','podium-ready');delete slot.dataset.racer;delete slot.dataset.podiumPhase
+}
 function renderPodiumRacer(slot,racer,rank){
-  if(!slot)return;slot.replaceChildren();slot.classList.remove('boss','podium-ready');delete slot.dataset.racer;if(!racer)return;slot.classList.toggle('boss',racer===miaNpc);slot.dataset.racer=racer.slug;
-  const delay=rank===3?760:rank===2?1420:2140;slot.style.setProperty('--delay',`${delay}ms`);
+  if(!slot)return;resetPodiumRacer(slot);if(!racer)return;slot.classList.toggle('boss',racer===miaNpc);slot.dataset.racer=racer.slug;slot.dataset.podiumPhase='loading';
+  const delay=rank===3?520:rank===2?1480:2440;slot.style.setProperty('--jump-rotate',rank===2?'-4deg':rank===3?'4deg':'0deg');
   slot.innerHTML=`<canvas width="300" height="300" aria-label="${racer.name}"></canvas><strong>${ordinal(rank)}</strong><span>${racer.name}</span>`;
   const canvas=slot.querySelector('canvas');
-  const ready=racer.frames?Promise.resolve():ensureContestantSprite(racer).catch(error=>console.warn(`Podium sprite load failed: ${racer.slug}`,error));
-  ready.then(()=>{if(!slot.isConnected||slot.dataset.racer!==racer.slug)return;try{drawPodiumRacerSprite(canvas,racer,rank)}catch(error){console.warn(`Podium sprite failed: ${racer.slug}`,error)}void slot.offsetWidth;slot.classList.add('podium-ready')});
+  const finishJump=()=>{if(!slot.isConnected||slot.dataset.racer!==racer.slug)return;if(slot._podiumFinishHandler)slot.removeEventListener('animationend',slot._podiumFinishHandler);slot._podiumFinishHandler=null;slot.classList.remove('podium-jumping');slot.classList.add('podium-ready');slot.dataset.podiumPhase='ready'};
+  const stage=()=>{if(!slot.isConnected||slot.dataset.racer!==racer.slug||!canvas.dataset.painted)return;slot.classList.add('podium-staged');slot.dataset.podiumPhase='staged';void slot.offsetWidth;slot._podiumTimer=setTimeout(()=>{if(!slot.isConnected||slot.dataset.racer!==racer.slug)return;slot.classList.remove('podium-staged');slot.classList.add('podium-jumping');slot.dataset.podiumPhase='jumping';playSfx('uiMove',{intensity:rank===1?.82:.58});const onEnd=event=>{if(event.animationName!=='podiumCeremonyJump'||event.pseudoElement||slot.dataset.racer!==racer.slug)return;finishJump()};slot._podiumFinishHandler=onEnd;slot.addEventListener('animationend',onEnd);slot._podiumFallbackTimer=setTimeout(finishJump,1150)},delay)};
+  ensurePodiumSprite(racer).then(()=>{if(!slot.isConnected||slot.dataset.racer!==racer.slug)return;if(!drawPodiumRacerSprite(canvas,racer,rank))throw new Error(`Podium canvas stayed blank: ${racer.slug}`);stage()}).catch(error=>{console.warn(`Podium sprite failed: ${racer.slug}`,error);drawPodiumPortraitFallback(canvas,racer,rank).then(stage).catch(fallbackError=>{console.error(`Podium fallback failed: ${racer.slug}`,fallbackError);slot.dataset.podiumPhase='failed'})});
 }
 function renderResultCeremony(){
-  const recorded=Array.isArray(state.finishOrder)?state.finishOrder.filter(Boolean):[],remaining=raceContestants().filter(racer=>!recorded.includes(racer)).sort((a,b)=>b.distance-a.distance),sorted=[...recorded,...remaining],rows=$('resultRows');
+  const recorded=Array.isArray(state.finishOrder)?state.finishOrder.filter(Boolean):[],remaining=raceOrder().filter(racer=>!recorded.includes(racer)),sorted=[...recorded,...remaining],rows=$('resultRows');
   const topRows=sorted.slice(0,6);
   rows.innerHTML=topRows.map((r,i)=>{const rank=i+1,isPlayer=r===racers[state.selected],isMia=r===miaNpc;return`<div class="result-row ${isPlayer?'player':''}${isMia?' boss':''}" style="--delay:${Math.max(0,6-rank)*70}ms"><strong>${ordinal(rank)}</strong><canvas class="result-face" width="72" height="72" aria-label="${r.name}"></canvas><span>${r.name}${isMia?' · BOSS':''}</span><b>${isMia?'':racerResultTime(rank)}</b></div>`}).join('');
   rows.querySelectorAll('.result-face').forEach((canvas,i)=>{const racer=topRows[i],draw=()=>{try{drawResultFaceSprite(canvas,racer)}catch(error){console.warn(`Result face failed: ${racer.slug}`,error)}};if(racer.frames)draw();else ensureContestantSprite(racer).then(draw).catch(error=>console.warn(`Result face load failed: ${racer.slug}`,error))});
@@ -1158,10 +1237,10 @@ function showGoalFx(rank){
   clearTimeout(showGoalFx.t);showGoalFx.t=setTimeout(()=>{fx.classList.add('hidden');fx.classList.remove('show');$('goalConfetti').innerHTML='';$('app').classList.remove('goal-slow')},1500);
 }
 function finishRace(){
-  if(state.finish)return;state.finish=true;state.finishTime=state.elapsed;state.finishCoast=0;state.finishOrder=[...raceContestants()].sort((a,b)=>b.distance-a.distance);state.rank=state.finishOrder.indexOf(racers[state.selected])+1;state.running=true;
+  if(state.finish)return;state.finish=true;state.finishTime=state.elapsed;state.finishCoast=0;state.finishOrder=raceOrder();state.rank=state.finishOrder.indexOf(racers[state.selected])+1;state.running=true;
   const bonus=state.rank===1?20:state.rank===2?15:state.rank===3?12:Math.max(3,11-state.rank);state.raceRewards=calculateRaceRewards(state.finishOrder);const challengeBonus=state.raceRewards.reduce((sum,reward)=>sum+reward.coins,0),totalBonus=bonus+challengeBonus;state.raceWalletEarned+=totalBonus;addWalletCoins(totalBonus);pauseRaceMusic();window.NyanAudio?.stopEngine();playSfx('finish',{intensity:state.rank===1?1.25:1});setDebugPanel(false);$('mobileControls').classList.add('hidden');showGoalFx(state.rank);
   $('finishRank').innerHTML=ordinal(state.rank);$('finishTitle').textContent=state.rank===1?'VICTORY!':'RACE CLEAR!';$('finishTime').textContent=fmt(state.finishTime);$('finishCoins').textContent=`+${state.raceWalletEarned} COINS · TOTAL ${playerProgress.coins}`;
-  clearTimeout(finishRace.timer);finishRace.timer=setTimeout(()=>{state.running=false;state.mode='finish';$('hud').classList.add('hidden');$('resultRows').replaceChildren();[1,2,3].forEach(rank=>{$(`podiumSlot${rank}`)?.replaceChildren();$(`podiumSlot${rank}`)?.classList.remove('podium-ready')});showScreen('finish');requestAnimationFrame(()=>{try{renderResultCeremony()}catch(error){console.error('Result ceremony render failed',error)}})},1350)
+  clearTimeout(finishRace.timer);finishRace.timer=setTimeout(()=>{state.running=false;state.mode='finish';$('hud').classList.add('hidden');$('resultRows').replaceChildren();[1,2,3].forEach(rank=>resetPodiumRacer($(`podiumSlot${rank}`)));showScreen('finish');requestAnimationFrame(()=>{try{renderResultCeremony()}catch(error){console.error('Result ceremony render failed',error)}})},1350)
 }
 
 function coverImage(image,shift=0,crop=null){
@@ -1174,7 +1253,7 @@ function drawBackdrop(){
   const shade=ctx.createLinearGradient(0,0,0,innerHeight);shade.addColorStop(0,'rgba(4,8,46,.06)');shade.addColorStop(.48,'rgba(15,8,52,.12)');shade.addColorStop(1,'rgba(5,3,24,.4)');ctx.fillStyle=shade;ctx.fillRect(0,0,innerWidth,innerHeight);
 }
 function buildRoadProjection(){
-  const h=innerHeight,w=innerWidth,speed=Math.min(1,state.speed/220),grade=hillAt(state.distance+45)-hillAt(state.distance-20),horizon=h*(.30-speed*.014+grade*.025),base=trackSample(state.progress),cameraLane=clamp(state.x,-1.58,1.58),cameraX=cameraLane*ROAD_WORLD_HALF_WIDTH*.64;
+  const h=innerHeight,w=innerWidth,speed=Math.min(1,state.speed/220),grade=hillAt(state.distance+45)-hillAt(state.distance-20),horizon=h*(.30-speed*.014+grade*.025),base=trackSample(state.progress),cameraLane=clamp(state.x,-1.58,1.58),cameraX=cameraLane*ROAD_WORLD_HALF_WIDTH*.64;state.routeCameraElevation=routeCameraElevation();
   // Raw Catmull-Rom tangents can change very quickly on tight S bends.  Feed
   // a wider heading sample through a small low-pass filter before integrating
   // it.  The visible curve now follows the map without far-road jitter.
@@ -1200,13 +1279,28 @@ function roadPoint(rel){
 }
 
 function poly(points,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fill()}
+function roadBandPoly(p1,p2,left1,right1,left2,right2,color){poly([[p1.cx+p1.half*left1,p1.y],[p1.cx+p1.half*right1,p1.y],[p2.cx+p2.half*right2,p2.y],[p2.cx+p2.half*left2,p2.y]],color)}
+function routeCameraElevation(){const geometry=routeGeometryAt(state.distance),player=racers[state.selected];return geometry&&player?.routeLap===geometry.lap?geometry.branches[player.routeChoice]?.elevation||0:0}
+function routePathY(point,path){return point.y-((path?.elevation||0)-(state.routeCameraElevation||0))*point.half*.32}
+function routePathBandPoly(p1,p2,path1,path2,left1,right1,left2,right2,color){const y1=routePathY(p1,path1),y2=routePathY(p2,path2);poly([[p1.cx+p1.half*(path1.visualCenter+left1),y1],[p1.cx+p1.half*(path1.visualCenter+right1),y1],[p2.cx+p2.half*(path2.visualCenter+right2),y2],[p2.cx+p2.half*(path2.visualCenter+left2),y2]],color)}
+function drawSplitRoadSegment(p1,p2,distance1,distance2,band,alt,theme,terrain){
+  const a=routeGeometryAt(distance1),b=routeGeometryAt(distance2),fork=Math.max(a?.fork||0,b?.fork||0);if(fork<=.055)return false;
+  const ga=a||b,gb=b||a,leftA=ga.branches.left,rightA=ga.branches.right,leftB=gb.branches.left,rightB=gb.branches.right,outerA=Math.max(Math.abs(leftA.visualCenter)+leftA.visualHalf,Math.abs(rightA.visualCenter)+rightA.visualHalf),outerB=Math.max(Math.abs(leftB.visualCenter)+leftB.visualHalf,Math.abs(rightB.visualCenter)+rightB.visualHalf);
+  poly([[0,p1.y],[p1.cx-p1.half*(outerA+1.05),p1.y],[p2.cx-p2.half*(outerB+1.05),p2.y],[0,p2.y]],terrain.deepA);poly([[p1.cx+p1.half*(outerA+1.05),p1.y],[innerWidth,p1.y],[innerWidth,p2.y],[p2.cx+p2.half*(outerB+1.05),p2.y]],terrain.deepB);
+  const leftInnerA=leftA.visualCenter+leftA.visualHalf,rightInnerA=rightA.visualCenter-rightA.visualHalf,leftInnerB=leftB.visualCenter+leftB.visualHalf,rightInnerB=rightB.visualCenter-rightB.visualHalf;
+  poly([[p1.cx+p1.half*leftInnerA,routePathY(p1,leftA)],[p1.cx+p1.half*rightInnerA,routePathY(p1,rightA)],[p2.cx+p2.half*rightInnerB,routePathY(p2,rightB)],[p2.cx+p2.half*leftInnerB,routePathY(p2,leftB)]],alt?terrain.grassA:terrain.grassB);
+  const roadColor=alt?theme.roadA:theme.roadB,curbColor=alt?theme.curbA:theme.curbB,curbAlt=alt?theme.curbB:theme.curbA;
+  for(const id of['left','right']){const pa=ga.branches[id],pb=gb.branches[id],halfA=pa.visualHalf,halfB=pb.visualHalf;routePathBandPoly(p1,p2,pa,pb,-halfA-.8,-halfA-.28,-halfB-.8,-halfB-.28,id==='left'?terrain.grassA:terrain.grassB);routePathBandPoly(p1,p2,pa,pb,halfA+.28,halfA+.8,halfB+.28,halfB+.8,id==='left'?terrain.grassB:terrain.grassA);routePathBandPoly(p1,p2,pa,pb,-halfA-.28,-halfA-.08,-halfB-.28,-halfB-.08,alt?terrain.shoulderA:terrain.shoulderB);routePathBandPoly(p1,p2,pa,pb,halfA+.08,halfA+.28,halfB+.08,halfB+.28,alt?terrain.shoulderB:terrain.shoulderA);routePathBandPoly(p1,p2,pa,pb,-halfA,halfA,-halfB,halfB,roadColor);routePathBandPoly(p1,p2,pa,pb,-halfA-.075,-halfA,-halfB-.075,-halfB,curbColor);routePathBandPoly(p1,p2,pa,pb,halfA,halfA+.075,halfB,halfB+.075,curbAlt);if(band%5<2){const w1=Math.max(.004,p1.half*.011)/Math.max(1,p1.half),w2=Math.max(.004,p2.half*.011)/Math.max(1,p2.half);routePathBandPoly(p1,p2,pa,pb,-w1,w1,-w2,w2,theme.lane)}}
+  return true
+}
 function drawRoad(){
   const w=innerWidth,current=trackSample(state.progress),theme=activeCourse.theme,terrain=offroadPalette(theme);canvas.dataset.heading=current.heading.toFixed(3);canvas.dataset.cameraHeading=(Number.isFinite(state.cameraHeading)?state.cameraHeading:current.heading).toFixed(3);
   for(let i=ROAD_SEGMENTS-1;i>=0;i--){
     const r1=i/ROAD_SEGMENTS*DRAW_DISTANCE,p1=roadProjection[i],p2=roadProjection[i+1];
     if(!p1.visible)continue;
-    const band=Math.floor((state.distance+r1)/25),alt=band%2===0;
+    const distance1=state.distance+p1.rel,distance2=state.distance+p2.rel,band=Math.floor((state.distance+r1)/25),alt=band%2===0;
     const shoulder=alt?terrain.shoulderA:terrain.shoulderB,grass=alt?terrain.grassA:terrain.grassB,deep=alt?terrain.deepA:terrain.deepB;
+    if(drawSplitRoadSegment(p1,p2,distance1,distance2,band,alt,theme,terrain))continue;
     const bandPoly=(side,inner,outer,color)=>{if(side<0)poly([[p1.cx-p1.half*outer,p1.y],[p1.cx-p1.half*inner,p1.y],[p2.cx-p2.half*inner,p2.y],[p2.cx-p2.half*outer,p2.y]],color);else poly([[p1.cx+p1.half*inner,p1.y],[p1.cx+p1.half*outer,p1.y],[p2.cx+p2.half*outer,p2.y],[p2.cx+p2.half*inner,p2.y]],color)};
     poly([[0,p1.y],[p1.cx-p1.half*2.36,p1.y],[p2.cx-p2.half*2.36,p2.y],[0,p2.y]],deep);
     poly([[p1.cx+p1.half*2.36,p1.y],[w,p1.y],[w,p2.y],[p2.cx+p2.half*2.36,p2.y]],deep);
@@ -1220,8 +1314,8 @@ function drawRoad(){
   }
 }
 function drawRoadSurfaceDetails(){
-  for(let i=ROAD_SEGMENTS-1;i>=0;i--){const p1=roadProjection[i],p2=roadProjection[i+1];if(!p1.visible)continue;const band=Math.floor((state.distance+p1.rel)/18);if(band%7===0){for(const lane of [-.62,.08,.57]){const width1=Math.max(.35,p1.half*.0035),width2=Math.max(.25,p2.half*.0035);poly([[p1.cx+p1.half*lane-width1,p1.y],[p1.cx+p1.half*lane+width1,p1.y],[p2.cx+p2.half*lane+width2,p2.y],[p2.cx+p2.half*lane-width2,p2.y]],'rgba(255,255,255,.045)')}}if(band%13===2){const lane=Math.sin(band*2.17)*.5,w1=p1.half*.035,w2=p2.half*.035;poly([[p1.cx+p1.half*lane-w1,p1.y],[p1.cx+p1.half*lane+w1,p1.y],[p2.cx+p2.half*lane+w2,p2.y],[p2.cx+p2.half*lane-w2,p2.y]],'rgba(105,226,255,.075)')}}
-  const markPhase=95,firstMark=Math.ceil((state.distance+28-markPhase)/260)*260+markPhase;for(let start=firstMark;start<state.distance+DRAW_DISTANCE;start+=260){const lane=Math.sin(start*.017)*.38;for(let d=0;d<78;d+=9){const p1=roadPoint(start+d-state.distance),p2=roadPoint(start+d+10-state.distance);if(!p1.visible)continue;for(const tyre of [-.085,.085]){const x1=p1.cx+p1.half*(lane+tyre),x2=p2.cx+p2.half*(lane+tyre),w1=Math.max(.6,p1.half*.009),w2=Math.max(.45,p2.half*.009);poly([[x1-w1,p1.y],[x1+w1,p1.y],[x2+w2,p2.y],[x2-w2,p2.y]],'rgba(18,17,30,.34)')}}}
+  for(let i=ROAD_SEGMENTS-1;i>=0;i--){const p1=roadProjection[i],p2=roadProjection[i+1];if(!p1.visible)continue;const distance=state.distance+p1.rel,route=routeGeometryAt(distance),band=Math.floor(distance/18),lanes=route?.fork>.055?[-route.visualCenter,route.visualCenter]:[-.62,.08,.57];if(band%7===0){for(const lane of lanes){const width1=Math.max(.35,p1.half*.0035),width2=Math.max(.25,p2.half*.0035);poly([[p1.cx+p1.half*lane-width1,p1.y],[p1.cx+p1.half*lane+width1,p1.y],[p2.cx+p2.half*lane+width2,p2.y],[p2.cx+p2.half*lane-width2,p2.y]],'rgba(255,255,255,.045)')}}if(band%13===2){const lane=route?.fork>.055?(band%2?-route.visualCenter:route.visualCenter):Math.sin(band*2.17)*.5,w1=p1.half*.035,w2=p2.half*.035;poly([[p1.cx+p1.half*lane-w1,p1.y],[p1.cx+p1.half*lane+w1,p1.y],[p2.cx+p2.half*lane+w2,p2.y],[p2.cx+p2.half*lane-w2,p2.y]],'rgba(105,226,255,.075)')}}
+  const markPhase=95,firstMark=Math.ceil((state.distance+28-markPhase)/260)*260+markPhase;for(let start=firstMark;start<state.distance+DRAW_DISTANCE;start+=260){const route=routeGeometryAt(start),lane=route?.fork>.055?(Math.floor(start/260)%2?-route.visualCenter:route.visualCenter):Math.sin(start*.017)*.38;for(let d=0;d<78;d+=9){const p1=roadPoint(start+d-state.distance),p2=roadPoint(start+d+10-state.distance);if(!p1.visible)continue;for(const tyre of [-.085,.085]){const x1=p1.cx+p1.half*(lane+tyre),x2=p2.cx+p2.half*(lane+tyre),w1=Math.max(.6,p1.half*.009),w2=Math.max(.45,p2.half*.009);poly([[x1-w1,p1.y],[x1+w1,p1.y],[x2+w2,p2.y],[x2-w2,p2.y]],'rgba(18,17,30,.34)')}}}
   const speed=Math.min(1,state.speed/190);if(speed>.18){ctx.save();ctx.lineCap='round';ctx.strokeStyle=`rgba(174,241,255,${.08+speed*.22})`;for(let i=0;i<20;i++){const rel=22+((i*53-state.distance*(1.2+speed*2.8))%430+430)%430,p1=roadPoint(rel),p2=roadPoint(rel+18+speed*55),lane=((i*37)%100/100-.5)*1.45;if(!p1.visible||!p2.visible)continue;ctx.lineWidth=Math.max(.5,p1.half*.006);ctx.beginPath();ctx.moveTo(p2.cx+p2.half*lane,p2.y);ctx.lineTo(p1.cx+p1.half*lane,p1.y);ctx.stroke()}ctx.restore()}
 }
 function drawVergeSurfaceDetails(){
@@ -1343,9 +1437,26 @@ function drawGates(){
   for(let i=gates.length-1;i>=0;i--){const rel=gates[i]-state.distance,p=roadPoint(rel);if(!p.visible||tunnelAt(gates[i]))continue;const s=p.scale,alpha=(.28+s*.72)*distanceFadeAlpha(rel,460,790);if(alpha<=.02)continue;const left=p.cx-p.half*1.12,right=p.cx+p.half*1.12,top=p.y-155*s;ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=gates[i]%860===0?theme.lightA:theme.lightB;ctx.lineWidth=Math.max(2,9*s);ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=18*s;ctx.beginPath();ctx.moveTo(left,p.y);ctx.lineTo(left,top+32*s);ctx.quadraticCurveTo(p.cx,top-65*s,right,top+32*s);ctx.lineTo(right,p.y);ctx.stroke();ctx.fillStyle=theme.accent;for(let k=-2;k<=2;k++){ctx.beginPath();ctx.arc(p.cx+k*45*s,top-18*s+Math.abs(k)*8*s,6*s,0,7);ctx.fill()}ctx.restore()}
 }
 function drawRoadMotion(){
-  if(state.speed<45)return;const power=Math.min(1,(state.speed-40)/145),cycle=690,travel=state.distance*(1.45+power*2.8);ctx.save();ctx.lineCap='round';ctx.globalCompositeOperation='screen';
-  for(let i=0;i<26;i++){const rel=18+((i*79-travel)%cycle+cycle)%cycle,lane=((i*47)%101/100-.5)*1.56,length=22+power*72,pNear=roadPoint(rel),pMid=roadPoint(rel+length*.52),pFar=roadPoint(rel+length);if(!pNear.visible||!pMid.visible||!pFar.visible)continue;const xNear=pNear.cx+pNear.half*lane,xMid=pMid.cx+pMid.half*lane,xFar=pFar.cx+pFar.half*lane,gradient=ctx.createLinearGradient(xFar,pFar.y,xNear,pNear.y);gradient.addColorStop(0,'rgba(180,246,255,0)');gradient.addColorStop(.45,`rgba(180,246,255,${.08+power*.14})`);gradient.addColorStop(1,`rgba(255,255,255,${.13+power*.28})`);ctx.strokeStyle=gradient;ctx.lineWidth=Math.max(.55,Math.min(4.2,pNear.half*(.0038+power*.0038)));ctx.beginPath();ctx.moveTo(xFar,pFar.y);ctx.quadraticCurveTo(xMid,pMid.y,xNear,pNear.y);ctx.stroke()}
-  ctx.restore();canvas.dataset.speedFlow='road-projected';
+  const comfort=motionLevel(settings.speedLines);if(state.speed<45||comfort<=0){canvas.dataset.speedFlow='off';return}const power=Math.min(1,(state.speed-40)/145),cycle=690,travel=state.distance*(1.45+power*2.8);ctx.save();ctx.lineCap='round';ctx.globalCompositeOperation='screen';ctx.globalAlpha=comfort;
+  const count=Math.max(7,Math.round(26*comfort));for(let i=0;i<count;i++){const rel=18+((i*79-travel)%cycle+cycle)%cycle,route=routeGeometryAt(state.distance+rel);let lane=((i*47)%101/100-.5)*1.56;if(route?.fork>.055&&(Math.abs(lane)<route.visualInner+.06||Math.abs(lane)>route.visualOuter-.04))lane=(i%2?-1:1)*route.visualCenter;const length=22+power*72,pNear=roadPoint(rel),pMid=roadPoint(rel+length*.52),pFar=roadPoint(rel+length);if(!pNear.visible||!pMid.visible||!pFar.visible)continue;const xNear=pNear.cx+pNear.half*lane,xMid=pMid.cx+pMid.half*lane,xFar=pFar.cx+pFar.half*lane,gradient=ctx.createLinearGradient(xFar,pFar.y,xNear,pNear.y);gradient.addColorStop(0,'rgba(180,246,255,0)');gradient.addColorStop(.45,`rgba(180,246,255,${.08+power*.14})`);gradient.addColorStop(1,`rgba(255,255,255,${.13+power*.28})`);ctx.strokeStyle=gradient;ctx.lineWidth=Math.max(.55,Math.min(4.2,pNear.half*(.0038+power*.0038)));ctx.beginPath();ctx.moveTo(xFar,pFar.y);ctx.quadraticCurveTo(xMid,pMid.y,xNear,pNear.y);ctx.stroke()}
+  ctx.restore();canvas.dataset.speedFlow=comfort<.75?'road-projected-low':'road-projected';
+}
+
+function drawProjectedRouteArrow(z,side,color,label){
+  const rel=z-state.distance;if(rel<18||rel>DRAW_DISTANCE-24)return false;const near=roadPoint(rel-15),far=roadPoint(rel+18);if(!near.visible||!far.visible)return false;const lane=side*.56,nx=near.cx+near.half*lane,ny=near.y,fx=far.cx+far.half*lane,fy=far.y,dx=fx-nx,dy=fy-ny,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,px=-uy,py=ux,line=Math.max(3,near.half*.075),head=Math.max(8,near.half*.2);ctx.save();ctx.globalAlpha=distanceFadeAlpha(rel,470,780)*.88;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=Math.max(5,line*1.8);ctx.lineCap='round';ctx.lineWidth=line;ctx.beginPath();ctx.moveTo(nx,ny);ctx.lineTo(fx-ux*head*.5,fy-uy*head*.5);ctx.stroke();ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx-ux*head+px*head*.62,fy-uy*head+py*head*.62);ctx.lineTo(fx-ux*head-px*head*.62,fy-uy*head-py*head*.62);ctx.closePath();ctx.fill();ctx.shadowBlur=5;ctx.fillStyle='#fff';ctx.font=`900 ${Math.max(7,Math.min(16,near.half*.095))}px Fredoka`;ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillText(label,nx,ny-line*.8);ctx.restore();return true
+}
+function drawRouteDecisionGate(z,graph,lap){
+  const rel=z-state.distance;if(rel<18||rel>DRAW_DISTANCE-30)return false;const p=roadPoint(rel);if(!p.visible)return false;const theme=activeCourse.theme,alpha=distanceFadeAlpha(rel,470,790),selected=racers[state.selected]?.routeLap===lap?racers[state.selected].routeChoice:null,panelW=Math.max(42,p.half*.68),panelH=Math.max(18,p.half*.25),panelY=p.y-Math.max(34,p.half*.64),poleTop=panelY+panelH*.5;ctx.save();ctx.globalAlpha=alpha;ctx.lineWidth=Math.max(2,p.half*.045);ctx.strokeStyle=theme.curbA;ctx.shadowColor=theme.lightB;ctx.shadowBlur=Math.max(5,p.half*.08);for(const side of[-1,1]){const x=p.cx+side*p.half*.48,branch=side<0?graph.branches.left:graph.branches.right,color=side<0?theme.lightA:theme.lightB;ctx.beginPath();ctx.moveTo(x-side*panelW*.34,p.y);ctx.lineTo(x-side*panelW*.34,poleTop);ctx.stroke();ctx.fillStyle='rgba(10,8,35,.94)';ctx.strokeStyle=selected===branch.id?'#fff36e':color;ctx.lineWidth=Math.max(2,p.half*.025);ctx.beginPath();ctx.roundRect(x-panelW/2,panelY,panelW,panelH,Math.max(4,panelH*.2));ctx.fill();ctx.stroke();ctx.fillStyle=selected===branch.id?'#fff36e':'#fff';ctx.font=`900 ${Math.max(7,Math.min(18,p.half*.11))}px Fredoka`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(`${side<0?'←':'→'} ${branch.label}`,x,panelY+panelH*.38,panelW*.9);ctx.fillStyle=color;ctx.font=`900 ${Math.max(5,Math.min(10,p.half*.06))}px Fredoka`;ctx.fillText(branch.perk,x,panelY+panelH*.73,panelW*.88)}ctx.restore();return true
+}
+function drawRouteGraphRoad(){
+  const graph=activeCourse?.routeGraph;if(!graph)return;const length=raceLength(),theme=activeCourse.theme,firstLap=Math.max(0,Math.floor((state.distance-graph.end-190)/length)),lastLap=Math.ceil((state.distance+DRAW_DISTANCE-graph.start+190)/length);let visibleForks=0,visibleGates=0;
+  for(let lap=firstLap;lap<=lastLap;lap++){
+    const start=lap*length+graph.start,end=lap*length+graph.end,selected=racers[state.selected]?.routeLap===lap?racers[state.selected].routeChoice:null;
+    for(const warning of[165,105,52])for(const branch of Object.values(graph.branches))drawProjectedRouteArrow(start-warning,branch.side,selected===branch.id?'#fff36e':branch.side<0?theme.lightA:theme.lightB,branch.side<0?'ITEM':'BOOST');
+    if(drawRouteDecisionGate(start-82,graph,lap))visibleGates++;
+    const from=Math.max(start,state.distance+2),to=Math.min(end,state.distance+DRAW_DISTANCE);if(to<=from)continue;visibleForks++;
+  }
+  canvas.dataset.routeForkVisible=String(visibleForks);canvas.dataset.routeGraphEdges=String(graph.edges.length);canvas.dataset.routeRoadModel=graph.geometry?.model||'none';canvas.dataset.routeDecisionGate=visibleGates?'visible':'none';
 }
 
 function drawFrame(frame,x,y,width,alpha=1,rotation=0){if(!frame)return;const height=width*frame.sh/frame.sw;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(rotation);ctx.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,-width/2,-height,width,height);ctx.restore()}
@@ -1353,7 +1464,7 @@ function drawFrameCentered(frame,x,y,width,alpha=1,rotation=0){if(!frame)return;
 function drawFrameHeight(frame,x,y,height,alpha=1,rotation=0){if(!frame)return;const width=height*frame.sw/frame.sh;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(rotation);ctx.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,-width/2,-height,width,height);ctx.restore()}
 function drawKartShadow(x,y,w,alpha=.32){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle='#050310';ctx.beginPath();ctx.ellipse(x,y-3,w,.24*w,0,0,7);ctx.fill();ctx.restore()}
 function drawOpponentTag(x,y,r,rank){const text=r===miaNpc?`BOSS  ${r.name}`:`${rank}  ${r.name}`;ctx.save();ctx.font="900 12px 'Noto Sans JP'";const width=Math.max(60,ctx.measureText(text).width+18);ctx.fillStyle=r===miaNpc?'rgba(43,2,34,.9)':'rgba(10,8,32,.82)';ctx.strokeStyle=r.color;ctx.lineWidth=r===miaNpc?3:2;ctx.shadowColor=r===miaNpc?r.color:'transparent';ctx.shadowBlur=r===miaNpc?15:0;ctx.beginPath();ctx.roundRect(x-width/2,y-18,width,25,12);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y-5);ctx.restore()}
-function jumpCameraDrop(){return(state.jumpView||0)*(innerHeight*.07+Math.min(62,state.speed*.2))}
+function jumpCameraDrop(){return(state.jumpView||0)*(innerHeight*.07+Math.min(62,state.speed*.2))*motionLevel(settings.cameraMotion)}
 function courseCamera(){
   const iw=courseMapImage.naturalWidth||1254,ih=courseMapImage.naturalHeight||1254,s=trackSample(state.progress),zoom=1.88+Math.min(1,state.speed/210)*.18,cameraHeading=Number.isFinite(state.cameraHeading)?state.cameraHeading:s.heading;
   return{...s,iw,ih,wx:s.x*iw,wy:s.y*ih,zoom,ys:.70,screenX:innerWidth*.5,screenY:innerHeight*.86,cameraHeading,rotation:-cameraHeading-Math.PI/2,roadHalf:50};
@@ -1368,9 +1479,11 @@ function drawCourseWorld(){
   const fade=ctx.createLinearGradient(0,0,0,h);fade.addColorStop(0,'rgba(7,5,29,.46)');fade.addColorStop(.24,'rgba(7,5,29,.06)');fade.addColorStop(1,'rgba(4,2,20,.08)');ctx.fillStyle=fade;ctx.fillRect(0,0,w,h);
   return c;
 }
+function projectedRoutePath(distance,lane=0){const geometry=routeGeometryAt(distance);if(!geometry||geometry.fork<=.055)return null;return Object.values(geometry.branches).sort((a,b)=>Math.abs(lane-a.laneCenter)-Math.abs(lane-b.laneCenter))[0]||null}
+function projectedRouteLane(distance,lane=0){const path=projectedRoutePath(distance,lane);if(!path)return lane*.78;const local=clamp((lane-path.laneCenter)/Math.max(.001,path.laneHalf),-1.35,1.35);return path.visualCenter+local*path.visualHalf}
 function projectTrackEntity(distance,lane=0){
   const rel=distance-state.distance,depth=Math.max(4,8+rel),p=roadPoint(depth),s=trackSample(distance/TRACK_LENGTH),base=trackSample(state.progress);
-  return{x:p.cx+p.half*lane*.78,y:p.y,half:p.half,heading:s.heading,cameraHeading:base.heading,relativeHeading:p.relativeHeading,tangent:p.tangent,scale:Math.max(.11,Math.min(1.02,p.scale*1.28)),visible:p.visible};
+  const path=projectedRoutePath(distance,lane);return{x:p.cx+p.half*projectedRouteLane(distance,lane),y:routePathY(p,path),half:p.half,heading:s.heading,cameraHeading:base.heading,relativeHeading:p.relativeHeading+(path?.curveBias||0)*.34,tangent:p.tangent+(path?.curveBias||0)*.2,scale:Math.max(.11,Math.min(1.02,p.scale*1.28)),visible:p.visible,routePath:path};
 }
 const TRACK_ENTITY_STYLE={
   coin:{roadHeight:.31,minHeight:9,maxHeight:.13,fadeNear:500,fadeFar:748,float:.18},
@@ -1390,13 +1503,21 @@ function drawCourseLimits(){
 function jumpRampFrameFor(p,ramp){
   if(!jumpRampFrames.length)return null;
   const row=Math.max(0,Math.min(JUMP_RAMP_ROWS-1,activeCourse?.rampRow??state.selectedCourse));
-  const rel=ramp.z-state.distance,near=roadPoint(Math.max(10,rel-12)),far=roadPoint(rel+12),screenDx=far.cx-near.cx,screenDy=Math.max(8,near.y-far.y),worldDx=far.worldX-near.worldX,relativeYaw=p?.relativeHeading??roadPoint(rel).relativeHeading,before=trackSample((ramp.z-24)/TRACK_LENGTH),after=trackSample((ramp.z+24)/TRACK_LENGTH),courseTurn=angleDelta(after.heading,before.heading),direction=Math.sign(Math.abs(courseTurn)>.002?courseTurn:Math.abs(relativeYaw)>.02?relativeYaw:worldDx),angleStrength=Math.max(Math.abs(relativeYaw),Math.abs(courseTurn)*5),targetScore=direction*Math.min(.92,angleStrength*1.18);
-  if(!Number.isFinite(ramp.frameScore)||Math.sign(ramp.frameScore)!==Math.sign(targetScore)&&Math.abs(targetScore)>.1)ramp.frameScore=targetScore;else ramp.frameScore+=(targetScore-ramp.frameScore)*.38;
-  const score=ramp.frameScore;let col=3,best=Infinity;for(let i=0;i<JUMP_RAMP_FRAME_YAW.length;i++){const error=Math.abs(JUMP_RAMP_FRAME_YAW[i]-score);if(error<best){best=error;col=i}}
+  // Select the art from the road that is actually on screen.  World-space
+  // curve signs can be opposite to the projected direction depending on the
+  // loop heading, and they also miss the perspective of an off-centre ramp.
+  const rel=ramp.z-state.distance,near=roadPoint(Math.max(4,rel-18)),far=roadPoint(rel+18),lane=ramp.lane||0;
+  const nearX=near.cx+near.half*projectedRouteLane(ramp.z-18,lane),farX=far.cx+far.half*projectedRouteLane(ramp.z+18,lane),screenDx=farX-nearX,screenDy=Math.max(5,near.y-far.y);
+  const worldDx=far.worldX-near.worldX,relativeYaw=p?.relativeHeading??roadPoint(rel).relativeHeading,before=trackSample((ramp.z-24)/TRACK_LENGTH),after=trackSample((ramp.z+24)/TRACK_LENGTH),courseTurn=angleDelta(after.heading,before.heading);
+  let targetScore=clamp(Math.atan2(screenDx,screenDy)/(Math.PI*.5),-1,1);if(Math.abs(targetScore)<.045)targetScore=0;
+  const signChanged=Number.isFinite(ramp.frameScore)&&Math.sign(ramp.frameScore)!==Math.sign(targetScore)&&Math.abs(targetScore)>.07;
+  if(!Number.isFinite(ramp.frameScore)||signChanged)ramp.frameScore=targetScore;else ramp.frameScore+=(targetScore-ramp.frameScore)*.7;
+  const score=ramp.frameScore,direction=Math.sign(score);let col=3,best=Infinity;for(let i=0;i<JUMP_RAMP_FRAME_YAW.length;i++){const error=Math.abs(JUMP_RAMP_FRAME_YAW[i]-score);if(error<best){best=error;col=i}}
+  if(Number.isInteger(ramp.frameCol)&&ramp.frameCol!==col&&Math.sign(JUMP_RAMP_FRAME_YAW[ramp.frameCol])===direction){const heldError=Math.abs(JUMP_RAMP_FRAME_YAW[ramp.frameCol]-score);if(best+.055>=heldError)col=ramp.frameCol}ramp.frameCol=col;
   return{frame:jumpRampFrames[row*JUMP_RAMP_COLS+col]||jumpRampFrames[row*JUMP_RAMP_COLS+3],row,col,score,dx:screenDx,dy:screenDy,worldDx,relativeYaw,courseTurn,direction};
 }
 function drawRampTrackEntity(entry){
-  const ramp=entry.object,picked=jumpRampFrameFor(entry.p,ramp),frame=picked?.frame;if(!frame)return;const width=entry.height*frame.sw/frame.sh,tilt=clamp(picked.score*.018,-.035,.035);drawThroughTunnelPortal(entry,()=>{drawKartShadow(entry.p.x,entry.groundY+3,Math.max(4,width*.36),.28*entry.alpha);drawFrameHeight(frame,entry.p.x,entry.groundY+4,entry.height,entry.alpha,tilt)});canvas.dataset.jumpRampFrame=`${picked.row}:${picked.col}`;canvas.dataset.jumpRampAngleScore=picked.score.toFixed(3);canvas.dataset.jumpRampVector=`${picked.dx.toFixed(3)},${picked.dy.toFixed(3)},${picked.worldDx.toFixed(4)},${picked.relativeYaw.toFixed(3)},${picked.courseTurn.toFixed(4)}`;canvas.dataset.jumpRampDirection=picked.direction>0?'right':picked.direction<0?'left':'straight';canvas.dataset.jumpRampSize=entry.height.toFixed(1)
+  const ramp=entry.object,picked=jumpRampFrameFor(entry.p,ramp),frame=picked?.frame;if(!frame)return;const width=entry.height*frame.sw/frame.sh;drawThroughTunnelPortal(entry,()=>{drawKartShadow(entry.p.x,entry.groundY+3,Math.max(4,width*.36),.28*entry.alpha);drawFrameHeight(frame,entry.p.x,entry.groundY+4,entry.height,entry.alpha,0)});canvas.dataset.jumpRampFrame=`${picked.row}:${picked.col}`;canvas.dataset.jumpRampAngleScore=picked.score.toFixed(3);canvas.dataset.jumpRampVector=`${picked.dx.toFixed(3)},${picked.dy.toFixed(3)},${picked.worldDx.toFixed(4)},${picked.relativeYaw.toFixed(3)},${picked.courseTurn.toFixed(4)}`;canvas.dataset.jumpRampDirection=picked.direction>0?'right':picked.direction<0?'left':'straight';canvas.dataset.jumpRampSize=entry.height.toFixed(1)
 }
 function drawPickupTrackEntity(entry){
   const o=entry.object,frame=o.type==='coin'?itemFrames[4]:o.type==='item'?itemFrames[6]:itemFrames[7];if(!frame)return;const bob=Math.sin(state.elapsed*.005+o.z*.03)*entry.height*.055,baseY=entry.groundY-entry.height*entry.style.float+bob,rotation=o.type==='coin'?Math.sin(state.elapsed*.004)*.15:0,width=entry.height*frame.sw/frame.sh;drawThroughTunnelPortal(entry,()=>{if(o.type!=='pad')drawKartShadow(entry.p.x,entry.groundY+2,Math.max(3,width*.3),.18*entry.alpha);drawFrameHeight(frame,entry.p.x,baseY,entry.height,entry.alpha,rotation)})
@@ -1415,7 +1536,7 @@ function drawOpponentItemAura(racer,x,y,height,alpha){
   if(racer.shield>0){ctx.save();ctx.globalAlpha=alpha*(.5+.18*Math.sin(state.elapsed*.011));ctx.strokeStyle='#78efff';ctx.lineWidth=Math.max(2,height*.028);ctx.shadowColor='#46eaff';ctx.shadowBlur=Math.max(8,height*.15);ctx.beginPath();ctx.ellipse(x,y-height*.43,height*.48,height*.56,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
 }
 function drawOpponents(){
-  const player=racers[state.selected],order=[...raceContestants()].sort((a,b)=>b.distance-a.distance),visible=raceContestants().map((r,i)=>({r,i,rel:r.distance-state.distance,rank:order.indexOf(r)+1})).filter(o=>o.r!==player&&o.rel>-8&&o.rel<480).sort((a,b)=>b.rel-a.rel);
+  const player=racers[state.selected],order=raceOrder(),visible=raceContestants().map((r,i)=>({r,i,rel:r.distance-state.distance,rank:order.indexOf(r)+1})).filter(o=>o.r!==player&&o.rel>-8&&o.rel<480).sort((a,b)=>b.rel-a.rel);
   for(const o of visible){const isMia=o.r===miaNpc,side=o.rel<0?(o.i%2?.1:-.1):0,p=projectTrackEntity(o.r.distance,o.r.lane+side);if(!p.visible||p.x<-160||p.x>innerWidth+160||p.y<-260||p.y>innerHeight+120)continue;const alpha=distanceFadeAlpha(o.rel,330,470);if(alpha<=.02)continue;const laneTurn=(o.r.aiTargetLane-o.r.lane)*2.5,turn=Math.max(-3,Math.min(3,Math.round(p.tangent*9+laneTurn))),col=3+turn,frameIndex=col,frame=o.r.frames?.[frameIndex];
     const height=Math.max(24,Math.min(isMia?194:178,(isMia?178:166)*p.scale)),jump=(o.r.jumpY||0)*Math.max(.45,p.scale),spriteY=p.y+6-jump;drawThroughTunnelPortal(o.r.distance,()=>{if(isMia){ctx.save();ctx.globalAlpha=alpha*(.3+.16*Math.sin(state.elapsed*.012));ctx.fillStyle='#ff4da8';ctx.shadowColor='#ff2d99';ctx.shadowBlur=35;ctx.beginPath();ctx.ellipse(p.x,spriteY-height*.46,height*.56,height*.68,0,0,7);ctx.fill();ctx.restore()}drawKartShadow(p.x,p.y,Math.max(9,height*.38)*(1-Math.min(.24,jump/180)),Math.max(.08,.16+p.scale*.18-jump*.0015)*alpha);drawOpponentItemAura(o.r,p.x,spriteY,height,alpha);drawFrameHeight(frame,p.x,spriteY,height,(o.r.hit>0?.62:1)*alpha,(o.r.spin>0?Math.sin(state.elapsed*.025)*.25:turn*.025));if(o.rel<300&&height>44&&alpha>.28)drawOpponentTag(p.x,spriteY-height-9,o.r,o.rank)});
   }
@@ -1424,7 +1545,7 @@ function drawProjectiles(){for(const shot of state.projectiles){const rel=shot.z
 function drawPlayer(){
   const mobileRace=matchMedia('(pointer:coarse)').matches||innerWidth<820,r=racers[state.selected],hard=mobileRace?(state.drift>.4?1.75:Math.abs(state.steer)>.78?2.25:1.7):(state.drift>.4?2:Math.abs(state.steer)>.78?3:2),col=Math.max(0,Math.min(6,3+Math.round(state.steer*hard))),frame=r.frames?.[col];
   canvas.dataset.player=r.slug;canvas.dataset.frame=String(col);canvas.dataset.speed=String(Math.round(state.speed));canvas.dataset.distance=state.distance.toFixed(1);canvas.dataset.drift=String(state.driftLevel);canvas.dataset.centrifugal=state.centrifugal.toFixed(3);canvas.dataset.jump=state.jumpY.toFixed(1);canvas.dataset.airborne=String(state.airborne);
-  const cameraDrop=jumpCameraDrop(),base=roadPoint(2.5),x=innerWidth*.5+state.steer*18+(Math.random()-.5)*state.shake,groundY=Math.min(innerHeight*.9,base.y)+state.suspension+(Math.random()-.5)*state.shake,shadowY=groundY+cameraDrop-state.suspension*.45,y=groundY-state.jumpY,bob=Math.sin(state.elapsed*(.012+state.speed*.00008))*(1.2+state.speed*.008),squash=1-Math.min(.055,Math.abs(state.suspension)*.0035),targetHeight=mobileRace?Math.min(214,Math.max(156,innerHeight*.34)):Math.min(innerHeight*.29,218),height=targetHeight*squash,jumpScale=1-Math.min(.23,(state.jumpY+cameraDrop*.55)/190);
+  const shakeFactor=motionLevel(settings.screenShake),cameraDrop=jumpCameraDrop(),base=roadPoint(2.5),x=innerWidth*.5+state.steer*18+(Math.random()-.5)*state.shake*shakeFactor,groundY=Math.min(innerHeight*.9,base.y)+state.suspension+(Math.random()-.5)*state.shake*shakeFactor,shadowY=groundY+cameraDrop-state.suspension*.45,y=groundY-state.jumpY,bob=Math.sin(state.elapsed*(.012+state.speed*.00008))*(1.2+state.speed*.008)*motionLevel(settings.cameraMotion),squash=1-Math.min(.055,Math.abs(state.suspension)*.0035),targetHeight=mobileRace?Math.min(214,Math.max(156,innerHeight*.34)):Math.min(innerHeight*.29,218),height=targetHeight*squash,jumpScale=1-Math.min(.23,(state.jumpY+cameraDrop*.55)/190);
   drawKartShadow(x,shadowY,Math.min(92,height*.4)*jumpScale,Math.max(.08,.42-Math.min(.25,(state.jumpY+cameraDrop*.55)*.003)));if(state.boosting||state.invincible>0){const row=state.invincible>0?4:0,v=animatedFxFrame(itemFxFrames,row,(state.elapsed*.0022)%1),effectY=state.invincible>0?y-height*.46:y-height*.12;drawFrameCentered(v,x,effectY,state.invincible>0?218:176,state.invincible>0?.78:.92,state.invincible>0?0:Math.PI)}
   drawFrameHeight(frame,x,y+bob,height,1,-state.steer*(state.drift>0?.085:.04)+state.centrifugal*.018);
   if(state.shield>0){ctx.save();ctx.strokeStyle='#77efff';ctx.lineWidth=5;ctx.globalAlpha=.5+.25*Math.sin(state.elapsed*.01);ctx.shadowColor='#46eaff';ctx.shadowBlur=25;ctx.beginPath();ctx.ellipse(x,y-height*.42,Math.min(innerWidth*.15,165),height*.46,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
@@ -1460,9 +1581,9 @@ function drawParticles(layer='front'){
   }
 }
 function drawRace(){
-  const roll=state.drift>0?-state.steer*.008:0,bob=Math.sin(state.elapsed*.012)*Math.min(1.5,state.speed/135)-state.suspension*.28+state.landingBounce,cameraDrop=jumpCameraDrop();
+  const cameraMotion=motionLevel(settings.cameraMotion),shakeFactor=motionLevel(settings.screenShake),roll=(state.drift>0?-state.steer*.008:0)*shakeFactor,bob=(Math.sin(state.elapsed*.012)*Math.min(1.5,state.speed/135)-state.suspension*.28+state.landingBounce)*cameraMotion,cameraDrop=jumpCameraDrop();
   roadProjection=[];tunnelClipCount=0;buildRoadProjection();canvas.dataset.course=activeCourse.short;canvas.dataset.bgm=raceBgm?(raceBgm.paused?`paused:${musicError||'waiting'}`:'playing'):'none';canvas.dataset.taken=String(state.objects.filter(o=>o.taken).length);canvas.dataset.collectFx=String(state.collectFx.length);canvas.dataset.suspension=state.suspension.toFixed(2);canvas.dataset.nextTunnelPortal=String(firstTunnelPortalBetween(state.distance+DRAW_DISTANCE)??'none');canvas.dataset.jumpCamera=cameraDrop.toFixed(1);
-  ctx.save();ctx.translate(innerWidth/2,innerHeight/2+bob);ctx.rotate(roll);ctx.translate(-innerWidth/2,-innerHeight/2);ctx.translate((Math.random()-.5)*state.shake,(Math.random()-.5)*state.shake);drawBackdrop();if(cameraDrop>0)ctx.translate(0,cameraDrop);drawRoad();drawVergeSurfaceDetails();drawRoadSurfaceDetails();drawRoadMotion();drawMode7Texture();drawGuardrails();drawDistantScenery();drawVergeDetails();drawTracksideDecorations();drawTrackside();drawGates();drawStartArch();drawDistanceFog();drawTunnel();if(state.debug.showCourseLimits)drawCourseLimits();drawTrackEntities();drawProjectiles();drawOpponents();drawCollectFx();drawTunnelForeground();ctx.restore();canvas.dataset.tunnelOcclusion=String(tunnelClipCount);drawParticles('back');drawPlayer();drawParticles('front');if(state.flash>0){ctx.fillStyle=`rgba(255,255,255,${state.flash*.65})`;ctx.fillRect(0,0,innerWidth,innerHeight)}
+  ctx.save();ctx.translate(innerWidth/2,innerHeight/2+bob);ctx.rotate(roll);ctx.translate(-innerWidth/2,-innerHeight/2);ctx.translate((Math.random()-.5)*state.shake*shakeFactor,(Math.random()-.5)*state.shake*shakeFactor);drawBackdrop();if(cameraDrop>0)ctx.translate(0,cameraDrop);drawRoad();drawVergeSurfaceDetails();drawRoadSurfaceDetails();drawRoadMotion();drawRouteGraphRoad();drawMode7Texture();drawGuardrails();drawDistantScenery();drawVergeDetails();drawTracksideDecorations();drawTrackside();drawGates();drawStartArch();drawDistanceFog();drawTunnel();if(state.debug.showCourseLimits)drawCourseLimits();drawTrackEntities();drawProjectiles();drawOpponents();drawCollectFx();drawTunnelForeground();ctx.restore();canvas.dataset.tunnelOcclusion=String(tunnelClipCount);drawParticles('back');drawPlayer();drawParticles('front');const flashFactor=motionLevel(settings.screenFlash);if(state.flash>0&&flashFactor>0){ctx.fillStyle=`rgba(255,255,255,${state.flash*.65*flashFactor})`;ctx.fillRect(0,0,innerWidth,innerHeight)}
 }
 // Every cat sheet was verified against this shared layout: rear arc (0..6),
 // then front arc (7..13). The two side views are duplicated at row boundaries,

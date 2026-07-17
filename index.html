@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=32" />
+  <link rel="stylesheet" href="style.css?v=37" />
 </head>
 <body>
   <main id="app">
@@ -103,6 +103,15 @@
           <button id="preloadAssetsToggle" class="setting-toggle" type="button" aria-pressed="true">レース素材先読み ON</button>
           <p id="performanceDescription" class="settings-help">端末に合わせて解像度・描画量を自動調整します。</p>
           <p class="settings-help">遠くは霞ませ、近くの装飾だけくっきり表示します。重い場合はOFFにできます。</p>
+          <div class="motion-settings">
+            <div><small>MOTION COMFORT</small><strong>酔い軽減を個別設定</strong></div>
+            <div class="motion-settings-grid">
+              <button id="cameraMotionToggle" class="setting-toggle motion-toggle" type="button">カメラ上下 標準</button>
+              <button id="screenShakeToggle" class="setting-toggle motion-toggle" type="button">画面揺れ 標準</button>
+              <button id="speedLinesToggle" class="setting-toggle motion-toggle" type="button">速度流線 標準</button>
+              <button id="screenFlashToggle" class="setting-toggle motion-toggle" type="button">白フラッシュ 標準</button>
+            </div>
+          </div>
         </section>
       </div>
       <button id="settingsDone" class="primary-btn compact settings-done"><span>設定を保存</span><small>ゲームへ戻る</small></button>
@@ -232,6 +241,10 @@
         <img alt="">
         <div><small>OVERTAKE!</small><strong></strong><span></span></div>
       </div>
+      <div id="routeGuide" class="route-guide" aria-live="polite">
+        <small>ROUTE SPLIT</small>
+        <div><b class="route-left">‹ LEFT</b><strong>CHOOSE</strong><b class="route-right">RIGHT ›</b></div>
+      </div>
       <div id="toast" class="toast"></div>
       <div id="goalFx" class="goal-fx hidden" aria-live="polite">
         <div id="goalConfetti" class="goal-confetti"></div>
@@ -336,7 +349,7 @@
   </main>
   <script src="assets/sprite-bounds.js?v=2"></script>
   <script src="audio.js?v=2"></script>
-  <script src="game.js?v=62"></script>
-  <script src="quality.js?v=12"></script>
+  <script src="game.js?v=73"></script>
+  <script src="quality.js?v=20"></script>
 </body>
 </html>
