@@ -36,7 +36,7 @@
     constructor(){
       this.context=null;this.master=null;this.compressor=null;this.engineBus=null;this.rivalBus=null;this.sfxBus=null;this.raceTone=null;this.tunnelSend=null;this.tunnelConvolver=null;this.tunnelReturn=null;this.engine=null;
       this.machineSlug='';this.machineStats=null;this.running=false;this.mix={master:.8,effects:.72,muted:false};
-      this.lastPlayed=new Map();this.previewTimer=0;this.noiseBuffer=null;this.rivalVoices=new Map();this.maxRivalVoices=3;this.dopplerEnabled=true;this.tunnelReverbEnabled=true;this.tunnelMix=0;this.supported=!!(window.AudioContext||window.webkitAudioContext);
+      this.lastPlayed=new Map();this.previewTimer=0;this.noiseBuffer=null;this.rivalVoices=new Map();this.maxRivalVoices=3;this.dopplerEnabled=true;this.tunnelReverbEnabled=true;this.tunnelMix=0;this.surfaceAudio='dry';this.surfaceAudioLevel=0;this.supported=!!(window.AudioContext||window.webkitAudioContext);
       const unlock=()=>this.unlock();
       addEventListener('pointerdown',unlock,{passive:true});addEventListener('touchstart',unlock,{passive:true});addEventListener('keydown',unlock);
     }
@@ -68,29 +68,32 @@
     createEngine(){
       const context=this.ensure();if(!context)return;const p=this.profile(),now=context.currentTime;
       const output=context.createGain(),filter=context.createBiquadFilter(),oscA=context.createOscillator(),oscB=context.createOscillator(),gainA=context.createGain(),gainB=context.createGain();
-      const noise=context.createBufferSource(),noiseFilter=context.createBiquadFilter(),noiseGain=context.createGain(),skid=context.createBufferSource(),skidFilter=context.createBiquadFilter(),skidGain=context.createGain(),lfo=context.createOscillator(),lfoGain=context.createGain();
+      const noise=context.createBufferSource(),noiseFilter=context.createBiquadFilter(),noiseGain=context.createGain(),skid=context.createBufferSource(),skidFilter=context.createBiquadFilter(),skidGain=context.createGain(),surfaceNoise=context.createBufferSource(),surfaceFilter=context.createBiquadFilter(),surfaceGain=context.createGain(),lfo=context.createOscillator(),lfoGain=context.createGain();
       output.gain.value=.0001;filter.type='lowpass';filter.frequency.value=p.filter;filter.Q.value=p.resonance;
       oscA.type=p.wave;oscB.type=p.harmonicWave;oscA.frequency.value=p.baseHz;oscB.frequency.value=p.baseHz*p.harmonic;gainA.gain.value=.5;gainB.gain.value=.16;
       noise.buffer=this.noiseBuffer;noise.loop=true;noiseFilter.type='bandpass';noiseFilter.frequency.value=300;noiseFilter.Q.value=.8;noiseGain.gain.value=.0001;
       skid.buffer=this.noiseBuffer;skid.loop=true;skidFilter.type='bandpass';skidFilter.frequency.value=1800;skidFilter.Q.value=3.6;skidGain.gain.value=.0001;
+      surfaceNoise.buffer=this.noiseBuffer;surfaceNoise.loop=true;surfaceFilter.type='bandpass';surfaceFilter.frequency.value=1200;surfaceFilter.Q.value=.8;surfaceGain.gain.value=.0001;
       lfo.type='sine';lfo.frequency.value=p.pulse;lfoGain.gain.value=p.pulseDepth;lfo.connect(lfoGain);lfoGain.connect(oscA.detune);lfoGain.connect(oscB.detune);
       oscA.connect(gainA);oscB.connect(gainB);gainA.connect(filter);gainB.connect(filter);filter.connect(output);
-      noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(output);skid.connect(skidFilter);skidFilter.connect(skidGain);skidGain.connect(output);output.connect(this.engineBus);
-      [oscA,oscB,noise,skid,lfo].forEach(node=>node.start(now));this.engine={output,filter,oscA,oscB,gainA,gainB,noise,noiseFilter,noiseGain,skid,skidFilter,skidGain,lfo,lfoGain};
+      noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(output);skid.connect(skidFilter);skidFilter.connect(skidGain);skidGain.connect(output);surfaceNoise.connect(surfaceFilter);surfaceFilter.connect(surfaceGain);surfaceGain.connect(output);output.connect(this.engineBus);
+      [oscA,oscB,noise,skid,surfaceNoise,lfo].forEach(node=>node.start(now));this.engine={output,filter,oscA,oscB,gainA,gainB,noise,noiseFilter,noiseGain,skid,skidFilter,skidGain,surfaceNoise,surfaceFilter,surfaceGain,lfo,lfoGain};
     }
-    destroyEngine(){if(!this.engine)return;const now=this.context?.currentTime||0;try{this.engine.output.gain.cancelScheduledValues(now);this.engine.output.gain.setTargetAtTime(.0001,now,.025)}catch{}const old=this.engine;setTimeout(()=>{for(const key of ['oscA','oscB','noise','skid','lfo'])try{old[key].stop()}catch{};try{old.output.disconnect()}catch{}},170);this.engine=null}
+    destroyEngine(){if(!this.engine)return;const now=this.context?.currentTime||0;try{this.engine.output.gain.cancelScheduledValues(now);this.engine.output.gain.setTargetAtTime(.0001,now,.025)}catch{}const old=this.engine;setTimeout(()=>{for(const key of ['oscA','oscB','noise','skid','surfaceNoise','lfo'])try{old[key].stop()}catch{};try{old.output.disconnect()}catch{}},170);this.engine=null}
     startEngine(slug,stats,{silent=false}={}){this.unlock();this.setMachine(slug,stats);if(!this.engine)this.createEngine();this.running=true;if(!silent)this.play('engineStart',{intensity:.8})}
     stopEngine(){this.running=false;if(this.engine&&this.context)this.engine.output.gain.setTargetAtTime(.0001,this.context.currentTime,.09);this.stopRivals();this.setTunnel(false)}
     updateEngine(data={}){
+      const rawSpeed=Math.max(0,Number(data.speed)||0),requestedSurface=['wet','damp','snow'].includes(data.weatherSurface)?data.weatherSurface:'dry',roadContact=data.surface==='road'&&!data.airborne,requestedLevel=roadContact&&data.running&&!data.paused?Math.min(1,rawSpeed/180):0;this.surfaceAudio=requestedSurface;this.surfaceAudioLevel=requestedLevel*(requestedSurface==='dry'?0:1);
       if(!this.context)return;if(!this.engine&&this.machineSlug)this.createEngine();if(!this.engine)return;
-      const p=this.profile(),e=this.engine,now=this.context.currentTime,speed=Math.max(0,Number(data.speed)||0),n=Math.min(1.22,speed/215),throttle=data.accelerating?1:data.braking?.1:.38,boost=data.boosting||data.turbo>0,offroad=data.surface&&data.surface!=='road',audible=this.running&&data.running&&!data.paused;
+      const p=this.profile(),e=this.engine,now=this.context.currentTime,speed=rawSpeed,n=Math.min(1.22,speed/215),throttle=data.accelerating?1:data.braking?.1:.38,boost=data.boosting||data.turbo>0,offroad=data.surface&&data.surface!=='road',material=data.trackMaterial||'asphalt',materialNoise=material==='jungle-mud'?.034:material==='jungle-wood'?.018:material==='jungle-stone'?.01:material==='jungle-emerald'?.006:0,materialTone=material==='jungle-wood'?-120:material==='jungle-mud'?-190:material==='jungle-stone'?90:material==='jungle-emerald'?240:0,materialPulse=material==='jungle-wood'?(Math.sin(now*(16+n*18))+1)*.006:material==='jungle-stone'?(Math.sin(now*(25+n*12))+1)*.002:0,audible=this.running&&data.running&&!data.paused;
       const statSpeed=(this.machineStats?.speed||80)-80,statAccel=(this.machineStats?.accel||80)-80;
       const fundamental=Math.max(20,p.baseHz+(n*(74+statSpeed*.16))+(boost?17:0)+(data.airborne?8:0));
       e.oscA.frequency.setTargetAtTime(fundamental,now,.035);e.oscB.frequency.setTargetAtTime(fundamental*p.harmonic+(statAccel*.08),now,.045);
       e.filter.frequency.setTargetAtTime(p.filter+n*1500+(boost?620:0)+(offroad?-180:0),now,.045);e.filter.Q.setTargetAtTime(p.resonance+(boost?1.8:0),now,.06);
       e.gainA.gain.setTargetAtTime(.33+throttle*.18+n*.08,now,.035);e.gainB.gain.setTargetAtTime(.09+n*.11+(boost?.08:0),now,.045);
-      e.noiseFilter.frequency.setTargetAtTime(210+n*760+(offroad?190:0),now,.05);e.noiseGain.gain.setTargetAtTime(.006+p.roughness*(.035+n*.075)+(offroad?.07:0)+(boost?p.air*.1:0),now,.04);
+      e.noiseFilter.frequency.setTargetAtTime(Math.max(90,210+n*760+(offroad?190:0)+materialTone),now,.05);e.noiseGain.gain.setTargetAtTime(.006+p.roughness*(.035+n*.075)+(offroad?.07:0)+(boost?p.air*.1:0)+materialNoise*n+materialPulse*n,now,.04);
       e.skidGain.gain.setTargetAtTime(data.drifting&&speed>55?.045+Math.min(.12,Math.abs(data.steer||0)*.08):.0001,now,.035);e.skidFilter.frequency.setTargetAtTime(1200+n*1700,now,.04);
+      const slip=Math.min(.5,Math.abs(Number(data.weatherSlip)||0)),wet=requestedSurface==='wet'||requestedSurface==='damp',snow=requestedSurface==='snow',crunch=(Math.sin(now*(24+n*31))+Math.sin(now*(12+n*17)+1.3)+2)*.25,surfaceLevel=(!audible||!roadContact)? .0001:wet?(.014+n*.062+slip*.16)*(requestedSurface==='damp'?.58:1):snow?.012+n*.055*(.42+crunch*.96)+slip*.11:.0001;e.surfaceFilter.frequency.setTargetAtTime(wet?1450+n*1850+slip*1200:230+n*390+crunch*260,now,wet?.045:.025);e.surfaceFilter.Q.setTargetAtTime(wet?.7:1.55,now,.05);e.surfaceGain.gain.setTargetAtTime(surfaceLevel,now,wet?.06:.025);this.surfaceAudioLevel=surfaceLevel;
       e.output.gain.setTargetAtTime(audible?.08+n*.055+(throttle*.018):.0001,now,audible?.06:.045);
     }
     createRivalVoice(slug,stats={}){
@@ -119,7 +122,7 @@
       for(const [slug,voice] of this.rivalVoices)if(!active.has(slug))this.retireRivalVoice(slug,voice);
     }
     getRivalDebug(){return[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).map(voice=>voice.slug).slice(0,this.maxRivalVoices)}
-    getAcousticsDebug(){return{tunnelMix:this.tunnelMix,rivals:[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).slice(0,this.maxRivalVoices).map(voice=>({slug:voice.slug,doppler:voice.doppler}))}}
+    getAcousticsDebug(){return{tunnelMix:this.tunnelMix,surfaceAudio:this.surfaceAudio,surfaceAudioLevel:this.surfaceAudioLevel,rivals:[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).slice(0,this.maxRivalVoices).map(voice=>({slug:voice.slug,doppler:voice.doppler}))}}
     allowed(name,interval=0){const now=performance.now(),last=this.lastPlayed.get(name)||-Infinity;if(now-last<interval)return false;this.lastPlayed.set(name,now);return true}
     tone({frequency=440,to=frequency,type='sine',duration=.12,gain=.12,delay=0,attack=.006,detune=0,bus=null}={}){
       const context=this.unlock();bus=bus||this.sfxBus;if(!context||!bus)return;const start=context.currentTime+delay,end=start+duration,osc=context.createOscillator(),amp=context.createGain();osc.type=type;osc.detune.value=detune;osc.frequency.setValueAtTime(Math.max(20,frequency),start);osc.frequency.exponentialRampToValueAtTime(Math.max(20,to),end);amp.gain.setValueAtTime(.0001,start);amp.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),start+Math.min(attack,duration*.3));amp.gain.exponentialRampToValueAtTime(.0001,end);osc.connect(amp);amp.connect(bus);osc.start(start);osc.stop(end+.03)

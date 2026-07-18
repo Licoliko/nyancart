@@ -152,11 +152,13 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;user-select:none;-webk
    A class-driven keyframe keeps async sprite loading from skipping the jump. */
 .podium-racer{opacity:0;transform:translateY(92%) scale(.72);transform-origin:50% 100%;animation:none;transition:none}
 .podium-racer.podium-staged{opacity:0;transform:translateY(92%) scale(.72)}
+.podium-racer.podium-prepainted:not(.podium-jumping):not(.podium-ready){animation:podiumEmergencyReveal .01s linear var(--podium-emergency-delay,4s) forwards}
 .podium-racer.podium-jumping{animation:podiumCeremonyJump .9s cubic-bezier(.16,.86,.2,1) both!important}
 .podium-racer.podium-ready{opacity:1;transform:translateY(0) scale(1)}
 .podium-racer:after{content:'';position:absolute;z-index:-1;left:20%;right:20%;bottom:24px;height:12px;border-radius:50%;background:radial-gradient(ellipse,#fff9cce8 0 18%,#72eaffaa 30%,transparent 72%);opacity:0;transform:scale(.25)}
 .podium-racer.podium-jumping:after{animation:podiumLandingBurst .9s ease-out both}
 @keyframes podiumCeremonyJump{0%{opacity:0;transform:translateY(92%) scale(.72) rotate(var(--jump-rotate,0deg))}10%{opacity:1}48%{opacity:1;transform:translateY(-21%) scale(1.07) rotate(0deg)}68%{transform:translateY(5%) scale(.97) rotate(0deg)}82%{transform:translateY(-5%) scale(1.025)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes podiumEmergencyReveal{to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes podiumLandingBurst{0%,57%{opacity:0;transform:scale(.2)}68%{opacity:1;transform:scale(1.25)}86%{opacity:.55;transform:scale(1.7)}100%{opacity:0;transform:scale(2)}}
 
 /* Overtake callouts remain readable without covering the racing line. */
