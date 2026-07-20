@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=38" />
+  <link rel="stylesheet" href="style.css?v=40" />
 </head>
 <body>
   <main id="app">
@@ -158,16 +158,59 @@
       </div>
     </section>
 
-    <section id="courseSelect" class="screen course-select-screen">
-      <header class="select-header">
+    <section id="courseSelect" class="screen course-select-screen" aria-labelledby="courseSelectTitle">
+      <div class="course-showcase-backdrop" aria-hidden="true"><img id="courseShowcaseBackdrop" alt=""><i></i></div>
+      <header class="select-header course-select-header">
         <button id="backCourseSelect" class="icon-btn" aria-label="セット選択へ戻る">‹</button>
-        <div><p class="eyebrow">CHOOSE YOUR CIRCUIT</p><h2>コースを選ぼう！</h2></div>
-        <div class="step-badge">02 / 03</div>
+        <div><p class="eyebrow">NYAN CART WORLD TOUR</p><h2 id="courseSelectTitle">レース会場を選ぼう！</h2></div>
+        <div id="courseSelectCounter" class="step-badge">01 / 11</div>
       </header>
-      <div id="courseGrid" class="course-grid"></div>
+
+      <main class="course-showcase-main">
+        <section id="courseHeroStage" class="course-hero-stage">
+          <div class="course-hero-visual">
+            <img id="courseShowcaseArt" alt="" draggable="false">
+            <div id="courseWeatherFx" class="course-showcase-weather" aria-hidden="true"></div>
+            <div class="course-hero-grid" aria-hidden="true"></div>
+            <div class="course-hero-number"><small>CIRCUIT</small><strong id="courseShowcaseNumber">01</strong></div>
+            <div class="course-title-lockup">
+              <small id="courseShowcaseShort">TWINKLE SWEETS</small>
+              <h3 id="selectedCourseName">きらめきスイーツサーキット</h3>
+              <p id="selectedCourseInfo">テクニカル＆トリッキー</p>
+            </div>
+          </div>
+
+          <aside class="course-intel-panel">
+            <div class="course-intel-heading"><span>LIVE CIRCUIT DATA</span><b id="courseWeatherLabel">STAR DUST</b></div>
+            <div class="course-map-showcase">
+              <canvas id="courseSelectMap" width="420" height="238" aria-label="選択中コースの全体マップ"></canvas>
+              <span class="course-map-kicker">ROUTE PREVIEW</span>
+            </div>
+            <p id="courseShowcaseDescription" class="course-showcase-description">きらめきと分岐が交差する、お菓子の街のテクニカルコース。</p>
+            <div class="course-spec-grid">
+              <span><small>RACE TYPE</small><strong id="courseRaceType">TECHNICAL</strong></span>
+              <span><small>DISTANCE</small><strong id="courseDistance">1800m × 2</strong></span>
+              <span><small>COURSE RATING</small><strong id="courseRating">★★★☆☆</strong></span>
+            </div>
+            <div id="courseFeatureChips" class="course-feature-chips" aria-label="コースの特徴"></div>
+            <div class="course-route-cards">
+              <span><small>LEFT ROUTE</small><strong id="courseLeftRoute">SUGAR ARC</strong><em id="courseLeftMetric">ITEM / SCENIC</em></span>
+              <span><small>RIGHT ROUTE</small><strong id="courseRightRoute">CREAM DASH</strong><em id="courseRightMetric">SHORT / BOOST</em></span>
+            </div>
+          </aside>
+        </section>
+
+        <section class="course-carousel-shell" aria-label="コース一覧">
+          <button id="coursePrev" class="course-carousel-arrow previous" type="button" aria-label="前のコース">‹</button>
+          <div id="courseGrid" class="course-grid" role="listbox" aria-label="レース会場" tabindex="0"></div>
+          <button id="courseNext" class="course-carousel-arrow next" type="button" aria-label="次のコース">›</button>
+        </section>
+      </main>
+
       <div class="course-dock">
-        <div><small>SELECTED CIRCUIT</small><strong id="selectedCourseName">きらめきスイーツサーキット</strong><span id="selectedCourseInfo">テクニカル＆トリッキー</span></div>
-        <button id="confirmCourse" class="primary-btn compact"><span>DIFFICULTY SELECT</span><small>難易度を選ぶ</small></button>
+        <div class="course-dock-guide"><small>SELECT WITH</small><strong>DRAG / ← →</strong><span>カードを横へ動かして会場を切り替え</span></div>
+        <div class="course-dock-position"><small>SELECTED</small><strong id="courseDockPosition">01</strong><span id="courseDockTotal">/ 11</span></div>
+        <button id="confirmCourse" class="primary-btn compact course-confirm-btn"><span>RACE THIS CIRCUIT</span><small>難易度選択へ進む</small></button>
       </div>
     </section>
 
@@ -227,6 +270,7 @@
         <button id="debugCourseBounds" type="button" aria-pressed="false">コース枠 OFF</button>
         <button id="debugQualityCheck" type="button">品質チェック F8</button>
         <button id="debugBalanceCheck" type="button">NORMALバランステスト</button>
+        <button id="debugReplayCheck" type="button">11コース連続実走検査</button>
         <small id="debugLiveMetrics">FPS -- / P95 --</small>
       </div>
       <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
@@ -332,7 +376,7 @@
     <section id="qualityReport" class="quality-report hidden" aria-hidden="true" aria-labelledby="qualityTitle">
       <header>
         <div><p class="eyebrow">NYAN CART PRODUCT CHECK</p><h2 id="qualityTitle">品質チェックレポート</h2><p id="qualityProgress">検査を開始します</p></div>
-        <div class="quality-actions"><button id="qualityRunBalance" type="button">NORMAL TEST</button><button id="qualityExportCsv" type="button">CSV</button><button id="qualityExportJson" type="button">JSON</button><button id="qualityClose" type="button" aria-label="品質チェックを閉じる">×</button></div>
+        <div class="quality-actions"><button id="qualityRunReplay" type="button">11 COURSE REPLAY</button><button id="qualityRunBalance" type="button">NORMAL TEST</button><button id="qualityExportCsv" type="button">CSV</button><button id="qualityExportJson" type="button">JSON</button><button id="qualityClose" type="button" aria-label="品質チェックを閉じる">×</button></div>
       </header>
       <div class="quality-body">
         <div id="qualitySummary" class="quality-summary"></div>
@@ -343,14 +387,20 @@
           <div id="balanceWarnings" class="balance-warnings"></div>
           <div class="balance-tables"><div><h4>COURSE RESULTS</h4><div id="balanceCourseRows" class="balance-rows"></div></div><div><h4>RACER RESULTS</h4><div id="balanceRacerRows" class="balance-rows racer"></div></div></div>
         </section>
+        <section id="replayAudit" class="quality-section replay-audit">
+          <header><div><h3>CONTINUOUS ACTUAL-RENDER REPLAY</h3><p id="replayProgress">未実行 — 全11コースを2周し、道路・ジャンプ台・トンネル・ゴールを連続検査します。</p></div><div><button id="replayExportCsv" type="button" disabled>CSV</button><button id="replayExportJson" type="button" disabled>JSON</button></div></header>
+          <div id="replaySummary" class="balance-summary replay-summary"><div><strong>--</strong><span>COURSES</span></div><div><strong>--</strong><span>PROJECTION</span></div><div><strong>--</strong><span>ACTUAL DRAW</span></div><div><strong>--</strong><span>RAMP CASES</span></div><div><strong>--</strong><span>MISMATCH</span></div><div><strong>--</strong><span>DRAW P95</span></div></div>
+          <div id="replayWarnings" class="balance-warnings"></div>
+          <div id="replayCourseRows" class="balance-rows replay-rows"></div>
+        </section>
         <section class="quality-section"><h3>COURSE / RACER / LAYOUT / AUDIO</h3><div id="qualityRows" class="quality-rows"></div></section>
         <section class="quality-section sprite-audit"><h3>14-DIRECTION VISUAL CONTACT SHEETS</h3><p>後方7方向・前方7方向の順序、反対向きの混入、隣セルの映り込みを目視確認できます。</p><div id="qualitySpriteGallery" class="quality-sprite-gallery"></div></section>
       </div>
     </section>
   </main>
   <script src="assets/sprite-bounds.js?v=2"></script>
-  <script src="audio.js?v=4"></script>
-  <script src="game.js?v=88"></script>
-  <script src="quality.js?v=34"></script>
+  <script src="audio.js?v=7"></script>
+  <script src="game.js?v=95"></script>
+  <script src="quality.js?v=44"></script>
 </body>
 </html>
