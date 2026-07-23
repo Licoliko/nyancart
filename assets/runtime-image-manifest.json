@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 115,
-  "sourceBytes": 149625386,
-  "outputBytes": 66387646,
-  "savedBytes": 83237740,
-  "savedPercent": 55.63,
+  "files": 133,
+  "sourceBytes": 166923428,
+  "outputBytes": 68636882,
+  "savedBytes": 98286546,
+  "savedPercent": 58.88,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -425,6 +425,17 @@
       "savedBytes": 391713
     },
     {
+      "source": "assets/sprites/mia-throw-gpt2-v1.png",
+      "output": "assets/sprites/mia-throw-gpt2-v1.webp",
+      "width": 1254,
+      "height": 1254,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 900922,
+      "outputBytes": 121230,
+      "savedBytes": 779692
+    },
+    {
       "source": "assets/select-heroes/aruka-sham.png",
       "output": "assets/select-heroes/aruka-sham.webp",
       "width": 1024,
@@ -744,15 +755,37 @@
       "savedBytes": 113518
     },
     {
-      "source": "assets/ui/mia-charme-intrusion-gpt2.png",
-      "output": "assets/ui/mia-charme-intrusion-gpt2.webp",
-      "width": 1920,
-      "height": 1080,
+      "source": "assets/ui/weather-driving-vfx-gpt2-v1.png",
+      "output": "assets/ui/weather-driving-vfx-gpt2-v1.webp",
+      "width": 2172,
+      "height": 724,
       "policy": "high-quality",
       "quality": 93,
-      "sourceBytes": 3727242,
-      "outputBytes": 707298,
-      "savedBytes": 3019944
+      "sourceBytes": 695366,
+      "outputBytes": 105938,
+      "savedBytes": 589428
+    },
+    {
+      "source": "assets/ui/cat-can-gears-gpt2-v1.png",
+      "output": "assets/ui/cat-can-gears-gpt2-v1.webp",
+      "width": 1536,
+      "height": 1024,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1075647,
+      "outputBytes": 172044,
+      "savedBytes": 903603
+    },
+    {
+      "source": "assets/ui/mia-charme-intrusion-gpt2-v2.png",
+      "output": "assets/ui/mia-charme-intrusion-gpt2-v2.webp",
+      "width": 1672,
+      "height": 941,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 3012544,
+      "outputBytes": 436678,
+      "savedBytes": 2575866
     },
     {
       "source": "assets/ui/mia-charme-boss-portrait-gpt2.png",
@@ -830,6 +863,28 @@
       "sourceBytes": 1843163,
       "outputBytes": 451450,
       "savedBytes": 1391713
+    },
+    {
+      "source": "assets/trackside/course-tunnel-portals-gpt2-v1.png",
+      "output": "assets/trackside/course-tunnel-portals-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1592315,
+      "outputBytes": 200056,
+      "savedBytes": 1392259
+    },
+    {
+      "source": "assets/trackside/course-tunnel-interiors-gpt2-v1.png",
+      "output": "assets/trackside/course-tunnel-interiors-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 2567805,
+      "outputBytes": 320138,
+      "savedBytes": 2247667
     },
     {
       "source": "assets/trackside/course-scenery-sweets-gpt2.png",
@@ -951,6 +1006,149 @@
       "sourceBytes": 1381287,
       "outputBytes": 384922,
       "savedBytes": 996365
+    },
+    {
+      "source": "assets/trackside/course-scenery-jungle-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-jungle-near-gpt2-v1.webp",
+      "width": 1536,
+      "height": 1024,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 2096701,
+      "outputBytes": 421968,
+      "savedBytes": 1674733
+    },
+    {
+      "source": "assets/trackside/course-scenery-aurora-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-aurora-near-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1354663,
+      "outputBytes": 163758,
+      "savedBytes": 1190905
+    },
+    {
+      "source": "assets/trackside/course-scenery-sakura-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-sakura-near-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1290780,
+      "outputBytes": 127122,
+      "savedBytes": 1163658
+    },
+    {
+      "source": "assets/trackside/course-scenery-coral-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-coral-near-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1622994,
+      "outputBytes": 196032,
+      "savedBytes": 1426962
+    },
+    {
+      "source": "assets/trackside/course-scenery-phantom-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-phantom-near-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1308952,
+      "outputBytes": 151470,
+      "savedBytes": 1157482
+    },
+    {
+      "source": "assets/trackside/course-scenery-lunatic-near-gpt2-v1.png",
+      "output": "assets/trackside/course-scenery-lunatic-near-gpt2-v1.webp",
+      "width": 1448,
+      "height": 1086,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1308422,
+      "outputBytes": 140222,
+      "savedBytes": 1168200
+    },
+    {
+      "source": "assets/trackside/course-vfx-rain-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-rain-gpt2-v1.webp",
+      "width": 1254,
+      "height": 1254,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 327273,
+      "outputBytes": 76946,
+      "savedBytes": 250327
+    },
+    {
+      "source": "assets/trackside/course-vfx-steam-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-steam-gpt2-v1.webp",
+      "width": 1536,
+      "height": 1024,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 475875,
+      "outputBytes": 47040,
+      "savedBytes": 428835
+    },
+    {
+      "source": "assets/trackside/course-vfx-bubbles-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-bubbles-gpt2-v1.webp",
+      "width": 1536,
+      "height": 1024,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 247280,
+      "outputBytes": 55540,
+      "savedBytes": 191740
+    },
+    {
+      "source": "assets/trackside/course-vfx-sakura-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-sakura-gpt2-v1.webp",
+      "width": 1254,
+      "height": 1254,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 288445,
+      "outputBytes": 44124,
+      "savedBytes": 244321
+    },
+    {
+      "source": "assets/trackside/course-vfx-snow-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-snow-gpt2-v1.webp",
+      "width": 1254,
+      "height": 1254,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 208993,
+      "outputBytes": 51098,
+      "savedBytes": 157895
+    },
+    {
+      "source": "assets/trackside/course-vfx-fireflies-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-fireflies-gpt2-v1.webp",
+      "width": 1536,
+      "height": 1024,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 326471,
+      "outputBytes": 59060,
+      "savedBytes": 267411
+    },
+    {
+      "source": "assets/trackside/course-vfx-stardust-gpt2-v1.png",
+      "output": "assets/trackside/course-vfx-stardust-gpt2-v1.webp",
+      "width": 1254,
+      "height": 1254,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 323836,
+      "outputBytes": 66070,
+      "savedBytes": 257766
     },
     {
       "source": "assets/trackside/spectator-pink-human.png",

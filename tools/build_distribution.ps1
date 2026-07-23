@@ -37,7 +37,6 @@ $catSlugs = @(
     "stella-russianblue", "honey-british", "liber-birman"
 )
 $portraitSlugs = $catSlugs[0..11]
-$spectators = @("pink-human", "blond-cookie", "cyan-cat", "purple-witch", "teal-glasses")
 
 $files = [Collections.Generic.List[string]]::new()
 $files.AddRange([string[]]@("index.html", "style.css", "audio.js", "game.js", "quality.js", "README.md"))
@@ -45,63 +44,45 @@ $files.Add("assets/sprite-bounds.js")
 $files.Add("assets/runtime-image-manifest.json")
 $files.AddRange([string[]]@(
     "assets/audio/n(ya)itro_cat_grand_prix.mp3",
-    "assets/audio/drigt_swing_nya.mp3",
-    "assets/environment/sweets-circuit-v1.webp",
-    "assets/environment/course-sweets.webp",
-    "assets/environment/course-steam.webp",
-    "assets/environment/course-neon.webp",
-    "assets/environment/course-rain.webp",
-    "assets/environment/course-royal.webp",
-    "assets/environment/course-aurora.webp",
-    "assets/environment/course-jungle.webp",
-    "assets/environment/course-sakura.webp",
-    "assets/environment/course-coral.webp",
-    "assets/environment/course-phantom.webp",
-    "assets/environment/course-lunatic.webp",
-    "assets/environment/racer-set-garage.webp",
-    "assets/ui/course-map-v2.webp",
-    "assets/ui/items.webp",
-    "assets/ui/mobile-controls-gpt2.webp",
-    "assets/ui/driving-vfx-animated-gpt2-v1.webp",
-    "assets/ui/item-vfx-animated-gpt2-v1.webp",
-    "assets/ui/mia-charme-intrusion-gpt2.webp",
-    "assets/ui/mia-charme-boss-portrait-gpt2.webp",
-    "assets/ui/result-ceremony-gpt2.webp",
-    "assets/sprites/mia-charme.webp",
-    "assets/trackside/candy-sign.webp",
-    "assets/trackside/cupcake-tower.webp",
-    "assets/trackside/jump-ramps-angled-gpt2-v2.webp",
-    "assets/trackside/course-scenery-sweets-gpt2.webp",
-    "assets/trackside/course-scenery-steam-gpt2.webp",
-    "assets/trackside/course-scenery-neon-gpt2.webp",
-    "assets/trackside/course-scenery-rain-gpt2.webp",
-    "assets/trackside/course-scenery-royal-gpt2.webp",
-    "assets/trackside/course-scenery-aurora-gpt2.webp",
-    "assets/trackside/course-scenery-jungle-gpt2.webp",
-    "assets/trackside/course-scenery-sakura-gpt2.webp",
-    "assets/trackside/course-scenery-coral-gpt2.webp",
-    "assets/trackside/course-scenery-phantom-gpt2.webp",
-    "assets/trackside/course-scenery-lunatic-gpt2.webp",
-    "assets/trackside/scenery-candy-houses.webp",
-    "assets/trackside/scenery-forest.webp"
+    "assets/audio/drigt_swing_nya.mp3"
 ))
-foreach ($slug in $catSlugs) {
-    $files.Add("assets/sprites/$slug.webp")
-    $files.Add("assets/select-heroes/$slug.webp")
-}
 foreach ($slug in $portraitSlugs) {
     $files.Add("assets/portraits/$slug.webp")
 }
-foreach ($slug in $spectators) {
-    $files.Add("assets/trackside/spectator-$slug.webp")
+
+$runtimeImageManifestPath = Join-Path $root "assets/runtime-image-manifest.json"
+$runtimeImageManifest = Get-Content -LiteralPath $runtimeImageManifestPath -Raw | ConvertFrom-Json
+if (-not $runtimeImageManifest.assets -or $runtimeImageManifest.assets.Count -ne $runtimeImageManifest.files) {
+    throw "Runtime image manifest is missing or inconsistent. Run tools/optimize_runtime_images.py first."
 }
-foreach ($theme in @("steam", "neon", "rain", "royal")) {
-    foreach ($index in 0..5) {
-        $files.Add("assets/trackside/$theme-prop-$index.webp")
+$manifestOutputs = @($runtimeImageManifest.assets | ForEach-Object { [string]$_.output })
+if (($manifestOutputs | Sort-Object -Unique).Count -ne $manifestOutputs.Count) {
+    throw "Runtime image manifest contains duplicate output paths."
+}
+$ignoredRuntimeImages = @("assets/ui/mia-charme-intrusion-gpt2.webp")
+$unlistedRuntimeImages = @(
+    Get-ChildItem -LiteralPath @(
+        (Join-Path $root "assets/environment"),
+        (Join-Path $root "assets/sprites"),
+        (Join-Path $root "assets/select-heroes"),
+        (Join-Path $root "assets/ui"),
+        (Join-Path $root "assets/trackside")
+    ) -Filter "*.webp" -File |
+        ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') } |
+        Where-Object { $manifestOutputs -notcontains $_ -and $ignoredRuntimeImages -notcontains $_ }
+)
+if ($unlistedRuntimeImages.Count) {
+    throw "Optimized runtime images are missing from the manifest:`n$($unlistedRuntimeImages -join "`n")"
+}
+foreach ($asset in $runtimeImageManifest.assets) {
+    if (-not $asset.output -or -not $asset.output.EndsWith(".webp", [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Invalid runtime image manifest entry."
     }
+    $files.Add([string]$asset.output)
 }
 
-foreach ($relative in $files) {
+$uniqueFiles = $files | Sort-Object -Unique
+foreach ($relative in $uniqueFiles) {
     $source = Join-Path $root $relative
     if (-not (Test-Path -LiteralPath $source)) {
         throw "Missing required runtime file: $relative"
@@ -112,6 +93,13 @@ foreach ($relative in $files) {
         New-Item -ItemType Directory -Path $destinationDirectory -Force | Out-Null
     }
     Copy-Item -LiteralPath $source -Destination $destination
+}
+
+foreach ($asset in $runtimeImageManifest.assets) {
+    $publishedImage = Join-Path $packageRoot ([string]$asset.output)
+    if (-not (Test-Path -LiteralPath $publishedImage)) {
+        throw "Runtime image was not published: $($asset.output)"
+    }
 }
 
 $manifest = Get-ChildItem -LiteralPath $packageRoot -Recurse -File |

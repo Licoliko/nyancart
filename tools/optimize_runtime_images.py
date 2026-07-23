@@ -39,16 +39,25 @@ ENVIRONMENT = [
 UI = [
     "course-map-v2", "items", "mobile-controls-gpt2",
     "driving-vfx-animated-gpt2-v1", "item-vfx-animated-gpt2-v1",
-    "mia-charme-intrusion-gpt2", "mia-charme-boss-portrait-gpt2",
+    "weather-driving-vfx-gpt2-v1", "cat-can-gears-gpt2-v1",
+    "mia-charme-intrusion-gpt2-v2", "mia-charme-boss-portrait-gpt2",
     "result-ceremony-gpt2",
 ]
 
 TRACKSIDE = [
     "candy-sign", "cupcake-tower", "jump-ramps-angled-gpt2-v2",
     "scenery-candy-houses", "scenery-forest",
+    "course-tunnel-portals-gpt2-v1", "course-tunnel-interiors-gpt2-v1",
     *[f"course-scenery-{slug}-gpt2" for slug in (
         "sweets", "steam", "neon", "rain", "royal", "aurora", "jungle",
         "sakura", "coral", "phantom", "lunatic",
+    )],
+    *[f"course-scenery-{slug}-near-gpt2-v1" for slug in (
+        "jungle", "aurora", "sakura", "coral", "phantom", "lunatic",
+    )],
+    *[f"course-vfx-{effect}-gpt2-v1" for effect in (
+        "rain", "steam", "bubbles", "sakura", "snow", "fireflies",
+        "stardust",
     )],
     *[f"spectator-{slug}" for slug in (
         "pink-human", "blond-cookie", "cyan-cat", "purple-witch",
@@ -60,7 +69,7 @@ TRACKSIDE = [
 
 def runtime_sources() -> list[Path]:
     paths = [ASSETS / "environment" / f"{name}.png" for name in ENVIRONMENT]
-    paths += [ASSETS / "sprites" / f"{slug}.png" for slug in [*CAT_SLUGS, "mia-charme"]]
+    paths += [ASSETS / "sprites" / f"{slug}.png" for slug in [*CAT_SLUGS, "mia-charme", "mia-throw-gpt2-v1"]]
     paths += [ASSETS / "select-heroes" / f"{slug}.png" for slug in CAT_SLUGS]
     paths += [ASSETS / "ui" / f"{name}.png" for name in UI]
     paths += [ASSETS / "trackside" / f"{name}.png" for name in TRACKSIDE]
