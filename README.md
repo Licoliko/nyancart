@@ -20,7 +20,11 @@ Twinkle Sweets, Gear Clock, and Aurora Glacier now corner-cut their single-point
 
 Course start/finish rendering was stabilized on circuits where the start line sat on a sharp route seam. Gear Clock, Emerald Ruins, and Twinkle Sweets now use smoother internal start-line placement. Course scenery props now favor opaque rendering with a separate fog layer instead of semi-transparent prop bodies, and newly added circuits no longer reuse unrelated legacy prop sets.
 
-きらめきスイーツサーキットを舞台にした、3周制のブラウザ・カートレースゲームです。GPT Image 2.0で制作した18人分の14方向スプライト、スイーツコース背景、アイテム、VFXを使用しています。
+11のサーキットを2周で競うブラウザ・カートレースゲームです。GPT Image 2.0で制作した24人分の14方向スプライト、コース背景、VFXを使用しています。
+
+コース上の猫缶を取ると短い開封アニメーションが入り、順位に応じて重み付けされた4種のオリジナルギアから1つが自動で決まります。難しいモード選択はなく、決定後は1ボタンで使用できます。NPCも同じ猫缶抽選を使い、性格・順位・被弾・標的位置を見てギアを使います。コース上のコインは1枚につき所持コイン3枚、完走報酬は1位50枚（順位に応じて最低10枚）です。
+
+ボスNPCのミア・シャルムは、プレイヤーの前方にいる時だけ、時々後ろを振り向く4コマの予備動作を見せます。その後に猫の骨か空の猫缶を後方へ投げ、骨は強めの減速、空き缶は軽い減速と横ぶれを与えます。ベルガード中は防御できます。NORMALは投げる0.72秒前から振り向き、次の投擲まで8.5〜12秒あるため見てから回避できます。HARDは予備動作0.42秒・間隔3.2〜5.2秒となり、同一ルート上で連続回避と反撃の駆け引きが続きます。
 
 レース画面は2.5D疑似3D方式です。速度に応じて画角、地平線、路面幅、反射線、頭上ゲート、速度線、カメラロール、車体の上下動が変化します。スピードメーターと全体マップ上の各レーサー位置もリアルタイムに更新されます。
 
@@ -50,7 +54,7 @@ Course start/finish rendering was stabilized on circuits where the start line sa
 - アクセル: `↑`（離すと減速し、停止します）
 - ブレーキ: `↓`
 - ドリフト／ミニターボ: `Shift` + ハンドル
-- アイテム: `Space`
+- 猫缶ギア（開封後に使用）: `Space`
 - スタートダッシュ: カウント「2」からアクセルを押し続ける
 - ポーズ: `Esc`
 
@@ -64,7 +68,7 @@ Course start/finish rendering was stabilized on circuits where the start line sa
 - RT／A: アクセル
 - LT／B: ブレーキ
 - RB／LB: ドリフト
-- X: アイテム
+- X: 猫缶ギアを使用
 - START: ポーズ
 
 描画方式の比較と採用理由は `RACE_RENDERING_DECISION.md` にまとめています。

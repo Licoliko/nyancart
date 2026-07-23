@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=40" />
+  <link rel="stylesheet" href="style.css?v=41" />
 </head>
 <body>
   <main id="app">
@@ -91,7 +91,7 @@
             <span><b>RT / A</b>アクセル</span>
             <span><b>LT / B</b>ブレーキ</span>
             <span><b>RB / LB</b>ドリフト</span>
-            <span><b>X</b>アイテム</span>
+            <span><b>X</b>猫缶ギア</span>
             <span><b>START</b>ポーズ</span>
           </div>
           <button id="controllerVibrationToggle" class="setting-toggle" type="button" aria-pressed="true">SLIP VIBRATION ON</button>
@@ -194,7 +194,7 @@
             </div>
             <div id="courseFeatureChips" class="course-feature-chips" aria-label="コースの特徴"></div>
             <div class="course-route-cards">
-              <span><small>LEFT ROUTE</small><strong id="courseLeftRoute">SUGAR ARC</strong><em id="courseLeftMetric">ITEM / SCENIC</em></span>
+              <span><small>LEFT ROUTE</small><strong id="courseLeftRoute">SUGAR ARC</strong><em id="courseLeftMetric">CAT CAN / SCENIC</em></span>
               <span><small>RIGHT ROUTE</small><strong id="courseRightRoute">CREAM DASH</strong><em id="courseRightMetric">SHORT / BOOST</em></span>
             </div>
           </aside>
@@ -260,7 +260,7 @@
       <div class="minimap"><canvas id="courseMap" width="240" height="300" aria-label="コース全体マップ"></canvas><small>FULL COURSE</small></div>
       <div class="bottom-left">
         <div class="coin-pill">● <strong id="coins">00</strong></div>
-        <div class="item-box"><canvas id="itemIcon" width="92" height="92" aria-label="所持アイテム"></canvas><small id="itemKeyHint">SPACE</small></div>
+        <div class="item-box cat-can" data-gear="EMPTY"><canvas id="itemIcon" width="92" height="92" aria-label="猫缶ギアなし"></canvas><small id="itemKeyHint">SPACE</small></div>
       </div>
       <button id="musicToggle" class="music-toggle" aria-label="BGMの再生と停止">♫</button>
       <button id="raceSettings" class="race-settings" aria-label="設定を開く">⚙</button>
@@ -370,7 +370,7 @@
 
     <div id="mobileControls" class="mobile-controls hidden">
       <div class="steer"><button data-key="left" class="left-touch" aria-label="左へ曲がる"></button><button data-key="right" class="right-touch" aria-label="右へ曲がる"></button></div>
-      <div class="actions"><button data-key="brake" class="brake-touch" aria-label="ブレーキ"></button><button data-key="item" class="item-touch" aria-label="アイテムを使う"></button><button data-key="drift" class="boost-touch" aria-label="ドリフト"></button><button data-key="accel" class="accel-touch" aria-label="アクセル"></button></div>
+      <div class="actions"><button data-key="brake" class="brake-touch" aria-label="ブレーキ"></button><button data-key="item" class="item-touch" aria-label="猫缶ギアを使用"></button><button data-key="drift" class="boost-touch" aria-label="ドリフト"></button><button data-key="accel" class="accel-touch" aria-label="アクセル"></button></div>
     </div>
 
     <section id="qualityReport" class="quality-report hidden" aria-hidden="true" aria-labelledby="qualityTitle">
@@ -399,8 +399,8 @@
     </section>
   </main>
   <script src="assets/sprite-bounds.js?v=2"></script>
-  <script src="audio.js?v=7"></script>
-  <script src="game.js?v=95"></script>
-  <script src="quality.js?v=44"></script>
+  <script src="audio.js?v=8"></script>
+  <script src="game.js?v=97"></script>
+  <script src="quality.js?v=47"></script>
 </body>
 </html>

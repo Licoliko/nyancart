@@ -142,8 +142,9 @@
         case'go':this.tone({frequency:440,to:980,duration:.34,gain:.12*k,type:'sawtooth'});this.noise({duration:.28,gain:.08*k,frequency:420,to:2200});break;
         case'engineStart':{const p=this.profile();this.tone({frequency:p.baseHz,to:p.baseHz*2.6,duration:.38,gain:.07*k,type:p.wave});this.noise({duration:.19,gain:.035*k,frequency:170,to:680});break}
         case'coin':this.tone({frequency:880,to:1120,duration:.08,gain:.09*k,type:'sine'});this.tone({frequency:1320,to:1580,duration:.11,gain:.07*k,delay:.06,type:'sine'});break;
-        case'roulette':if(!this.allowed(name,62))return;this.tone({frequency:620+(variant%4)*95,to:690+(variant%4)*95,duration:.045,gain:.035*k,type:'square'});break;
-        case'itemGet':this.tone({frequency:520,to:1040,duration:.2,gain:.10*k,type:'triangle'});this.tone({frequency:780,to:1560,duration:.16,gain:.06*k,delay:.08});break;
+        case'catCan':this.tone({frequency:210,to:165,duration:.1,gain:.075*k,type:'square'});this.tone({frequency:680,to:920,duration:.12,gain:.04*k,delay:.045,type:'triangle'});break;
+        case'catCanOpen':if(!this.allowed(name,75))return;this.tone({frequency:520+variant*115,to:650+variant*150,duration:.065,gain:.048*k,type:variant>1?'triangle':'square'});if(variant===3)this.noise({duration:.11,gain:.035*k,frequency:2100,to:620,Q:2});break;
+        case'itemGet':this.tone({frequency:620,to:880,duration:.12,gain:.075*k,type:'triangle'});this.tone({frequency:930,to:1420,duration:.15,gain:.052*k,delay:.055,type:'sine'});break;
         case'boost':this.noise({duration:.38,gain:.12*k,frequency:260,to:2600});this.tone({frequency:85,to:240,duration:.32,gain:.10*k,type:'sawtooth'});break;
         case'driftCharge':if(!this.allowed(name,280))return;this.tone({frequency:760+variant*170,to:1040+variant*240,duration:.11,gain:.055*k,type:'square'});break;
         case'ramp':this.noise({duration:.28,gain:.10*k,frequency:240,to:1750});this.tone({frequency:120,to:520,duration:.34,gain:.09*k,type:'triangle'});break;
@@ -157,6 +158,10 @@
         case'rankUp':this.tone({frequency:520,to:820,duration:.13,gain:.075*k,type:'triangle'});this.tone({frequency:820,to:1240,duration:.16,gain:.055*k,delay:.06});break;
         case'rankDown':this.tone({frequency:480,to:210,duration:.2,gain:.065*k,type:'sawtooth'});break;
         case'mia':this.tone({frequency:92,to:54,duration:.48,gain:.15*k,type:'sawtooth'});this.tone({frequency:690,to:1380,duration:.4,gain:.07*k,delay:.14,type:'square'});this.noise({duration:.52,gain:.11*k,frequency:2200,to:240});break;
+        case'miaThrow':this.tone({frequency:variant?610:740,to:variant?470:560,duration:.22,gain:.065*k,type:'triangle'});this.tone({frequency:980,to:760,duration:.14,gain:.035*k,delay:.08,type:'square'});break;
+        case'miaThrowRelease':this.noise({duration:.18,gain:.075*k,frequency:1900,to:420,Q:1.6});this.tone({frequency:variant?240:340,to:variant?150:210,duration:.16,gain:.046*k,type:'sawtooth'});break;
+        case'miaBoneHit':this.tone({frequency:185,to:78,duration:.16,gain:.12*k,type:'square'});this.noise({duration:.14,gain:.1*k,frequency:1350,to:240,Q:.8});break;
+        case'miaCanHit':this.tone({frequency:720,to:290,duration:.18,gain:.09*k,type:'square'});this.tone({frequency:410,to:180,duration:.16,gain:.055*k,delay:.045,type:'triangle'});break;
         case'finish':this.noise({duration:.35,gain:.095*k,frequency:340,to:2300});for(let i=0;i<4;i++)this.tone({frequency:[523,659,784,1047][i],to:[600,760,900,1200][i],duration:.22,gain:.07*k,delay:i*.085,type:'triangle'});break;
       }
     }
