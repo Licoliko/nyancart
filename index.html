@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=41" />
+  <link rel="stylesheet" href="style.css?v=43" />
 </head>
 <body>
   <main id="app">
@@ -257,6 +257,11 @@
         <div class="lap-label">LAP <strong id="lap">1</strong><span id="lapTotal">/2</span></div>
         <div id="timer" class="timer">◷ 00:00.000</div>
       </div>
+      <div id="finalLapCallout" class="final-lap-callout" aria-live="assertive">
+        <i aria-hidden="true"></i>
+        <div><small>LAST CHANCE</small><strong>FINAL LAP</strong><span>GO FOR THE WIN!</span></div>
+        <i aria-hidden="true"></i>
+      </div>
       <div class="minimap"><canvas id="courseMap" width="240" height="300" aria-label="コース全体マップ"></canvas><small>FULL COURSE</small></div>
       <div class="bottom-left">
         <div class="coin-pill">● <strong id="coins">00</strong></div>
@@ -290,6 +295,12 @@
         <small>ROUTE SPLIT</small>
         <div><b class="route-left">‹ LEFT</b><strong>CHOOSE</strong><b class="route-right">RIGHT ›</b></div>
       </div>
+      <aside id="raceTutorial" class="race-tutorial" aria-live="polite" aria-hidden="true">
+        <span id="tutorialStep">01 / 03</span>
+        <div><small id="tutorialLabel">DRIVE</small><strong id="tutorialTitle">アクセルでスタート</strong><p id="tutorialCopy">アクセルを押してスピードを上げよう</p></div>
+        <kbd id="tutorialKey">↑ / R2</kbd>
+        <i><b id="tutorialProgress"></b></i>
+      </aside>
       <div id="toast" class="toast"></div>
       <div id="goalFx" class="goal-fx hidden" aria-live="polite">
         <div id="goalConfetti" class="goal-confetti"></div>
@@ -319,6 +330,29 @@
       <div id="introCount" class="intro-count"></div>
     </section>
 
+    <section id="courseLoading" class="course-loading hidden" aria-live="polite" aria-busy="false">
+      <div class="course-loading-backdrop"><img id="courseLoadingArt" alt=""><i></i></div>
+      <div class="course-loading-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="course-loading-card">
+        <header>
+          <small id="courseLoadingKicker">TRACK PACKAGE 01</small>
+          <h2 id="courseLoadingName">TWINKLE SWEETS</h2>
+          <p id="courseLoadingStyle">テクニカル＆トリッキー</p>
+        </header>
+        <div class="course-loading-route" aria-hidden="true">
+          <i class="course-loading-line"></i>
+          <span class="course-loading-kart"><b></b><em></em></span>
+        </div>
+        <div class="course-loading-meter">
+          <div><strong id="courseLoadingPercent">0%</strong><span id="courseLoadingTask">コースデータを確認中…</span></div>
+          <i><b id="courseLoadingBar"></b></i>
+        </div>
+        <div id="courseLoadingTasks" class="course-loading-tasks" aria-label="読み込み項目"></div>
+        <p id="courseLoadingHint" class="course-loading-hint">コーナーの出口へ視線を向けると、次のラインを選びやすくなります。</p>
+        <button id="courseLoadingRetry" class="course-loading-retry hidden" type="button">読み込みを再試行</button>
+      </div>
+    </section>
+
     <section id="miaIntrusion" class="mia-intrusion hidden" aria-live="assertive" aria-label="ミア・シャルム乱入">
       <div class="mia-intrusion-card">
         <img src="assets/ui/mia-charme-intrusion-gpt2-v2.webp" alt="空中からカートで乱入するミア・シャルム">
@@ -345,6 +379,12 @@
         <div class="result-panel">
           <p class="eyebrow">RESULT BOARD</p>
           <div id="resultRows" class="result-rows"></div>
+          <div id="resultTally" class="result-tally" aria-live="polite">
+            <div class="result-tally-row time" data-result-stage="time"><small>RACE TIME</small><strong id="resultTallyTime">00:00.000</strong><span id="resultTallyTimeNote">OFFICIAL</span></div>
+            <div class="result-tally-row record" data-result-stage="record"><small>COURSE RECORD</small><strong id="resultTallyRecord">FIRST RECORD</strong><span id="resultTallyRecordNote">NEW</span></div>
+            <div class="result-tally-row coins" data-result-stage="coins"><small>COINS EARNED</small><strong id="resultTallyCoins">+0</strong><span id="resultTallyWallet">TOTAL 0</span></div>
+            <div class="result-tally-row unlock" data-result-stage="unlock"><small>NEXT UNLOCK</small><strong id="resultTallyUnlock">ALL RACERS READY</strong><i><b id="resultTallyUnlockBar"></b></i></div>
+          </div>
           <div class="result-accolades">
             <div id="clearDifficultyBadge" class="clear-difficulty-badge normal"><small>GRAND PRIX</small><strong>NORMAL CLEAR</strong><span>DIFFICULTY BADGE</span></div>
             <div id="resultRewards" class="result-rewards" aria-live="polite"></div>
@@ -365,6 +405,12 @@
       </div>
       <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
     </section>
+
+    <div id="screenTransition" class="screen-transition" aria-hidden="true">
+      <div class="screen-transition-speedlines" aria-hidden="true"></div>
+      <div class="screen-transition-kart" aria-hidden="true"><i></i><b></b></div>
+      <strong>NYAN CART</strong>
+    </div>
 
     <div id="controllerMenuHint" class="controller-menu-hint hidden" aria-hidden="true"><span><b>LS / D-PAD</b> 選択</span><span><b>A</b> 決定</span><span><b>B</b> 戻る</span></div>
 
@@ -399,8 +445,8 @@
     </section>
   </main>
   <script src="assets/sprite-bounds.js?v=2"></script>
-  <script src="audio.js?v=8"></script>
-  <script src="game.js?v=97"></script>
-  <script src="quality.js?v=47"></script>
+  <script src="audio.js?v=10"></script>
+  <script src="game.js?v=99"></script>
+  <script src="quality.js?v=49"></script>
 </body>
 </html>
