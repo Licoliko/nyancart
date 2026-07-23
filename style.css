@@ -353,6 +353,8 @@ button.ui-pressed:not(.set-card){translate:0 var(--ui-press-depth);scale:.975;tr
 .course-loading-task.active:before{background:var(--load-accent);box-shadow:0 0 10px var(--load-accent);animation:courseLoadPulse .55s ease-in-out infinite alternate}
 .course-loading-task.ready{color:#fff2ae}
 .course-loading-task.ready:before{background:#6cf0a9;box-shadow:0 0 8px #6cf0a9}
+.course-loading-task.recovered{color:#ffe49c;border-color:#ffbd4b55;background:#ffb22910}
+.course-loading-task.recovered:before{background:#ffbd4b;box-shadow:0 0 8px #ffbd4b}
 .course-loading-hint{margin:15px 0 0;padding:10px 13px;border-left:4px solid var(--load-accent2);border-radius:7px;background:#ffffff09;color:#d3cfe4;font-size:9px;font-weight:800;line-height:1.55}
 .course-loading-retry{display:block;margin:14px auto 0;padding:10px 22px;border:2px solid #ff849e;border-radius:999px;background:#4b1734;color:#fff;font:900 11px 'Noto Sans JP'}
 .course-loading.error .course-loading-meter span{color:#ff9eb2}.course-loading.error .course-loading-card{border-color:#ff607f}
