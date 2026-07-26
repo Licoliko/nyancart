@@ -34,7 +34,9 @@ $catSlugs = @(
     "tick-abyssinian", "flora-turkishvan", "reska-americancurl",
     "cleo-mau", "ciel-norwegian", "sucre-persian",
     "moka-oriental", "garnet-bengal", "rinka-somali",
-    "stella-russianblue", "honey-british", "liber-birman"
+    "stella-russianblue", "honey-british", "liber-birman",
+    "masuka-chartreux", "soyi-tonkinese", "shino-cornish",
+    "aroma-balinese", "matsuri-japanese-bobtail"
 )
 $portraitSlugs = $catSlugs[0..11]
 
@@ -44,7 +46,8 @@ $files.Add("assets/sprite-bounds.js")
 $files.Add("assets/runtime-image-manifest.json")
 $files.AddRange([string[]]@(
     "assets/audio/n(ya)itro_cat_grand_prix.mp3",
-    "assets/audio/drigt_swing_nya.mp3"
+    "assets/audio/drigt_swing_nya.mp3",
+    "assets/audio/phantom_gear_parade.mp3"
 ))
 foreach ($slug in $portraitSlugs) {
     $files.Add("assets/portraits/$slug.webp")
@@ -64,7 +67,9 @@ $unlistedRuntimeImages = @(
     Get-ChildItem -LiteralPath @(
         (Join-Path $root "assets/environment"),
         (Join-Path $root "assets/sprites"),
+        (Join-Path $root "assets/select-chibis"),
         (Join-Path $root "assets/select-heroes"),
+        (Join-Path $root "assets/skill-cutins"),
         (Join-Path $root "assets/ui"),
         (Join-Path $root "assets/trackside")
     ) -Filter "*.webp" -File |

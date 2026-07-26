@@ -30,13 +30,48 @@
     'honey-british':{label:'HONEYCOMB BUZZ',concept:'蜂の羽音を丸く整えたハニカムブースター',wave:'square',harmonicWave:'triangle',baseHz:62,harmonic:1.51,filter:1320,resonance:8.5,roughness:.16,pulse:14.2,pulseDepth:12,air:.10},
     'liber-birman':{label:'BOOKLINER PHANTOM',concept:'ページをめくる風と幻影倍音のブックライナー',wave:'sine',harmonicWave:'sawtooth',baseHz:46,harmonic:2.65,filter:1580,resonance:9.5,roughness:.11,pulse:1.7,pulseDepth:17,air:.28}
   };
+  Object.assign(MACHINE_PROFILES,{
+    'masuka-chartreux':{label:'MUSCAT JEWEL DRIVE',concept:'果汁結晶が澄んで回るジュエルグライダー',wave:'sine',harmonicWave:'triangle',baseHz:56,harmonic:2.76,filter:1780,resonance:12,roughness:.04,pulse:1.6,pulseDepth:9,air:.20},
+    'soyi-tonkinese':{label:'STITCH SERVO',concept:'ミシンの縫い目を刻む精密ステッチサーボ',wave:'square',harmonicWave:'triangle',baseHz:64,harmonic:2.48,filter:1460,resonance:8,roughness:.11,pulse:11.8,pulseDepth:12,air:.06},
+    'shino-cornish':{label:'SHADOW SCROLL',concept:'巻物ホイールが低く忍ぶ影走りモーター',wave:'sine',harmonicWave:'sawtooth',baseHz:37,harmonic:2.68,filter:890,resonance:10,roughness:.16,pulse:2.1,pulseDepth:17,air:.26},
+    'aroma-balinese':{label:'MIRAGE DIFFUSER',concept:'香りの霧が静かに広がるミラージュ駆動',wave:'sine',harmonicWave:'triangle',baseHz:54,harmonic:3.08,filter:1840,resonance:13,roughness:.03,pulse:1.35,pulseDepth:12,air:.38},
+    'matsuri-japanese-bobtail':{label:'MATSURI TAIKO',concept:'太鼓と屋台囃子の拍で弾むお祭りエンジン',wave:'square',harmonicWave:'sawtooth',baseHz:42,harmonic:1.52,filter:980,resonance:4.2,roughness:.27,pulse:7.6,pulseDepth:15,air:.12}
+  });
   const FALLBACK={label:'NYAN RACING MOTOR',concept:'軽快な猫型レーシングモーター',wave:'triangle',harmonicWave:'sine',baseHz:48,harmonic:2,filter:1000,resonance:5,roughness:.15,pulse:3,pulseDepth:6,air:.1};
+  const SIGNATURE_AUDIO_PROFILES=Object.freeze({
+    prism:{root:523,wave:'triangle',from:.58,to:2.12,interval:1.5,pulses:3,noise:.018},
+    shadow:{root:196,wave:'sine',from:1.42,to:.62,interval:1.34,pulses:2,noise:.034},
+    claw:{root:138,wave:'sawtooth',from:.72,to:1.92,interval:1.22,pulses:2,noise:.095},
+    phantom:{root:233,wave:'triangle',from:1.7,to:.72,interval:1.62,pulses:3,noise:.042},
+    wave:{root:392,wave:'sine',from:.76,to:1.72,interval:1.5,pulses:3,noise:.025},
+    wing:{root:587,wave:'triangle',from:.62,to:1.86,interval:1.34,pulses:3,noise:.046},
+    roar:{root:110,wave:'sawtooth',from:.8,to:1.52,interval:2,pulses:2,noise:.12},
+    clock:{root:440,wave:'square',from:.86,to:1.52,interval:1.25,pulses:4,noise:.018},
+    steam:{root:98,wave:'sawtooth',from:.65,to:2.18,interval:1.5,pulses:2,noise:.13},
+    tea:{root:494,wave:'sine',from:.72,to:1.56,interval:1.67,pulses:3,noise:.014},
+    crystal:{root:659,wave:'triangle',from:.82,to:1.9,interval:1.5,pulses:3,noise:.036},
+    note:{root:587,wave:'square',from:.72,to:2.24,interval:1.26,pulses:4,noise:.026},
+    bloom:{root:440,wave:'sine',from:.68,to:1.78,interval:1.6,pulses:3,noise:.018},
+    rescue:{root:330,wave:'square',from:.72,to:1.66,interval:1.5,pulses:3,noise:.036},
+    scarab:{root:123,wave:'sawtooth',from:.66,to:1.82,interval:1.42,pulses:3,noise:.11},
+    wind:{root:554,wave:'sine',from:.7,to:2.04,interval:1.5,pulses:3,noise:.052},
+    flame:{root:294,wave:'sawtooth',from:.58,to:2.3,interval:1.5,pulses:3,noise:.084},
+    trace:{root:466,wave:'triangle',from:.78,to:1.6,interval:1.42,pulses:3,noise:.012},
+    cloud:{root:392,wave:'triangle',from:.62,to:1.92,interval:1.67,pulses:3,noise:.038},
+    aurora:{root:622,wave:'sine',from:.66,to:1.88,interval:1.5,pulses:4,noise:.02},
+    hex:{root:247,wave:'square',from:.82,to:1.48,interval:1.5,pulses:3,noise:.042},
+    page:{root:415,wave:'triangle',from:1.3,to:.78,interval:1.62,pulses:3,noise:.035},
+    fruit:{root:523,wave:'sine',from:.72,to:1.7,interval:1.34,pulses:3,noise:.024},
+    stitch:{root:698,wave:'square',from:.86,to:1.46,interval:1.2,pulses:4,noise:.02},
+    aroma:{root:466,wave:'sine',from:.64,to:1.62,interval:1.78,pulses:4,noise:.014},
+    festival:{root:147,wave:'square',from:.7,to:2.12,interval:1.5,pulses:4,noise:.105}
+  });
 
   class NyanAudioSystem{
     constructor(){
       this.context=null;this.master=null;this.compressor=null;this.engineBus=null;this.rivalBus=null;this.sfxBus=null;this.raceTone=null;this.tunnelSend=null;this.tunnelConvolver=null;this.tunnelReturn=null;this.engine=null;
       this.machineSlug='';this.machineStats=null;this.running=false;this.mix={master:.8,effects:.72,muted:false};
-      this.lastPlayed=new Map();this.previewTimer=0;this.noiseBuffer=null;this.rivalVoices=new Map();this.maxRivalVoices=3;this.dopplerEnabled=true;this.tunnelReverbEnabled=true;this.tunnelMix=0;this.surfaceAudio='dry';this.surfaceAudioLevel=0;this.surfacePan=0;this.enginePan=0;this.pickupRespawnPan=0;this.pickupRespawnCount=0;this.supported=!!(window.AudioContext||window.webkitAudioContext);
+      this.lastPlayed=new Map();this.previewTimer=0;this.noiseBuffer=null;this.rivalVoices=new Map();this.maxRivalVoices=3;this.dopplerEnabled=true;this.tunnelReverbEnabled=true;this.tunnelMix=0;this.surfaceAudio='dry';this.surfaceAudioLevel=0;this.surfacePan=0;this.enginePan=0;this.pickupRespawnPan=0;this.pickupRespawnCount=0;this.lastSignatureCue='none';this.signatureCueCount=0;this.lastPlayerSignatureCue='none';this.playerSignatureCueCount=0;this.supported=!!(window.AudioContext||window.webkitAudioContext);
       const unlock=()=>this.unlock();
       addEventListener('pointerdown',unlock,{passive:true});addEventListener('touchstart',unlock,{passive:true});addEventListener('keydown',unlock);
     }
@@ -122,7 +157,7 @@
       for(const [slug,voice] of this.rivalVoices)if(!active.has(slug))this.retireRivalVoice(slug,voice);
     }
     getRivalDebug(){return[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).map(voice=>voice.slug).slice(0,this.maxRivalVoices)}
-    getAcousticsDebug(){return{tunnelMix:this.tunnelMix,surfaceAudio:this.surfaceAudio,surfaceAudioLevel:this.surfaceAudioLevel,surfacePan:this.surfacePan,enginePan:this.enginePan,pickupRespawnPan:this.pickupRespawnPan,pickupRespawnCount:this.pickupRespawnCount,rivals:[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).slice(0,this.maxRivalVoices).map(voice=>({slug:voice.slug,doppler:voice.doppler}))}}
+    getAcousticsDebug(){return{tunnelMix:this.tunnelMix,surfaceAudio:this.surfaceAudio,surfaceAudioLevel:this.surfaceAudioLevel,surfacePan:this.surfacePan,enginePan:this.enginePan,pickupRespawnPan:this.pickupRespawnPan,pickupRespawnCount:this.pickupRespawnCount,lastSignatureCue:this.lastSignatureCue,signatureCueCount:this.signatureCueCount,lastPlayerSignatureCue:this.lastPlayerSignatureCue,playerSignatureCueCount:this.playerSignatureCueCount,rivals:[...this.rivalVoices.values()].filter(voice=>!voice.retireTimer).slice(0,this.maxRivalVoices).map(voice=>({slug:voice.slug,doppler:voice.doppler}))}}
     allowed(name,interval=0){const now=performance.now(),last=this.lastPlayed.get(name)||-Infinity;if(now-last<interval)return false;this.lastPlayed.set(name,now);return true}
     tone({frequency=440,to=frequency,type='sine',duration=.12,gain=.12,delay=0,attack=.006,detune=0,bus=null,pan=0}={}){
       const context=this.unlock();bus=bus||this.sfxBus;if(!context||!bus)return;const start=context.currentTime+delay,end=start+duration,osc=context.createOscillator(),amp=context.createGain(),panner=context.createStereoPanner?.()||null;osc.type=type;osc.detune.value=detune;osc.frequency.setValueAtTime(Math.max(20,frequency),start);osc.frequency.exponentialRampToValueAtTime(Math.max(20,to),end);amp.gain.setValueAtTime(.0001,start);amp.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),start+Math.min(attack,duration*.3));amp.gain.exponentialRampToValueAtTime(.0001,end);osc.connect(amp);if(panner){panner.pan.value=Math.max(-1,Math.min(1,Number(pan)||0));amp.connect(panner);panner.connect(bus)}else amp.connect(bus);osc.onended=()=>{try{amp.disconnect()}catch{}try{panner?.disconnect()}catch{}};osc.start(start);osc.stop(end+.03)
@@ -132,7 +167,7 @@
     }
     previewMachine(slug,stats){clearTimeout(this.previewTimer);this.previewTimer=setTimeout(()=>{this.setMachine(slug,stats);if(!this.allowed('machinePreview',190))return;const p=this.profile(slug);this.tone({frequency:p.baseHz*2.2,to:p.baseHz*4.1,type:p.wave,duration:.25,gain:.055});this.tone({frequency:p.baseHz*p.harmonic*2,to:p.baseHz*p.harmonic*3.1,type:p.harmonicWave,duration:.2,gain:.026,delay:.035});if(p.air>.2)this.noise({duration:.22,gain:p.air*.045,frequency:420,to:1700})},150)}
     playPickupRespawn({pan=0,type='item',distance=0}={}){if(this.mix.muted||this.mix.effects<=0||!this.allowed('pickupRespawn',72))return false;const safePan=Math.max(-.88,Math.min(.88,Number(pan)||0)),range=Math.max(0,Math.abs(Number(distance)||0)),falloff=Math.max(.14,Math.pow(Math.max(0,1-range/285),1.28)),base=type==='coin'?1040:type==='pad'?660:880,level=(type==='item'?.027:.021)*falloff;this.pickupRespawnPan=safePan;this.pickupRespawnCount++;this.tone({frequency:base,to:base*1.34,type:'sine',duration:.105,gain:level,attack:.004,pan:safePan});this.tone({frequency:base*1.52,to:base*1.9,type:'triangle',duration:.11,gain:level*.52,delay:.038,attack:.005,pan:safePan*.92});return true}
-    play(name,{intensity=1,variant=0}={}){
+    play(name,{intensity=1,variant=0,cue='prism',role='world'}={}){
       if(this.mix.muted||this.mix.effects<=0)return;const k=Math.max(.35,Math.min(1.5,intensity));
       switch(name){
         case'uiMove':if(!this.allowed(name,55))return;this.tone({frequency:430,to:580,duration:.055,gain:.045*k,type:'triangle'});break;
@@ -146,6 +181,7 @@
         case'catCanOpen':if(!this.allowed(name,75))return;this.tone({frequency:520+variant*115,to:650+variant*150,duration:.065,gain:.048*k,type:variant>1?'triangle':'square'});if(variant===3)this.noise({duration:.11,gain:.035*k,frequency:2100,to:620,Q:2});break;
         case'itemGet':this.tone({frequency:620,to:880,duration:.12,gain:.075*k,type:'triangle'});this.tone({frequency:930,to:1420,duration:.15,gain:.052*k,delay:.055,type:'sine'});break;
         case'boost':this.noise({duration:.38,gain:.12*k,frequency:260,to:2600});this.tone({frequency:85,to:240,duration:.32,gain:.10*k,type:'sawtooth'});break;
+        case'signature':{const profile=SIGNATURE_AUDIO_PROFILES[cue]||SIGNATURE_AUDIO_PROFILES.prism,index=Math.abs(Number(variant)||0),pitch=Math.pow(2,((index%7)-3)/36),root=profile.root*pitch,duration=.22+Math.min(4,profile.pulses)*.018;this.lastSignatureCue=cue;this.signatureCueCount++;if(role==='player'){this.lastPlayerSignatureCue=cue;this.playerSignatureCueCount++}this.tone({frequency:root*profile.from,to:root*profile.to,duration:duration+.08,gain:.072*k,type:profile.wave});this.tone({frequency:root,to:root*profile.interval,duration:duration+.12,gain:.052*k,delay:.045,type:profile.wave==='sine'?'triangle':'sine'});for(let i=0;i<profile.pulses;i++)this.tone({frequency:root*(1+i*.12),to:root*(profile.interval+i*.16),duration:.075+i*.012,gain:(.038-i*.004)*k,delay:.08+i*.055,type:i%2?'triangle':profile.wave});if(profile.noise>0)this.noise({duration:duration+.12,gain:profile.noise*k,frequency:profile.from>profile.to?2100:360,to:profile.from>profile.to?280:2500,Q:profile.noise>.08?.8:1.8,delay:.015});break}
         case'driftCharge':if(!this.allowed(name,280))return;this.tone({frequency:760+variant*170,to:1040+variant*240,duration:.11,gain:.055*k,type:'square'});break;
         case'ramp':this.noise({duration:.28,gain:.10*k,frequency:240,to:1750});this.tone({frequency:120,to:520,duration:.34,gain:.09*k,type:'triangle'});break;
         case'land':this.tone({frequency:96,to:42,duration:.22,gain:.16*k,type:'sine'});this.noise({duration:.23,gain:.13*k,frequency:520,to:100});break;
@@ -177,4 +213,5 @@
 
   window.NyanAudio=new NyanAudioSystem();
   window.NYAN_MACHINE_AUDIO_PROFILES=MACHINE_PROFILES;
+  window.NYAN_SIGNATURE_AUDIO_PROFILES=SIGNATURE_AUDIO_PROFILES;
 })();

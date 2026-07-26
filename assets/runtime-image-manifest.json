@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 133,
-  "sourceBytes": 166923428,
-  "outputBytes": 68636882,
-  "savedBytes": 98286546,
-  "savedPercent": 58.88,
+  "files": 201,
+  "sourceBytes": 284416137,
+  "outputBytes": 99806036,
+  "savedBytes": 184610101,
+  "savedPercent": 64.91,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -14,8 +14,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2093284,
-      "outputBytes": 293858,
-      "savedBytes": 1799426
+      "outputBytes": 303086,
+      "savedBytes": 1790198
     },
     {
       "source": "assets/environment/course-sweets.png",
@@ -25,8 +25,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2717129,
-      "outputBytes": 471416,
-      "savedBytes": 2245713
+      "outputBytes": 481274,
+      "savedBytes": 2235855
     },
     {
       "source": "assets/environment/course-steam.png",
@@ -36,8 +36,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 3032511,
-      "outputBytes": 592178,
-      "savedBytes": 2440333
+      "outputBytes": 611680,
+      "savedBytes": 2420831
     },
     {
       "source": "assets/environment/course-neon.png",
@@ -47,8 +47,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2806258,
-      "outputBytes": 505704,
-      "savedBytes": 2300554
+      "outputBytes": 515730,
+      "savedBytes": 2290528
     },
     {
       "source": "assets/environment/course-rain.png",
@@ -58,8 +58,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 3061248,
-      "outputBytes": 593006,
-      "savedBytes": 2468242
+      "outputBytes": 610436,
+      "savedBytes": 2450812
     },
     {
       "source": "assets/environment/course-royal.png",
@@ -69,8 +69,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2991420,
-      "outputBytes": 576090,
-      "savedBytes": 2415330
+      "outputBytes": 590924,
+      "savedBytes": 2400496
     },
     {
       "source": "assets/environment/course-aurora.png",
@@ -80,8 +80,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2944598,
-      "outputBytes": 578006,
-      "savedBytes": 2366592
+      "outputBytes": 590256,
+      "savedBytes": 2354342
     },
     {
       "source": "assets/environment/course-jungle.png",
@@ -91,8 +91,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 3213015,
-      "outputBytes": 652194,
-      "savedBytes": 2560821
+      "outputBytes": 673358,
+      "savedBytes": 2539657
     },
     {
       "source": "assets/environment/course-sakura.png",
@@ -102,8 +102,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 3120998,
-      "outputBytes": 589302,
-      "savedBytes": 2531696
+      "outputBytes": 605448,
+      "savedBytes": 2515550
     },
     {
       "source": "assets/environment/course-coral.png",
@@ -113,8 +113,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2883457,
-      "outputBytes": 566140,
-      "savedBytes": 2317317
+      "outputBytes": 578734,
+      "savedBytes": 2304723
     },
     {
       "source": "assets/environment/course-phantom.png",
@@ -124,8 +124,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2728577,
-      "outputBytes": 519946,
-      "savedBytes": 2208631
+      "outputBytes": 529056,
+      "savedBytes": 2199521
     },
     {
       "source": "assets/environment/course-lunatic.png",
@@ -135,8 +135,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 2804091,
-      "outputBytes": 508232,
-      "savedBytes": 2295859
+      "outputBytes": 515672,
+      "savedBytes": 2288419
     },
     {
       "source": "assets/environment/racer-set-garage.png",
@@ -146,8 +146,8 @@
       "policy": "high-quality",
       "quality": 91,
       "sourceBytes": 1864604,
-      "outputBytes": 182774,
-      "savedBytes": 1681830
+      "outputBytes": 187270,
+      "savedBytes": 1677334
     },
     {
       "source": "assets/sprites/aruka-sham.png",
@@ -157,8 +157,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1143009,
-      "outputBytes": 812480,
-      "savedBytes": 330529
+      "outputBytes": 838086,
+      "savedBytes": 304923
     },
     {
       "source": "assets/sprites/kurone-night.png",
@@ -168,8 +168,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1043502,
-      "outputBytes": 762870,
-      "savedBytes": 280632
+      "outputBytes": 789920,
+      "savedBytes": 253582
     },
     {
       "source": "assets/sprites/kohaku-taiga.png",
@@ -179,8 +179,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1377627,
-      "outputBytes": 1054460,
-      "savedBytes": 323167
+      "outputBytes": 1086858,
+      "savedBytes": 290769
     },
     {
       "source": "assets/sprites/ghost-rex.png",
@@ -190,8 +190,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1347172,
-      "outputBytes": 967108,
-      "savedBytes": 380064
+      "outputBytes": 1000438,
+      "savedBytes": 346734
     },
     {
       "source": "assets/sprites/nerine-korat.png",
@@ -201,8 +201,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1276525,
-      "outputBytes": 933296,
-      "savedBytes": 343229
+      "outputBytes": 962754,
+      "savedBytes": 313771
     },
     {
       "source": "assets/sprites/fumika-scotty.png",
@@ -212,8 +212,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1186937,
-      "outputBytes": 887292,
-      "savedBytes": 299645
+      "outputBytes": 914060,
+      "savedBytes": 272877
     },
     {
       "source": "assets/sprites/bell-savanna.png",
@@ -223,8 +223,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1338677,
-      "outputBytes": 1011366,
-      "savedBytes": 327311
+      "outputBytes": 1048844,
+      "savedBytes": 289833
     },
     {
       "source": "assets/sprites/popo-munch.png",
@@ -234,8 +234,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1236880,
-      "outputBytes": 920458,
-      "savedBytes": 316422
+      "outputBytes": 946016,
+      "savedBytes": 290864
     },
     {
       "source": "assets/sprites/marron-maine.png",
@@ -245,8 +245,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1300065,
-      "outputBytes": 942596,
-      "savedBytes": 357469
+      "outputBytes": 968838,
+      "savedBytes": 331227
     },
     {
       "source": "assets/sprites/milfi-ragdoll.png",
@@ -256,8 +256,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1399823,
-      "outputBytes": 1011652,
-      "savedBytes": 388171
+      "outputBytes": 1050824,
+      "savedBytes": 348999
     },
     {
       "source": "assets/sprites/yukine-silky.png",
@@ -267,8 +267,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1322441,
-      "outputBytes": 917774,
-      "savedBytes": 404667
+      "outputBytes": 953602,
+      "savedBytes": 368839
     },
     {
       "source": "assets/sprites/rhythm-sphynx.png",
@@ -278,8 +278,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1258274,
-      "outputBytes": 956524,
-      "savedBytes": 301750
+      "outputBytes": 980318,
+      "savedBytes": 277956
     },
     {
       "source": "assets/sprites/tick-abyssinian.png",
@@ -289,8 +289,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1167090,
-      "outputBytes": 838598,
-      "savedBytes": 328492
+      "outputBytes": 864728,
+      "savedBytes": 302362
     },
     {
       "source": "assets/sprites/flora-turkishvan.png",
@@ -300,8 +300,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1224594,
-      "outputBytes": 920030,
-      "savedBytes": 304564
+      "outputBytes": 947964,
+      "savedBytes": 276630
     },
     {
       "source": "assets/sprites/reska-americancurl.png",
@@ -311,8 +311,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1346375,
-      "outputBytes": 1031506,
-      "savedBytes": 314869
+      "outputBytes": 1058010,
+      "savedBytes": 288365
     },
     {
       "source": "assets/sprites/cleo-mau.png",
@@ -322,8 +322,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1240468,
-      "outputBytes": 933016,
-      "savedBytes": 307452
+      "outputBytes": 959000,
+      "savedBytes": 281468
     },
     {
       "source": "assets/sprites/ciel-norwegian.png",
@@ -333,8 +333,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1185411,
-      "outputBytes": 868080,
-      "savedBytes": 317331
+      "outputBytes": 892374,
+      "savedBytes": 293037
     },
     {
       "source": "assets/sprites/sucre-persian.png",
@@ -344,8 +344,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1412783,
-      "outputBytes": 1041852,
-      "savedBytes": 370931
+      "outputBytes": 1068784,
+      "savedBytes": 343999
     },
     {
       "source": "assets/sprites/moka-oriental.png",
@@ -355,8 +355,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1251296,
-      "outputBytes": 872036,
-      "savedBytes": 379260
+      "outputBytes": 900706,
+      "savedBytes": 350590
     },
     {
       "source": "assets/sprites/garnet-bengal.png",
@@ -366,8 +366,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1433403,
-      "outputBytes": 1072186,
-      "savedBytes": 361217
+      "outputBytes": 1105902,
+      "savedBytes": 327501
     },
     {
       "source": "assets/sprites/rinka-somali.png",
@@ -377,8 +377,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1369782,
-      "outputBytes": 1018456,
-      "savedBytes": 351326
+      "outputBytes": 1050158,
+      "savedBytes": 319624
     },
     {
       "source": "assets/sprites/stella-russianblue.png",
@@ -388,8 +388,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1403057,
-      "outputBytes": 1006062,
-      "savedBytes": 396995
+      "outputBytes": 1038008,
+      "savedBytes": 365049
     },
     {
       "source": "assets/sprites/honey-british.png",
@@ -399,8 +399,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1473396,
-      "outputBytes": 1100134,
-      "savedBytes": 373262
+      "outputBytes": 1123780,
+      "savedBytes": 349616
     },
     {
       "source": "assets/sprites/liber-birman.png",
@@ -410,8 +410,63 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1322055,
-      "outputBytes": 944116,
-      "savedBytes": 377939
+      "outputBytes": 979052,
+      "savedBytes": 343003
+    },
+    {
+      "source": "assets/sprites/masuka-chartreux.png",
+      "output": "assets/sprites/masuka-chartreux.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1203273,
+      "outputBytes": 886310,
+      "savedBytes": 316963
+    },
+    {
+      "source": "assets/sprites/soyi-tonkinese.png",
+      "output": "assets/sprites/soyi-tonkinese.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1248052,
+      "outputBytes": 940742,
+      "savedBytes": 307310
+    },
+    {
+      "source": "assets/sprites/shino-cornish.png",
+      "output": "assets/sprites/shino-cornish.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1140446,
+      "outputBytes": 840960,
+      "savedBytes": 299486
+    },
+    {
+      "source": "assets/sprites/aroma-balinese.png",
+      "output": "assets/sprites/aroma-balinese.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1175072,
+      "outputBytes": 848800,
+      "savedBytes": 326272
+    },
+    {
+      "source": "assets/sprites/matsuri-japanese-bobtail.png",
+      "output": "assets/sprites/matsuri-japanese-bobtail.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1368946,
+      "outputBytes": 1106898,
+      "savedBytes": 262048
     },
     {
       "source": "assets/sprites/mia-charme.png",
@@ -421,8 +476,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1453731,
-      "outputBytes": 1062018,
-      "savedBytes": 391713
+      "outputBytes": 1094222,
+      "savedBytes": 359509
     },
     {
       "source": "assets/sprites/mia-throw-gpt2-v1.png",
@@ -432,8 +487,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 900922,
-      "outputBytes": 121230,
-      "savedBytes": 779692
+      "outputBytes": 630882,
+      "savedBytes": 270040
     },
     {
       "source": "assets/select-heroes/aruka-sham.png",
@@ -443,8 +498,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 964383,
-      "outputBytes": 616534,
-      "savedBytes": 347849
+      "outputBytes": 638550,
+      "savedBytes": 325833
     },
     {
       "source": "assets/select-heroes/kurone-night.png",
@@ -454,8 +509,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1102105,
-      "outputBytes": 731084,
-      "savedBytes": 371021
+      "outputBytes": 757826,
+      "savedBytes": 344279
     },
     {
       "source": "assets/select-heroes/kohaku-taiga.png",
@@ -465,8 +520,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1242039,
-      "outputBytes": 849930,
-      "savedBytes": 392109
+      "outputBytes": 880484,
+      "savedBytes": 361555
     },
     {
       "source": "assets/select-heroes/ghost-rex.png",
@@ -476,8 +531,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1349399,
-      "outputBytes": 892290,
-      "savedBytes": 457109
+      "outputBytes": 932938,
+      "savedBytes": 416461
     },
     {
       "source": "assets/select-heroes/nerine-korat.png",
@@ -487,8 +542,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1081967,
-      "outputBytes": 704870,
-      "savedBytes": 377097
+      "outputBytes": 731590,
+      "savedBytes": 350377
     },
     {
       "source": "assets/select-heroes/fumika-scotty.png",
@@ -498,8 +553,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1166322,
-      "outputBytes": 783052,
-      "savedBytes": 383270
+      "outputBytes": 808354,
+      "savedBytes": 357968
     },
     {
       "source": "assets/select-heroes/bell-savanna.png",
@@ -509,8 +564,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1180638,
-      "outputBytes": 800634,
-      "savedBytes": 380004
+      "outputBytes": 831720,
+      "savedBytes": 348918
     },
     {
       "source": "assets/select-heroes/popo-munch.png",
@@ -520,8 +575,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1215660,
-      "outputBytes": 813486,
-      "savedBytes": 402174
+      "outputBytes": 837240,
+      "savedBytes": 378420
     },
     {
       "source": "assets/select-heroes/marron-maine.png",
@@ -531,8 +586,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1217852,
-      "outputBytes": 803752,
-      "savedBytes": 414100
+      "outputBytes": 828256,
+      "savedBytes": 389596
     },
     {
       "source": "assets/select-heroes/milfi-ragdoll.png",
@@ -700,6 +755,699 @@
       "savedBytes": 432656
     },
     {
+      "source": "assets/select-heroes/masuka-chartreux.png",
+      "output": "assets/select-heroes/masuka-chartreux.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1267504,
+      "outputBytes": 902052,
+      "savedBytes": 365452
+    },
+    {
+      "source": "assets/select-heroes/soyi-tonkinese.png",
+      "output": "assets/select-heroes/soyi-tonkinese.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1296392,
+      "outputBytes": 903758,
+      "savedBytes": 392634
+    },
+    {
+      "source": "assets/select-heroes/shino-cornish.png",
+      "output": "assets/select-heroes/shino-cornish.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1279266,
+      "outputBytes": 921550,
+      "savedBytes": 357716
+    },
+    {
+      "source": "assets/select-heroes/aroma-balinese.png",
+      "output": "assets/select-heroes/aroma-balinese.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1569736,
+      "outputBytes": 1072104,
+      "savedBytes": 497632
+    },
+    {
+      "source": "assets/select-heroes/matsuri-japanese-bobtail.png",
+      "output": "assets/select-heroes/matsuri-japanese-bobtail.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1339492,
+      "outputBytes": 1000864,
+      "savedBytes": 338628
+    },
+    {
+      "source": "assets/select-chibis/aruka-sham.png",
+      "output": "assets/select-chibis/aruka-sham.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1250341,
+      "outputBytes": 240926,
+      "savedBytes": 1009415
+    },
+    {
+      "source": "assets/select-chibis/kurone-night.png",
+      "output": "assets/select-chibis/kurone-night.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1093741,
+      "outputBytes": 220416,
+      "savedBytes": 873325
+    },
+    {
+      "source": "assets/select-chibis/kohaku-taiga.png",
+      "output": "assets/select-chibis/kohaku-taiga.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1170093,
+      "outputBytes": 265052,
+      "savedBytes": 905041
+    },
+    {
+      "source": "assets/select-chibis/ghost-rex.png",
+      "output": "assets/select-chibis/ghost-rex.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1450086,
+      "outputBytes": 295884,
+      "savedBytes": 1154202
+    },
+    {
+      "source": "assets/select-chibis/nerine-korat.png",
+      "output": "assets/select-chibis/nerine-korat.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1195353,
+      "outputBytes": 238692,
+      "savedBytes": 956661
+    },
+    {
+      "source": "assets/select-chibis/fumika-scotty.png",
+      "output": "assets/select-chibis/fumika-scotty.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1201053,
+      "outputBytes": 249980,
+      "savedBytes": 951073
+    },
+    {
+      "source": "assets/select-chibis/bell-savanna.png",
+      "output": "assets/select-chibis/bell-savanna.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1199757,
+      "outputBytes": 260488,
+      "savedBytes": 939269
+    },
+    {
+      "source": "assets/select-chibis/popo-munch.png",
+      "output": "assets/select-chibis/popo-munch.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1240170,
+      "outputBytes": 257246,
+      "savedBytes": 982924
+    },
+    {
+      "source": "assets/select-chibis/marron-maine.png",
+      "output": "assets/select-chibis/marron-maine.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1319529,
+      "outputBytes": 268430,
+      "savedBytes": 1051099
+    },
+    {
+      "source": "assets/select-chibis/milfi-ragdoll.png",
+      "output": "assets/select-chibis/milfi-ragdoll.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1271740,
+      "outputBytes": 254402,
+      "savedBytes": 1017338
+    },
+    {
+      "source": "assets/select-chibis/yukine-silky.png",
+      "output": "assets/select-chibis/yukine-silky.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1346311,
+      "outputBytes": 262630,
+      "savedBytes": 1083681
+    },
+    {
+      "source": "assets/select-chibis/rhythm-sphynx.png",
+      "output": "assets/select-chibis/rhythm-sphynx.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1263432,
+      "outputBytes": 248000,
+      "savedBytes": 1015432
+    },
+    {
+      "source": "assets/select-chibis/tick-abyssinian.png",
+      "output": "assets/select-chibis/tick-abyssinian.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1389547,
+      "outputBytes": 312574,
+      "savedBytes": 1076973
+    },
+    {
+      "source": "assets/select-chibis/flora-turkishvan.png",
+      "output": "assets/select-chibis/flora-turkishvan.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1329737,
+      "outputBytes": 269368,
+      "savedBytes": 1060369
+    },
+    {
+      "source": "assets/select-chibis/reska-americancurl.png",
+      "output": "assets/select-chibis/reska-americancurl.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1375299,
+      "outputBytes": 298816,
+      "savedBytes": 1076483
+    },
+    {
+      "source": "assets/select-chibis/cleo-mau.png",
+      "output": "assets/select-chibis/cleo-mau.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1249693,
+      "outputBytes": 289204,
+      "savedBytes": 960489
+    },
+    {
+      "source": "assets/select-chibis/ciel-norwegian.png",
+      "output": "assets/select-chibis/ciel-norwegian.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1495840,
+      "outputBytes": 328516,
+      "savedBytes": 1167324
+    },
+    {
+      "source": "assets/select-chibis/sucre-persian.png",
+      "output": "assets/select-chibis/sucre-persian.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1489534,
+      "outputBytes": 314330,
+      "savedBytes": 1175204
+    },
+    {
+      "source": "assets/select-chibis/moka-oriental.png",
+      "output": "assets/select-chibis/moka-oriental.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1266014,
+      "outputBytes": 278644,
+      "savedBytes": 987370
+    },
+    {
+      "source": "assets/select-chibis/garnet-bengal.png",
+      "output": "assets/select-chibis/garnet-bengal.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1377464,
+      "outputBytes": 314146,
+      "savedBytes": 1063318
+    },
+    {
+      "source": "assets/select-chibis/rinka-somali.png",
+      "output": "assets/select-chibis/rinka-somali.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1293849,
+      "outputBytes": 321116,
+      "savedBytes": 972733
+    },
+    {
+      "source": "assets/select-chibis/stella-russianblue.png",
+      "output": "assets/select-chibis/stella-russianblue.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1373815,
+      "outputBytes": 308594,
+      "savedBytes": 1065221
+    },
+    {
+      "source": "assets/select-chibis/honey-british.png",
+      "output": "assets/select-chibis/honey-british.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1187856,
+      "outputBytes": 273636,
+      "savedBytes": 914220
+    },
+    {
+      "source": "assets/select-chibis/liber-birman.png",
+      "output": "assets/select-chibis/liber-birman.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1426525,
+      "outputBytes": 318358,
+      "savedBytes": 1108167
+    },
+    {
+      "source": "assets/select-chibis/masuka-chartreux.png",
+      "output": "assets/select-chibis/masuka-chartreux.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1416656,
+      "outputBytes": 296576,
+      "savedBytes": 1120080
+    },
+    {
+      "source": "assets/select-chibis/soyi-tonkinese.png",
+      "output": "assets/select-chibis/soyi-tonkinese.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1086405,
+      "outputBytes": 232262,
+      "savedBytes": 854143
+    },
+    {
+      "source": "assets/select-chibis/shino-cornish.png",
+      "output": "assets/select-chibis/shino-cornish.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1228282,
+      "outputBytes": 262128,
+      "savedBytes": 966154
+    },
+    {
+      "source": "assets/select-chibis/aroma-balinese.png",
+      "output": "assets/select-chibis/aroma-balinese.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1676284,
+      "outputBytes": 356696,
+      "savedBytes": 1319588
+    },
+    {
+      "source": "assets/select-chibis/matsuri-japanese-bobtail.png",
+      "output": "assets/select-chibis/matsuri-japanese-bobtail.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1625880,
+      "outputBytes": 364206,
+      "savedBytes": 1261674
+    },
+    {
+      "source": "assets/skill-cutins/aruka-sham.png",
+      "output": "assets/skill-cutins/aruka-sham.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2243687,
+      "outputBytes": 316734,
+      "savedBytes": 1926953
+    },
+    {
+      "source": "assets/skill-cutins/kurone-night.png",
+      "output": "assets/skill-cutins/kurone-night.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2093331,
+      "outputBytes": 248866,
+      "savedBytes": 1844465
+    },
+    {
+      "source": "assets/skill-cutins/kohaku-taiga.png",
+      "output": "assets/skill-cutins/kohaku-taiga.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2332650,
+      "outputBytes": 357572,
+      "savedBytes": 1975078
+    },
+    {
+      "source": "assets/skill-cutins/ghost-rex.png",
+      "output": "assets/skill-cutins/ghost-rex.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2168900,
+      "outputBytes": 285904,
+      "savedBytes": 1882996
+    },
+    {
+      "source": "assets/skill-cutins/nerine-korat.png",
+      "output": "assets/skill-cutins/nerine-korat.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2480749,
+      "outputBytes": 398598,
+      "savedBytes": 2082151
+    },
+    {
+      "source": "assets/skill-cutins/fumika-scotty.png",
+      "output": "assets/skill-cutins/fumika-scotty.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2057403,
+      "outputBytes": 280128,
+      "savedBytes": 1777275
+    },
+    {
+      "source": "assets/skill-cutins/bell-savanna.png",
+      "output": "assets/skill-cutins/bell-savanna.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2262023,
+      "outputBytes": 342354,
+      "savedBytes": 1919669
+    },
+    {
+      "source": "assets/skill-cutins/popo-munch.png",
+      "output": "assets/skill-cutins/popo-munch.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2259269,
+      "outputBytes": 349746,
+      "savedBytes": 1909523
+    },
+    {
+      "source": "assets/skill-cutins/marron-maine.png",
+      "output": "assets/skill-cutins/marron-maine.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2308563,
+      "outputBytes": 322204,
+      "savedBytes": 1986359
+    },
+    {
+      "source": "assets/skill-cutins/milfi-ragdoll.png",
+      "output": "assets/skill-cutins/milfi-ragdoll.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2203079,
+      "outputBytes": 292136,
+      "savedBytes": 1910943
+    },
+    {
+      "source": "assets/skill-cutins/yukine-silky.png",
+      "output": "assets/skill-cutins/yukine-silky.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2229294,
+      "outputBytes": 306054,
+      "savedBytes": 1923240
+    },
+    {
+      "source": "assets/skill-cutins/rhythm-sphynx.png",
+      "output": "assets/skill-cutins/rhythm-sphynx.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2245399,
+      "outputBytes": 315300,
+      "savedBytes": 1930099
+    },
+    {
+      "source": "assets/skill-cutins/tick-abyssinian.png",
+      "output": "assets/skill-cutins/tick-abyssinian.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2279637,
+      "outputBytes": 341710,
+      "savedBytes": 1937927
+    },
+    {
+      "source": "assets/skill-cutins/flora-turkishvan.png",
+      "output": "assets/skill-cutins/flora-turkishvan.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2241371,
+      "outputBytes": 328820,
+      "savedBytes": 1912551
+    },
+    {
+      "source": "assets/skill-cutins/reska-americancurl.png",
+      "output": "assets/skill-cutins/reska-americancurl.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2063169,
+      "outputBytes": 263788,
+      "savedBytes": 1799381
+    },
+    {
+      "source": "assets/skill-cutins/cleo-mau.png",
+      "output": "assets/skill-cutins/cleo-mau.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2405366,
+      "outputBytes": 390378,
+      "savedBytes": 2014988
+    },
+    {
+      "source": "assets/skill-cutins/ciel-norwegian.png",
+      "output": "assets/skill-cutins/ciel-norwegian.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2221973,
+      "outputBytes": 302418,
+      "savedBytes": 1919555
+    },
+    {
+      "source": "assets/skill-cutins/sucre-persian.png",
+      "output": "assets/skill-cutins/sucre-persian.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2407639,
+      "outputBytes": 362402,
+      "savedBytes": 2045237
+    },
+    {
+      "source": "assets/skill-cutins/moka-oriental.png",
+      "output": "assets/skill-cutins/moka-oriental.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2272597,
+      "outputBytes": 318386,
+      "savedBytes": 1954211
+    },
+    {
+      "source": "assets/skill-cutins/garnet-bengal.png",
+      "output": "assets/skill-cutins/garnet-bengal.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2595029,
+      "outputBytes": 444116,
+      "savedBytes": 2150913
+    },
+    {
+      "source": "assets/skill-cutins/rinka-somali.png",
+      "output": "assets/skill-cutins/rinka-somali.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2386743,
+      "outputBytes": 360426,
+      "savedBytes": 2026317
+    },
+    {
+      "source": "assets/skill-cutins/stella-russianblue.png",
+      "output": "assets/skill-cutins/stella-russianblue.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2212983,
+      "outputBytes": 310838,
+      "savedBytes": 1902145
+    },
+    {
+      "source": "assets/skill-cutins/honey-british.png",
+      "output": "assets/skill-cutins/honey-british.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2362346,
+      "outputBytes": 360188,
+      "savedBytes": 2002158
+    },
+    {
+      "source": "assets/skill-cutins/liber-birman.png",
+      "output": "assets/skill-cutins/liber-birman.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2333173,
+      "outputBytes": 330008,
+      "savedBytes": 2003165
+    },
+    {
+      "source": "assets/skill-cutins/masuka-chartreux.png",
+      "output": "assets/skill-cutins/masuka-chartreux.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2495697,
+      "outputBytes": 385560,
+      "savedBytes": 2110137
+    },
+    {
+      "source": "assets/skill-cutins/soyi-tonkinese.png",
+      "output": "assets/skill-cutins/soyi-tonkinese.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2403665,
+      "outputBytes": 344136,
+      "savedBytes": 2059529
+    },
+    {
+      "source": "assets/skill-cutins/shino-cornish.png",
+      "output": "assets/skill-cutins/shino-cornish.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 1992280,
+      "outputBytes": 232226,
+      "savedBytes": 1760054
+    },
+    {
+      "source": "assets/skill-cutins/aroma-balinese.png",
+      "output": "assets/skill-cutins/aroma-balinese.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2396538,
+      "outputBytes": 336950,
+      "savedBytes": 2059588
+    },
+    {
+      "source": "assets/skill-cutins/matsuri-japanese-bobtail.png",
+      "output": "assets/skill-cutins/matsuri-japanese-bobtail.webp",
+      "width": 1774,
+      "height": 887,
+      "policy": "high-quality",
+      "quality": 93,
+      "sourceBytes": 2359691,
+      "outputBytes": 353806,
+      "savedBytes": 2005885
+    },
+    {
       "source": "assets/ui/course-map-v2.png",
       "output": "assets/ui/course-map-v2.webp",
       "width": 1254,
@@ -762,8 +1510,8 @@
       "policy": "high-quality",
       "quality": 93,
       "sourceBytes": 695366,
-      "outputBytes": 105938,
-      "savedBytes": 589428
+      "outputBytes": 140010,
+      "savedBytes": 555356
     },
     {
       "source": "assets/ui/cat-can-gears-gpt2-v1.png",
@@ -773,8 +1521,8 @@
       "policy": "lossless",
       "quality": 100,
       "sourceBytes": 1075647,
-      "outputBytes": 172044,
-      "savedBytes": 903603
+      "outputBytes": 798436,
+      "savedBytes": 277211
     },
     {
       "source": "assets/ui/mia-charme-intrusion-gpt2-v2.png",
@@ -784,8 +1532,8 @@
       "policy": "high-quality",
       "quality": 93,
       "sourceBytes": 3012544,
-      "outputBytes": 436678,
-      "savedBytes": 2575866
+      "outputBytes": 570508,
+      "savedBytes": 2442036
     },
     {
       "source": "assets/ui/mia-charme-boss-portrait-gpt2.png",
@@ -872,8 +1620,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1592315,
-      "outputBytes": 200056,
-      "savedBytes": 1392259
+      "outputBytes": 370678,
+      "savedBytes": 1221637
     },
     {
       "source": "assets/trackside/course-tunnel-interiors-gpt2-v1.png",
@@ -883,8 +1631,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 2567805,
-      "outputBytes": 320138,
-      "savedBytes": 2247667
+      "outputBytes": 446538,
+      "savedBytes": 2121267
     },
     {
       "source": "assets/trackside/course-scenery-sweets-gpt2.png",
@@ -1015,8 +1763,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 2096701,
-      "outputBytes": 421968,
-      "savedBytes": 1674733
+      "outputBytes": 539160,
+      "savedBytes": 1557541
     },
     {
       "source": "assets/trackside/course-scenery-aurora-near-gpt2-v1.png",
@@ -1026,8 +1774,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1354663,
-      "outputBytes": 163758,
-      "savedBytes": 1190905
+      "outputBytes": 315042,
+      "savedBytes": 1039621
     },
     {
       "source": "assets/trackside/course-scenery-sakura-near-gpt2-v1.png",
@@ -1037,8 +1785,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1290780,
-      "outputBytes": 127122,
-      "savedBytes": 1163658
+      "outputBytes": 265170,
+      "savedBytes": 1025610
     },
     {
       "source": "assets/trackside/course-scenery-coral-near-gpt2-v1.png",
@@ -1048,8 +1796,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1622994,
-      "outputBytes": 196032,
-      "savedBytes": 1426962
+      "outputBytes": 372510,
+      "savedBytes": 1250484
     },
     {
       "source": "assets/trackside/course-scenery-phantom-near-gpt2-v1.png",
@@ -1059,8 +1807,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1308952,
-      "outputBytes": 151470,
-      "savedBytes": 1157482
+      "outputBytes": 304246,
+      "savedBytes": 1004706
     },
     {
       "source": "assets/trackside/course-scenery-lunatic-near-gpt2-v1.png",
@@ -1070,8 +1818,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1308422,
-      "outputBytes": 140222,
-      "savedBytes": 1168200
+      "outputBytes": 265578,
+      "savedBytes": 1042844
     },
     {
       "source": "assets/trackside/course-vfx-rain-gpt2-v1.png",
@@ -1081,8 +1829,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 327273,
-      "outputBytes": 76946,
-      "savedBytes": 250327
+      "outputBytes": 144790,
+      "savedBytes": 182483
     },
     {
       "source": "assets/trackside/course-vfx-steam-gpt2-v1.png",
@@ -1092,8 +1840,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 475875,
-      "outputBytes": 47040,
-      "savedBytes": 428835
+      "outputBytes": 93380,
+      "savedBytes": 382495
     },
     {
       "source": "assets/trackside/course-vfx-bubbles-gpt2-v1.png",
@@ -1103,8 +1851,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 247280,
-      "outputBytes": 55540,
-      "savedBytes": 191740
+      "outputBytes": 94672,
+      "savedBytes": 152608
     },
     {
       "source": "assets/trackside/course-vfx-sakura-gpt2-v1.png",
@@ -1114,8 +1862,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 288445,
-      "outputBytes": 44124,
-      "savedBytes": 244321
+      "outputBytes": 93512,
+      "savedBytes": 194933
     },
     {
       "source": "assets/trackside/course-vfx-snow-gpt2-v1.png",
@@ -1125,8 +1873,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 208993,
-      "outputBytes": 51098,
-      "savedBytes": 157895
+      "outputBytes": 88746,
+      "savedBytes": 120247
     },
     {
       "source": "assets/trackside/course-vfx-fireflies-gpt2-v1.png",
@@ -1136,8 +1884,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 326471,
-      "outputBytes": 59060,
-      "savedBytes": 267411
+      "outputBytes": 110612,
+      "savedBytes": 215859
     },
     {
       "source": "assets/trackside/course-vfx-stardust-gpt2-v1.png",
@@ -1147,8 +1895,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 323836,
-      "outputBytes": 66070,
-      "savedBytes": 257766
+      "outputBytes": 121428,
+      "savedBytes": 202408
     },
     {
       "source": "assets/trackside/spectator-pink-human.png",

@@ -12,11 +12,15 @@ cat_slugs = (
     "cleo-mau", "ciel-norwegian", "sucre-persian",
     "moka-oriental", "garnet-bengal", "rinka-somali",
     "stella-russianblue", "honey-british", "liber-birman",
+    "masuka-chartreux", "soyi-tonkinese", "shino-cornish",
+    "aroma-balinese", "matsuri-japanese-bobtail",
 )
 sprites = [ROOT / "assets" / "sprites" / f"{slug}.png" for slug in cat_slugs]
 portraits = [ROOT / "assets" / "portraits" / f"{slug}.webp" for slug in cat_slugs[:12]]
 select_heroes = [ROOT / "assets" / "select-heroes" / f"{slug}.png" for slug in cat_slugs]
-for path in sprites + portraits + select_heroes:
+select_chibis = [ROOT / "assets" / "select-chibis" / f"{slug}.png" for slug in cat_slugs]
+skill_cutins = [ROOT / "assets" / "skill-cutins" / f"{slug}.png" for slug in cat_slugs]
+for path in sprites + portraits + select_heroes + select_chibis + skill_cutins:
     if not path.exists():
         errors.append(f"missing active cat-racer asset: {path.name}")
 
@@ -29,6 +33,29 @@ for path in select_heroes:
         alpha = image.getchannel("A")
         if alpha.getextrema() != (0, 255):
             errors.append(f"{path.name}: selection hero needs transparent and opaque pixels")
+
+for path in select_chibis:
+    if not path.exists():
+        continue
+    with Image.open(path).convert("RGBA") as image:
+        if image.size != (1024, 1536):
+            errors.append(f"{path.name}: selection chibi must be 1024x1536, got {image.size}")
+        alpha = image.getchannel("A")
+        if alpha.getextrema() != (0, 255):
+            errors.append(f"{path.name}: selection chibi needs transparent and opaque pixels")
+        content = alpha.point(lambda value: 255 if value >= 12 else 0).getbbox()
+        if not content:
+            errors.append(f"{path.name}: empty selection chibi")
+        elif content[0] < 4 or content[1] < 4 or content[2] > 1020 or content[3] > 1532:
+            errors.append(f"{path.name}: selection chibi touches the safe edge ({content})")
+
+for path in skill_cutins:
+    if not path.exists():
+        continue
+    with Image.open(path) as image:
+        w, h = image.size
+        if w < 1400 or h < 700 or not 1.9 < w / h < 2.1:
+            errors.append(f"{path.name}: skill cut-in must be a high-resolution 2:1 banner, got {w}x{h}")
 
 for path in sprites:
     if not path.exists():

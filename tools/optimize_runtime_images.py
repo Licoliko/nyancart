@@ -27,6 +27,8 @@ CAT_SLUGS = [
     "cleo-mau", "ciel-norwegian", "sucre-persian", "moka-oriental",
     "garnet-bengal", "rinka-somali", "stella-russianblue",
     "honey-british", "liber-birman",
+    "masuka-chartreux", "soyi-tonkinese", "shino-cornish",
+    "aroma-balinese", "matsuri-japanese-bobtail",
 ]
 
 ENVIRONMENT = [
@@ -71,6 +73,8 @@ def runtime_sources() -> list[Path]:
     paths = [ASSETS / "environment" / f"{name}.png" for name in ENVIRONMENT]
     paths += [ASSETS / "sprites" / f"{slug}.png" for slug in [*CAT_SLUGS, "mia-charme", "mia-throw-gpt2-v1"]]
     paths += [ASSETS / "select-heroes" / f"{slug}.png" for slug in CAT_SLUGS]
+    paths += [ASSETS / "select-chibis" / f"{slug}.png" for slug in CAT_SLUGS]
+    paths += [ASSETS / "skill-cutins" / f"{slug}.png" for slug in CAT_SLUGS]
     paths += [ASSETS / "ui" / f"{name}.png" for name in UI]
     paths += [ASSETS / "trackside" / f"{name}.png" for name in TRACKSIDE]
     return paths
@@ -84,6 +88,10 @@ def policy(source: Path, image: Image.Image) -> tuple[str, int]:
     group = source.parent.name
     if group in {"sprites", "select-heroes"}:
         return "lossless", 100
+    if group == "select-chibis":
+        return "high-quality-alpha", 94
+    if group == "skill-cutins":
+        return "high-quality", 93
     if group == "ui" and has_alpha(image):
         return "lossless", 100
     if group == "environment":

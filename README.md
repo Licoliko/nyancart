@@ -4,7 +4,7 @@ Repository: https://github.com/Licoliko/nyancart
 
 Jump ramps now use a GPT Image 2.0 7-angle atlas (`assets/trackside/jump-ramps-angled-gpt2-v2.png`): left, left 45, left 15, front, right 15, right 45, and right. The race renderer picks the ramp angle from the projected course curve, and jumps/elevation have been strengthened for clearer pseudo-3D airtime.
 
-The roster now contains 24 cat-ear racer sets. The first 18 are available by default, and the 6 newly added GPT Image 2.0 racer sets are locked behind coin unlock costs. Jump-ramp angle selection has also been mirrored to better match the perceived course direction.
+The roster now contains 29 cat-ear racer sets. The first 18 are available by default, and all 11 unlockable racer sets have a unified 150-coin price. Jump-ramp angle selection has also been mirrored to better match the perceived course direction.
 
 Jump ramps now use a fixed-cell v2 atlas (`assets/trackside/jump-ramps-angled-gpt2-v2.png`, 7 x 5, 320 x 240 per cell) so animated/angled frames keep a consistent frame size without neighboring-cell bleed. Course-side scenery also has GPT Image 2.0 course-specific atlases rendered as far/mid/near scenery layers.
 
@@ -12,7 +12,7 @@ The stage roster has been expanded from 5 to 11 circuits. The six added concept-
 
 Settings now include a rich scenery toggle. When enabled, course-side scenery draws more densely with distance fog: far props are softened and faded, while near props remain crisp. Turning it off reduces scenery density for lighter rendering.
 
-Settings also open the **24 MACHINE SOUND LAB**. Every racer/kart profile can be selected independently and compared at STOP/IDLE, LOW (65 km/h), HIGH (175 km/h), and FULL BOOST while keeping the same effects-volume mix. The screen supports mouse, touch, keyboard back, and controller navigation.
+Settings also open the **29 MACHINE SOUND LAB**. Every racer/kart profile can be selected independently and compared at STOP/IDLE, LOW (65 km/h), HIGH (175 km/h), and FULL BOOST while keeping the same effects-volume mix. The screen supports mouse, touch, keyboard back, and controller navigation.
 
 During a race, the nearest three regular rivals reuse those machine profiles as lightweight positional voices. Volume and high-frequency detail fall with distance, lane separation controls stereo pan, and a short selection hysteresis prevents engines from popping when two rivals exchange places.
 
@@ -20,7 +20,9 @@ Twinkle Sweets, Gear Clock, and Aurora Glacier now corner-cut their single-point
 
 Course start/finish rendering was stabilized on circuits where the start line sat on a sharp route seam. Gear Clock, Emerald Ruins, and Twinkle Sweets now use smoother internal start-line placement. Course scenery props now favor opaque rendering with a separate fog layer instead of semi-transparent prop bodies, and newly added circuits no longer reuse unrelated legacy prop sets.
 
-11のサーキットを2周で競うブラウザ・カートレースゲームです。GPT Image 2.0で制作した24人分の14方向スプライト、コース背景、VFXを使用しています。
+11のサーキットを2周で競うブラウザ・カートレースゲームです。GPT Image 2.0で制作した29人分の14方向スプライト、コース背景、VFXを使用しています。
+
+全29レーサーに固有能力があります。能力は常時補正とは別に、追い抜き・被弾・悪路・雨雪・ジャンプ・ドリフト・分岐・取得物・集団戦などキャラクターごとの条件で発動し、最高速、加速、旋回、ドリフト蓄積、ブースト、悪路性能、空中制御、接触耐性へ短時間の変化を与えます。プレイヤーとNPCは同じ発動・クールダウン処理を使い、29種類の色・紋章・オーラ、チャージHUD、発動表示、専用効果音で判別できます。
 
 コース上の猫缶を取ると短い開封アニメーションが入り、順位に応じて重み付けされた4種のオリジナルギアから1つが自動で決まります。難しいモード選択はなく、決定後は1ボタンで使用できます。NPCも同じ猫缶抽選を使い、性格・順位・被弾・標的位置を見てギアを使います。コース上のコインは1枚につき所持コイン3枚、完走報酬は1位50枚（順位に応じて最低10枚）です。
 
@@ -34,7 +36,7 @@ Course start/finish rendering was stabilized on circuits where the start line sa
 
 コース外の森とお菓子の家はGPT Image 2.0で制作した3×2アトラスを使用し、約118m間隔の遠景LODとして必要な枚数だけ描画します。5コース専用ジャンプ台と、排気煙・ターボ煙・ドリフト煙・オフロード土煙・着地煙もGPT Image 2.0製アトラスを使用します。ジャンプ台を踏むとカートが実際に浮上し、着地時にサスペンション、カメラ振動、土煙、短い着地ブーストが発生します。
 
-メニューまたはレース画面の歯車ボタンから設定画面を開けます。マスター音量・BGM音量・マシン／効果音音量・ミュート・キー割り当てはブラウザに保存されます。24台の専用カートは、プリズムタービン、蒸気ピストン、時計仕掛け、ドリル、蜂型ブースターなど、車体設定に合わせた固有のプロシージャルエンジン音を持ちます。
+メニューまたはレース画面の歯車ボタンから設定画面を開けます。マスター音量・BGM音量・マシン／効果音音量・ミュート・キー割り当てはブラウザに保存されます。29台の専用カートは、プリズムタービン、蒸気ピストン、時計仕掛け、ドリル、蜂型ブースターなど、車体設定に合わせた固有のプロシージャルエンジン音を持ちます。ファントムカーニバルナイトサーキットでは専用曲 `phantom_gear_parade.mp3` が再生されます。
 
 レース中は近いライバル最大3台の固有エンジン音が距離と左右位置に連動します。追い越し・追い越される瞬間には相対速度に応じた軽いドップラー効果がかかり、トンネル内部ではカート音だけに短いステレオ反響と高音の減衰が加わります。入口・出口は約22mのフェードで切り替わります。
 
@@ -44,9 +46,9 @@ Course start/finish rendering was stabilized on circuits where the start line sa
 
 描画品質AUTOは端末情報からHIGH・BALANCED・LIGHTを選んで開始し、レース中の実測FPSとフレーム時間を約2.6秒単位で監視します。負荷が続く場合は背景物量・エフェクト・道路セグメント・内部解像度を段階的に下げ、安定が続けば段階的に戻します。LIGHTでも内部解像度は74%を下回りません。手動のHIGH・BALANCED・LIGHTではレース中の自動変更を行いません。
 
-レーサーセットはドラッグ／スワイプに加えて、左右のカードを直接選ぶとそのカードまで自動スクロールします。18番の右は1番、1番の左は18番につながる循環カルーセルです。現在の18セットは初期開放済みで、今後19人目以降に追加するセットはレースで獲得したコインを使って開放します。所持コインと開放状態はブラウザに保存されます。
+レーサーセットはドラッグ／スワイプに加えて、左右のカードを直接選ぶとそのカードまで自動スクロールします。29番の右は1番、1番の左は29番につながる循環カルーセルです。最初の18セットは初期開放済みで、19〜29人目の11セットはレースで獲得したコイン150枚で開放します。所持コインと開放状態はブラウザに保存されます。
 
-レース中の小さな `DBG` ボタンでは、走行確認用のコース境界線を表示・非表示にできます。`品質チェック` または `F8` から、全11コース、24キャラの14方向シート、ジャンプ台方向、画面幅、専用音響、FPS・フレーム時間・粒子数・NPCコースアウト数をまとめて検査できます。通常プレイでは境界線と品質レポートは非表示です。
+レース中の小さな `DBG` ボタンでは、走行確認用のコース境界線を表示・非表示にできます。`品質チェック` または `F8` から、全11コース、29キャラの14方向シート、ジャンプ台方向、画面幅、専用音響、FPS・フレーム時間・粒子数・NPCコースアウト数をまとめて検査できます。通常プレイでは境界線と品質レポートは非表示です。
 
 ## 遊び方
 

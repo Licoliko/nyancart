@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=44" />
+  <link rel="stylesheet" href="style.css?v=49" />
 </head>
 <body>
   <main id="app">
@@ -20,7 +20,7 @@
       </div>
       <button id="openSelect" class="primary-btn"><span>RACE START</span><small>レーサーセットを選ぶ</small></button>
       <button id="openSettings" class="secondary-btn menu-settings-btn"><span>⚙ SETTINGS</span><small>音量・操作設定</small></button>
-      <div class="menu-hints"><span>🏁 2 LAPS</span><span>⭐ 18 RACERS</span><span>⚡ DRIFT TURBO</span></div>
+      <div class="menu-hints"><span>🏁 2 LAPS</span><span>⭐ 29 RACERS</span><span>⚡ DRIFT TURBO</span></div>
     </section>
 
     <section id="kartSelect" class="screen set-select-screen" aria-labelledby="setSelectTitle">
@@ -33,7 +33,7 @@
       <div class="set-select-body">
         <section class="set-hero-stage" aria-label="選択中のレーサーセット">
           <div class="set-stage-kicker"><span>EXCLUSIVE</span><strong id="setStageLabel">NYAN RACING SET</strong></div>
-          <div class="set-selection-meta"><span id="setPosition">01 / 18</span><span class="set-wallet">COINS <strong id="walletCoins">0</strong></span></div>
+          <div class="set-selection-meta"><span id="setPosition">01 / 29</span><span class="set-wallet">COINS <strong id="walletCoins">0</strong></span></div>
           <img id="setHeroImage" class="set-hero-image" alt="選択中のレーサーと専用カート" draggable="false" />
         </section>
         <aside class="set-detail-panel">
@@ -75,7 +75,7 @@
           <label class="range-setting" for="musicVolume"><span>BGM音量</span><output id="musicVolumeValue">55</output><input id="musicVolume" type="range" min="0" max="100" step="1" value="55"></label>
           <label class="range-setting" for="effectsVolume"><span>マシン・効果音</span><output id="effectsVolumeValue">72</output><input id="effectsVolume" type="range" min="0" max="100" step="1" value="72"></label>
           <button id="muteToggle" class="setting-toggle" type="button" aria-pressed="false">♫ サウンド ON</button>
-          <button id="openSoundTest" class="sound-test-open" type="button"><span>24 MACHINE SOUND LAB</span><small>停止・低速・高速・ブーストを聴き比べる</small></button>
+          <button id="openSoundTest" class="sound-test-open" type="button"><span>29 MACHINE SOUND LAB</span><small>停止・低速・高速・ブーストを聴き比べる</small></button>
         </section>
         <section class="settings-panel key-settings">
           <div class="panel-title-row"><h3>キーコンフィグ</h3><button id="resetKeys" class="text-btn" type="button">初期設定へ戻す</button></div>
@@ -110,7 +110,7 @@
               <button id="cameraMotionToggle" class="setting-toggle motion-toggle" type="button">カメラ上下 標準</button>
               <button id="screenShakeToggle" class="setting-toggle motion-toggle" type="button">画面揺れ 標準</button>
               <button id="speedLinesToggle" class="setting-toggle motion-toggle" type="button">速度流線 標準</button>
-              <button id="screenFlashToggle" class="setting-toggle motion-toggle" type="button">白フラッシュ 標準</button>
+              <button id="screenFlashToggle" class="setting-toggle motion-toggle" type="button">画面フラッシュ 標準</button>
             </div>
           </div>
         </section>
@@ -120,14 +120,15 @@
 
     <section id="soundTest" class="screen sound-test-screen" aria-labelledby="soundTestTitle">
       <div class="sound-test-backdrop"><i></i><i></i><i></i></div>
+      <div id="soundTestSignatureFlash" class="sound-test-signature-flash" aria-hidden="true"><i></i></div>
       <header class="select-header sound-test-header">
         <button id="closeSoundTest" class="icon-btn" type="button" aria-label="設定へ戻る">‹</button>
-        <div><p class="eyebrow">NYAN CART AUDIO GARAGE</p><h2 id="soundTestTitle">24 MACHINE SOUND LAB</h2></div>
-        <div id="soundTestCounter" class="step-badge">01 / 24</div>
+        <div><p class="eyebrow">NYAN CART AUDIO GARAGE</p><h2 id="soundTestTitle">29 MACHINE &amp; SIGNATURE LAB</h2></div>
+        <div id="soundTestCounter" class="step-badge">01 / 29</div>
       </header>
       <div class="sound-test-layout">
         <aside class="sound-test-roster">
-          <div class="sound-test-roster-title"><strong>SELECT MACHINE</strong><small>24 UNIQUE ENGINES</small></div>
+          <div class="sound-test-roster-title"><strong>SELECT MACHINE</strong><small>29 UNIQUE ENGINES</small></div>
           <div id="soundTestGrid" class="sound-test-grid" role="listbox" aria-label="試聴するマシン"></div>
         </aside>
         <main class="sound-test-console">
@@ -136,10 +137,21 @@
             <div class="sound-test-floor"></div>
             <img id="soundTestHero" alt="試聴中のレーサーとマシン" draggable="false">
             <div class="sound-test-state"><span>NOW PLAYING</span><strong id="soundTestStateLabel">STOP / IDLE</strong></div>
+            <div id="soundTestSignaturePanel" class="sound-test-signature-panel" aria-live="polite">
+              <small>SIGNATURE SYNC CHECK</small>
+              <strong id="soundTestSignatureName">プリズム・ロイヤル</strong>
+              <p id="soundTestSignatureCopy">能力色・画面フラッシュ・専用音・振動を同時に確認します。</p>
+              <div class="sound-test-signature-signals">
+                <span id="soundTestSignatureAudio">AUDIO · PRISM</span>
+                <span id="soundTestSignatureColor">FLASH · CYAN</span>
+                <span id="soundTestSignatureHaptic">VIBRATION · READY</span>
+              </div>
+              <button id="soundTestSignaturePlay" type="button"><b>発動をテスト</b><em>PLAY SIGNATURE</em></button>
+            </div>
           </div>
           <div class="sound-test-readout">
             <div class="sound-test-machine-copy">
-              <p class="eyebrow">SELECTED ENGINE PROFILE</p>
+              <p id="soundTestProfileKicker" class="eyebrow">SELECTED ENGINE PROFILE</p>
               <h3 id="soundTestMachineName">PRISM TURBINE</h3>
               <strong id="soundTestSetName">アルカ・シャム / プリズム・ロイヤル</strong>
               <p id="soundTestConcept">クリスタルタービンの透明感ある回転音。</p>
@@ -152,8 +164,9 @@
             <button type="button" data-sound-mode="low" role="radio" aria-checked="false"><small>02</small><strong>LOW</strong><span>低速 65 km/h</span></button>
             <button type="button" data-sound-mode="high" role="radio" aria-checked="false"><small>03</small><strong>HIGH</strong><span>高速 175 km/h</span></button>
             <button type="button" data-sound-mode="boost" role="radio" aria-checked="false"><small>04</small><strong>BOOST</strong><span>最高負荷＋ターボ</span></button>
+            <button type="button" data-sound-mode="signature" role="radio" aria-checked="false"><small>05</small><strong>SKILL</strong><span>色・音・振動同期</span></button>
           </div>
-          <p class="sound-test-help">マスター音量と「マシン・効果音」の設定が反映されます。マシンを切り替えると同じ状態のまま比較できます。</p>
+          <p class="sound-test-help">マスター音量と「マシン・効果音」、画面フラッシュ、コントローラー振動の設定が反映されます。</p>
         </main>
       </div>
     </section>
@@ -256,6 +269,15 @@
       <div class="race-info">
         <div class="lap-label">LAP <strong id="lap">1</strong><span id="lapTotal">/2</span></div>
         <div id="timer" class="timer">◷ 00:00.000</div>
+      </div>
+      <div id="signatureHud" class="signature-hud" aria-live="polite">
+        <span id="signatureGlyph" aria-hidden="true">♕</span>
+        <div><small id="signatureStatus">CHARGE</small><strong id="signatureName">プリズム・ロイヤル</strong><i><b id="signatureMeter"></b></i></div>
+      </div>
+      <div id="signatureCallout" class="signature-callout" aria-live="assertive">
+        <img id="signatureCalloutArt" class="signature-callout-art" alt="" aria-hidden="true" />
+        <span id="signatureCalloutGlyph" aria-hidden="true">♕</span>
+        <div><small>SIGNATURE DRIVE</small><strong id="signatureCalloutName">プリズム・ロイヤル</strong><p id="signatureCalloutCopy"></p></div>
       </div>
       <div id="finalLapCallout" class="final-lap-callout" aria-live="assertive">
         <i aria-hidden="true"></i>
@@ -428,7 +450,7 @@
         <div id="qualitySummary" class="quality-summary"></div>
         <section class="quality-section"><h3>LIVE PERFORMANCE</h3><div id="qualityRuntime" class="quality-runtime"></div></section>
         <section id="balanceAudit" class="quality-section balance-audit">
-          <header><div><h3>NORMAL RACE BALANCE</h3><p id="balanceProgress">未実行 — 11コース×24キャラ×5シードを高速集計します。</p></div><div><button id="balanceExportCsv" type="button" disabled>CSV</button><button id="balanceExportJson" type="button" disabled>JSON</button></div></header>
+          <header><div><h3>NORMAL RACE BALANCE</h3><p id="balanceProgress">未実行 — 11コース×29キャラ×5シードを高速集計します。</p></div><div><button id="balanceExportCsv" type="button" disabled>CSV</button><button id="balanceExportJson" type="button" disabled>JSON</button></div></header>
           <div id="balanceSummary" class="balance-summary"><div><strong>--</strong><span>RUNS</span></div><div><strong>--</strong><span>WIN RATE</span></div><div><strong>--</strong><span>PODIUM</span></div><div><strong>--</strong><span>AVG RANK</span></div></div>
           <div id="balanceWarnings" class="balance-warnings"></div>
           <div class="balance-tables"><div><h4>COURSE RESULTS</h4><div id="balanceCourseRows" class="balance-rows"></div></div><div><h4>RACER RESULTS</h4><div id="balanceRacerRows" class="balance-rows racer"></div></div></div>
@@ -444,9 +466,9 @@
       </div>
     </section>
   </main>
-  <script src="assets/sprite-bounds.js?v=2"></script>
-  <script src="audio.js?v=10"></script>
-  <script src="game.js?v=100"></script>
-  <script src="quality.js?v=50"></script>
+  <script src="assets/sprite-bounds.js?v=3"></script>
+  <script src="audio.js?v=13"></script>
+  <script src="game.js?v=112"></script>
+  <script src="quality.js?v=65"></script>
 </body>
 </html>
