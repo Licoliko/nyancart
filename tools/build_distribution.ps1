@@ -47,6 +47,10 @@ $files.Add("assets/runtime-image-manifest.json")
 $files.AddRange([string[]]@(
     "assets/audio/n(ya)itro_cat_grand_prix.mp3",
     "assets/audio/drigt_swing_nya.mp3",
+    "assets/audio/CARAMEL_OVERDRIVE.mp3",
+    "assets/audio/clockwork_claw.mp3",
+    "assets/audio/aurora_prism_break.mp3",
+    "assets/audio/EMERALD_CLAW.mp3",
     "assets/audio/phantom_gear_parade.mp3"
 ))
 foreach ($slug in $portraitSlugs) {

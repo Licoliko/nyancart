@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from PIL import Image
 
@@ -23,6 +24,27 @@ skill_cutins = [ROOT / "assets" / "skill-cutins" / f"{slug}.png" for slug in cat
 for path in sprites + portraits + select_heroes + select_chibis + skill_cutins:
     if not path.exists():
         errors.append(f"missing active cat-racer asset: {path.name}")
+
+visual_spec_path = ROOT / "assets" / "racer-visual-spec.json"
+if not visual_spec_path.exists():
+    errors.append("missing playable racer visual specification: racer-visual-spec.json")
+else:
+    visual_spec = json.loads(visual_spec_path.read_text(encoding="utf-8"))
+    race_sprite_spec = visual_spec.get("raceSprite", {})
+    if race_sprite_spec.get("proportion") != "2.5-head chibi":
+        errors.append("race sprite proportion must remain 2.5-head chibi")
+    if (race_sprite_spec.get("columns"), race_sprite_spec.get("rows")) != (7, 2):
+        errors.append("race sprite direction atlas must remain 7x2")
+    if len(race_sprite_spec.get("directionOrder", [])) != 14:
+        errors.append("race sprite visual specification needs all 14 directions")
+    approved = tuple(visual_spec.get("approvedRacers", ()))
+    if set(approved) != set(cat_slugs):
+        missing = sorted(set(cat_slugs) - set(approved))
+        retired = sorted(set(approved) - set(cat_slugs))
+        errors.append(
+            "new playable racers must pass the 2.5-head chibi workflow "
+            f"(missing={missing}, unknown={retired})"
+        )
 
 for path in select_heroes:
     if not path.exists():
@@ -95,6 +117,59 @@ for name, cols, rows in [("items.png",4,2),("vfx.png",4,2),("mobile-controls.png
                 box=(round(w*col/cols),round(h*row/rows),round(w*(col+1)/cols),round(h*(row+1)/rows))
                 if not alpha.crop(box).getbbox():errors.append(f"{name}: empty cell {row},{col}")
 
+jungle_gimmicks = ROOT / "assets" / "trackside" / "jungle-dual-gimmicks-gpt2-v1.png"
+if not jungle_gimmicks.exists():
+    errors.append("missing jungle Dual Corridor gimmick sheet")
+else:
+    with Image.open(jungle_gimmicks).convert("RGBA") as image:
+        alpha=image.getchannel("A");w,h=image.size
+        if w % 4 or h % 2:
+            errors.append(f"jungle-dual-gimmicks-gpt2-v1.png: expected exact 4x2 grid, got {w}x{h}")
+        else:
+            cell_w,cell_h=w//4,h//2
+            for row in range(2):
+                for col in range(4):
+                    cell=alpha.crop((col*cell_w,row*cell_h,(col+1)*cell_w,(row+1)*cell_h))
+                    content=cell.point(lambda value:255 if value>=12 else 0).getbbox()
+                    if not content:
+                        errors.append(f"jungle-dual-gimmicks-gpt2-v1.png: empty cell {row},{col}")
+                    elif content[0]<4 or content[2]>cell_w-4:
+                        errors.append(f"jungle-dual-gimmicks-gpt2-v1.png: cell {row},{col} crosses horizontal safety margin {content}")
+
+course_gimmicks = ROOT / "assets" / "trackside" / "course-dynamic-gimmicks-gpt2-v1.png"
+if not course_gimmicks.exists():
+    errors.append("missing all-course dynamic gimmick sheet")
+else:
+    with Image.open(course_gimmicks).convert("RGBA") as image:
+        alpha = image.getchannel("A")
+        if image.size != (1024, 1024):
+            errors.append(
+                f"course-dynamic-gimmicks-gpt2-v1.png: expected 1024x1024, got {image.size}"
+            )
+        else:
+            cell = 256
+            for row in range(4):
+                for col in range(4):
+                    frame = alpha.crop(
+                        (col * cell, row * cell, (col + 1) * cell, (row + 1) * cell)
+                    )
+                    content = frame.point(lambda value: 255 if value >= 12 else 0).getbbox()
+                    if not content:
+                        errors.append(
+                            f"course-dynamic-gimmicks-gpt2-v1.png: empty cell {row},{col}"
+                        )
+                        continue
+                    if (
+                        content[0] < 6
+                        or content[1] < 6
+                        or content[2] > cell - 6
+                        or content[3] > cell - 6
+                    ):
+                        errors.append(
+                            "course-dynamic-gimmicks-gpt2-v1.png: "
+                            f"cell {row},{col} violates isolation margin {content}"
+                        )
+
 result_ceremony = ROOT / "assets" / "ui" / "result-ceremony-gpt2.png"
 if not result_ceremony.exists():
     errors.append("missing result ceremony background: result-ceremony-gpt2.png")
@@ -158,6 +233,29 @@ else:
         w, h = image.size
         if w < 1280 or h < 720 or not 1.7 < w / h < 1.9:
             errors.append(f"racer-set-garage.png: expected a 16:9 HD image, got {w}x{h}")
+
+for name in (
+    "CARAMEL_OVERDRIVE.mp3",
+    "clockwork_claw.mp3",
+    "aurora_prism_break.mp3",
+    "EMERALD_CLAW.mp3",
+    "phantom_gear_parade.mp3",
+):
+    path = ROOT / "assets" / "audio" / name
+    if not path.exists():
+        errors.append(f"missing dedicated course music: {name}")
+        continue
+    if path.stat().st_size < 500_000:
+        errors.append(f"{name}: dedicated course music is unexpectedly small")
+    else:
+        with path.open("rb") as stream:
+            header = stream.read(3)
+        if header != b"ID3" and header[:2] not in (
+            b"\xff\xfb",
+            b"\xff\xf3",
+            b"\xff\xf2",
+        ):
+            errors.append(f"{name}: does not look like an MP3 stream")
 
 if errors:
     raise SystemExit("\n".join(errors))

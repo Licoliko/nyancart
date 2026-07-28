@@ -48,6 +48,7 @@ UI = [
 
 TRACKSIDE = [
     "candy-sign", "cupcake-tower", "jump-ramps-angled-gpt2-v2",
+    "jungle-dual-gimmicks-gpt2-v1", "course-dynamic-gimmicks-gpt2-v1",
     "scenery-candy-houses", "scenery-forest",
     "course-tunnel-portals-gpt2-v1", "course-tunnel-interiors-gpt2-v1",
     *[f"course-scenery-{slug}-gpt2" for slug in (

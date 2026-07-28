@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 201,
-  "sourceBytes": 284416137,
-  "outputBytes": 99806036,
-  "savedBytes": 184610101,
-  "savedPercent": 64.91,
+  "files": 203,
+  "sourceBytes": 287546376,
+  "outputBytes": 100655608,
+  "savedBytes": 186890768,
+  "savedPercent": 65.0,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -420,9 +420,9 @@
       "height": 524,
       "policy": "lossless",
       "quality": 100,
-      "sourceBytes": 1203273,
-      "outputBytes": 886310,
-      "savedBytes": 316963
+      "sourceBytes": 1288179,
+      "outputBytes": 903368,
+      "savedBytes": 384811
     },
     {
       "source": "assets/sprites/soyi-tonkinese.png",
@@ -431,9 +431,9 @@
       "height": 524,
       "policy": "lossless",
       "quality": 100,
-      "sourceBytes": 1248052,
-      "outputBytes": 940742,
-      "savedBytes": 307310
+      "sourceBytes": 1387556,
+      "outputBytes": 1025392,
+      "savedBytes": 362164
     },
     {
       "source": "assets/sprites/shino-cornish.png",
@@ -453,9 +453,9 @@
       "height": 524,
       "policy": "lossless",
       "quality": 100,
-      "sourceBytes": 1175072,
-      "outputBytes": 848800,
-      "savedBytes": 326272
+      "sourceBytes": 1320761,
+      "outputBytes": 915862,
+      "savedBytes": 404899
     },
     {
       "source": "assets/sprites/matsuri-japanese-bobtail.png",
@@ -1589,6 +1589,28 @@
       "sourceBytes": 2714244,
       "outputBytes": 730522,
       "savedBytes": 1983722
+    },
+    {
+      "source": "assets/trackside/jungle-dual-gimmicks-gpt2-v1.png",
+      "output": "assets/trackside/jungle-dual-gimmicks-gpt2-v1.webp",
+      "width": 1776,
+      "height": 888,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1743911,
+      "outputBytes": 378230,
+      "savedBytes": 1365681
+    },
+    {
+      "source": "assets/trackside/course-dynamic-gimmicks-gpt2-v1.png",
+      "output": "assets/trackside/course-dynamic-gimmicks-gpt2-v1.webp",
+      "width": 1024,
+      "height": 1024,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1016229,
+      "outputBytes": 302572,
+      "savedBytes": 713657
     },
     {
       "source": "assets/trackside/scenery-candy-houses.png",

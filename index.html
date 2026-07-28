@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=49" />
+  <link rel="stylesheet" href="style.css?v=53" />
 </head>
 <body>
   <main id="app">
@@ -186,6 +186,11 @@
             <div id="courseWeatherFx" class="course-showcase-weather" aria-hidden="true"></div>
             <div class="course-hero-grid" aria-hidden="true"></div>
             <div class="course-hero-number"><small>CIRCUIT</small><strong id="courseShowcaseNumber">01</strong></div>
+            <button id="courseMusicPreview" class="course-music-preview" type="button" aria-pressed="false" aria-label="選択中コースのBGMを試聴">
+              <span class="course-music-preview-icon" aria-hidden="true">▶</span>
+              <span><small>COURSE BGM · X / SPACE</small><strong id="courseMusicTitle">CARAMEL OVERDRIVE</strong></span>
+              <em id="courseMusicState">PREVIEW</em>
+            </button>
             <div class="course-title-lockup">
               <small id="courseShowcaseShort">TWINKLE SWEETS</small>
               <h3 id="selectedCourseName">きらめきスイーツサーキット</h3>
@@ -198,6 +203,7 @@
             <div class="course-map-showcase">
               <canvas id="courseSelectMap" width="420" height="238" aria-label="選択中コースの全体マップ"></canvas>
               <span class="course-map-kicker">ROUTE PREVIEW</span>
+              <div id="courseZoneSequence" class="course-zone-sequence" aria-label="景観ゾーンの走行順"></div>
             </div>
             <p id="courseShowcaseDescription" class="course-showcase-description">きらめきと分岐が交差する、お菓子の街のテクニカルコース。</p>
             <div class="course-spec-grid">
@@ -284,6 +290,11 @@
         <div><small>LAST CHANCE</small><strong>FINAL LAP</strong><span>GO FOR THE WIN!</span></div>
         <i aria-hidden="true"></i>
       </div>
+      <div id="zoneEntryCallout" class="zone-entry-callout" aria-live="polite" aria-hidden="true">
+        <i aria-hidden="true"></i>
+        <div><small>LANDMARK ZONE</small><strong id="zoneEntryName">キャンディ・ビレッジ</strong><span id="zoneEntryCourse">TWINKLE SWEETS</span></div>
+        <b id="zoneEntryNumber">01</b>
+      </div>
       <div class="minimap"><canvas id="courseMap" width="240" height="300" aria-label="コース全体マップ"></canvas><small>FULL COURSE</small></div>
       <div class="bottom-left">
         <div class="coin-pill">● <strong id="coins">00</strong></div>
@@ -342,8 +353,8 @@
         </div>
       </div>
       <div class="intro-panel intro-rivals-panel">
-        <p class="eyebrow">RIVAL SPOTLIGHT</p>
-        <h2>WATCH THESE RACERS</h2>
+        <p class="eyebrow">RIVAL INTELLIGENCE</p>
+        <h2>警戒すべきライバル</h2>
         <div id="introRivals" class="intro-rivals"></div>
       </div>
       <div class="intro-panel intro-grid-panel">
@@ -467,8 +478,8 @@
     </section>
   </main>
   <script src="assets/sprite-bounds.js?v=3"></script>
-  <script src="audio.js?v=13"></script>
-  <script src="game.js?v=112"></script>
-  <script src="quality.js?v=65"></script>
+  <script src="audio.js?v=16"></script>
+  <script src="game.js?v=125"></script>
+  <script src="quality.js?v=74"></script>
 </body>
 </html>
