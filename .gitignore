@@ -40,3 +40,4 @@ tools/*
 !tools/quality_browser_audit.mjs
 !tools/optimize_runtime_images.py
 !tools/build_course_gimmick_atlas.py
+!tools/normalize_costume_sheet.py

@@ -21,7 +21,18 @@ portraits = [ROOT / "assets" / "portraits" / f"{slug}.webp" for slug in cat_slug
 select_heroes = [ROOT / "assets" / "select-heroes" / f"{slug}.png" for slug in cat_slugs]
 select_chibis = [ROOT / "assets" / "select-chibis" / f"{slug}.png" for slug in cat_slugs]
 skill_cutins = [ROOT / "assets" / "skill-cutins" / f"{slug}.png" for slug in cat_slugs]
-for path in sprites + portraits + select_heroes + select_chibis + skill_cutins:
+costume_sets = [
+    ("aruka-sham", "cup-champion"),
+    ("kurone-night", "moonlight-ace"),
+    ("kohaku-taiga", "sunset-rally"),
+    ("ghost-rex", "phantom-gala"),
+    ("nerine-korat", "aqua-parade"),
+]
+costume_dirs = [ROOT / "assets" / "costumes" / slug / costume for slug, costume in costume_sets]
+costume_sprites = [path / "sprite.png" for path in costume_dirs]
+costume_selects = [path / "select.png" for path in costume_dirs]
+costume_webp = [path / name for path in costume_dirs for name in ("sprite.webp", "select.webp")]
+for path in sprites + portraits + select_heroes + select_chibis + skill_cutins + costume_sprites + costume_selects + costume_webp:
     if not path.exists():
         errors.append(f"missing active cat-racer asset: {path.name}")
 
@@ -56,7 +67,7 @@ for path in select_heroes:
         if alpha.getextrema() != (0, 255):
             errors.append(f"{path.name}: selection hero needs transparent and opaque pixels")
 
-for path in select_chibis:
+for path in [*select_chibis, *costume_selects]:
     if not path.exists():
         continue
     with Image.open(path).convert("RGBA") as image:
@@ -79,7 +90,7 @@ for path in skill_cutins:
         if w < 1400 or h < 700 or not 1.9 < w / h < 2.1:
             errors.append(f"{path.name}: skill cut-in must be a high-resolution 2:1 banner, got {w}x{h}")
 
-for path in sprites:
+for path in [*sprites, *costume_sprites]:
     if not path.exists():
         continue
     with Image.open(path).convert("RGBA") as image:
@@ -237,9 +248,15 @@ else:
 for name in (
     "CARAMEL_OVERDRIVE.mp3",
     "clockwork_claw.mp3",
+    "over_clock_nyaight_city.mp3",
+    "rainbow_prism_overdrive.mp3",
+    "crown_sugar_overdrive.mp3",
     "aurora_prism_break.mp3",
     "EMERALD_CLAW.mp3",
+    "yukemuri_overdrive.mp3",
+    "ABYSSAL_PEARL_OVERDRIVE.mp3",
     "phantom_gear_parade.mp3",
+    "lunar_gravity_break.mp3",
 ):
     path = ROOT / "assets" / "audio" / name
     if not path.exists():

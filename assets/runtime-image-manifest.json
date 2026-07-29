@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 203,
-  "sourceBytes": 287546376,
-  "outputBytes": 100655608,
-  "savedBytes": 186890768,
-  "savedPercent": 65.0,
+  "files": 213,
+  "sourceBytes": 298186785,
+  "outputBytes": 103879634,
+  "savedBytes": 194307151,
+  "savedPercent": 65.16,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -1448,6 +1448,116 @@
       "savedBytes": 2005885
     },
     {
+      "source": "assets/costumes/aruka-sham/cup-champion/select.png",
+      "output": "assets/costumes/aruka-sham/cup-champion/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1251564,
+      "outputBytes": 248668,
+      "savedBytes": 1002896
+    },
+    {
+      "source": "assets/costumes/aruka-sham/cup-champion/sprite.png",
+      "output": "assets/costumes/aruka-sham/cup-champion/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1230989,
+      "outputBytes": 915010,
+      "savedBytes": 315979
+    },
+    {
+      "source": "assets/costumes/ghost-rex/phantom-gala/select.png",
+      "output": "assets/costumes/ghost-rex/phantom-gala/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 934336,
+      "outputBytes": 175202,
+      "savedBytes": 759134
+    },
+    {
+      "source": "assets/costumes/ghost-rex/phantom-gala/sprite.png",
+      "output": "assets/costumes/ghost-rex/phantom-gala/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1347247,
+      "outputBytes": 399144,
+      "savedBytes": 948103
+    },
+    {
+      "source": "assets/costumes/kohaku-taiga/sunset-rally/select.png",
+      "output": "assets/costumes/kohaku-taiga/sunset-rally/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 775386,
+      "outputBytes": 144444,
+      "savedBytes": 630942
+    },
+    {
+      "source": "assets/costumes/kohaku-taiga/sunset-rally/sprite.png",
+      "output": "assets/costumes/kohaku-taiga/sunset-rally/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1136425,
+      "outputBytes": 349134,
+      "savedBytes": 787291
+    },
+    {
+      "source": "assets/costumes/kurone-night/moonlight-ace/select.png",
+      "output": "assets/costumes/kurone-night/moonlight-ace/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 768263,
+      "outputBytes": 134718,
+      "savedBytes": 633545
+    },
+    {
+      "source": "assets/costumes/kurone-night/moonlight-ace/sprite.png",
+      "output": "assets/costumes/kurone-night/moonlight-ace/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1053463,
+      "outputBytes": 265438,
+      "savedBytes": 788025
+    },
+    {
+      "source": "assets/costumes/nerine-korat/aqua-parade/select.png",
+      "output": "assets/costumes/nerine-korat/aqua-parade/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 922983,
+      "outputBytes": 181932,
+      "savedBytes": 741051
+    },
+    {
+      "source": "assets/costumes/nerine-korat/aqua-parade/sprite.png",
+      "output": "assets/costumes/nerine-korat/aqua-parade/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1219753,
+      "outputBytes": 362374,
+      "savedBytes": 857379
+    },
+    {
       "source": "assets/ui/course-map-v2.png",
       "output": "assets/ui/course-map-v2.webp",
       "width": 1254,
@@ -1609,8 +1719,8 @@
       "policy": "high-quality-alpha",
       "quality": 94,
       "sourceBytes": 1016229,
-      "outputBytes": 302572,
-      "savedBytes": 713657
+      "outputBytes": 350534,
+      "savedBytes": 665695
     },
     {
       "source": "assets/trackside/scenery-candy-houses.png",

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=53" />
+  <link rel="stylesheet" href="style.css?v=60" />
 </head>
 <body>
   <main id="app">
@@ -18,7 +18,10 @@
         <h1><span>NYAN</span><strong>CART</strong></h1>
         <p class="tagline">きらめく夜を、駆けぬけろ！</p>
       </div>
-      <button id="openSelect" class="primary-btn"><span>RACE START</span><small>レーサーセットを選ぶ</small></button>
+      <div class="menu-race-modes" aria-label="レースモード">
+        <button id="openSelect" class="primary-btn"><span>SINGLE RACE</span><small>1コースで勝負</small></button>
+        <button id="openCupSelect" class="primary-btn cup-mode-btn"><span>3 COURSE CUP</span><small>3戦の合計ポイントで勝負</small></button>
+      </div>
       <button id="openSettings" class="secondary-btn menu-settings-btn"><span>⚙ SETTINGS</span><small>音量・操作設定</small></button>
       <div class="menu-hints"><span>🏁 2 LAPS</span><span>⭐ 29 RACERS</span><span>⚡ DRIFT TURBO</span></div>
     </section>
@@ -59,8 +62,71 @@
         </div>
       </div>
       <div class="set-action-bar">
+        <button id="openWardrobe" class="wardrobe-open-btn" type="button"><span>OUTFIT LOCKER</span><small id="wardrobeCurrentLabel">STANDARD</small></button>
         <button id="confirmSet" class="set-confirm-btn"><span>COURSE SELECT</span><small>このセットで決定</small></button>
       </div>
+    </section>
+
+    <section id="wardrobe" class="screen wardrobe-screen" aria-labelledby="wardrobeTitle">
+      <div class="wardrobe-backdrop" aria-hidden="true"></div>
+      <header class="select-header wardrobe-header">
+        <button id="backWardrobe" class="icon-btn" type="button" aria-label="セット選択へ戻る">‹</button>
+        <div><p class="eyebrow">RACER COSTUME COLLECTION</p><h2 id="wardrobeTitle">衣装ロッカー</h2></div>
+        <div id="wardrobeCounter" class="step-badge">01 / 01</div>
+      </header>
+      <main class="wardrobe-layout">
+        <section class="wardrobe-hero-stage" aria-label="選択中の衣装">
+          <div class="wardrobe-glow" aria-hidden="true"></div>
+          <img id="wardrobeHero" alt="" draggable="false">
+          <div class="wardrobe-turntable" aria-live="polite">
+            <canvas id="wardrobeSpritePreview" width="602" height="524" aria-label="14方向スプライト回転プレビュー"></canvas>
+            <div class="wardrobe-turntable-ring" aria-hidden="true"></div>
+            <div class="wardrobe-angle-readout">
+              <span><small>ANGLE CHECK</small><strong id="wardrobeAngleLabel">REAR</strong></span>
+              <em id="wardrobeFrameCounter">04 / 14</em>
+            </div>
+            <div class="wardrobe-preview-modes">
+              <button id="wardrobeInspectionToggle" class="wardrobe-inspection-toggle" type="button" aria-pressed="false">
+                <span>◎</span><b>INSPECT</b><small>FRAME REVIEW</small>
+              </button>
+              <button id="wardrobeRotationToggle" class="wardrobe-rotation-toggle" type="button" aria-pressed="false">
+                <span>Ⅱ</span><b>AUTO ROTATE</b><small>14 DIRECTIONS</small>
+              </button>
+            </div>
+            <div id="wardrobeInspectionPanel" class="wardrobe-inspection-panel" aria-hidden="true">
+              <div id="wardrobeFrameStrip" class="wardrobe-frame-strip" role="listbox" aria-label="14方向の検品フレーム"></div>
+              <button id="wardrobePrevFrame" class="wardrobe-frame-step" type="button" aria-label="前の角度へ">‹</button>
+              <button id="wardrobeNextFrame" class="wardrobe-frame-step" type="button" aria-label="次の角度へ">›</button>
+              <button id="wardrobeMarkIssue" class="wardrobe-mark-issue" type="button" aria-pressed="false">
+                <span>⚠ MARK ISSUE</span><small id="wardrobeIssueCount">ISSUES 00</small>
+              </button>
+            </div>
+          </div>
+          <div class="wardrobe-racer-tag"><small>RACER</small><strong id="wardrobeRacerName">アルカ・シャム</strong></div>
+        </section>
+        <aside class="wardrobe-panel">
+          <p class="eyebrow">OUTFIT DETAILS</p>
+          <div class="wardrobe-title-row">
+            <div><small id="wardrobeKicker">ORIGINAL RACING SUIT</small><h3 id="wardrobeName">STANDARD</h3></div>
+            <span id="wardrobeStatus">EQUIPPED</span>
+          </div>
+          <p id="wardrobeDescription">専用カートと調和する、いつものレーシングスタイル。</p>
+          <div id="wardrobeUnlockCondition" class="wardrobe-unlock-condition"><b>UNLOCKED</b><span>最初から使用できます</span></div>
+          <div id="wardrobeGrid" class="wardrobe-grid" role="listbox" aria-label="衣装一覧"></div>
+          <section class="wardrobe-review-export" aria-labelledby="wardrobeReportTitle">
+            <header>
+              <div><small>FRAME REVIEW OUTPUT</small><strong id="wardrobeReportTitle">マーク済みコマの検品レポート</strong></div>
+              <em id="wardrobeReportCount">00 FRAMES</em>
+            </header>
+            <div class="wardrobe-review-actions">
+              <button id="wardrobeExportCsv" type="button" disabled><b>CSV REPORT</b><small>文字データ</small></button>
+              <button id="wardrobeExportSheet" type="button" disabled><b>PNG CONTACT SHEET</b><small>画像一覧</small></button>
+            </div>
+            <p id="wardrobeReportStatus" role="status">問題コマをマークすると、全キャラ・全衣装をまとめて出力できます。</p>
+          </section>
+          <button id="wardrobeEquip" class="primary-btn wardrobe-equip-btn" type="button"><span>USE THIS OUTFIT</span><small>衣装を装備する</small></button>
+        </aside>
+      </main>
     </section>
 
     <section id="settings" class="screen settings-screen" aria-labelledby="settingsTitle">
@@ -228,6 +294,7 @@
 
       <div class="course-dock">
         <div class="course-dock-guide"><small>SELECT WITH</small><strong>DRAG / ← →</strong><span>カードを横へ動かして会場を切り替え</span></div>
+        <div id="cupRoutePreview" class="cup-route-preview hidden" aria-label="3コースカップの開催順"></div>
         <div class="course-dock-position"><small>SELECTED</small><strong id="courseDockPosition">01</strong><span id="courseDockTotal">/ 11</span></div>
         <button id="confirmCourse" class="primary-btn compact course-confirm-btn"><span>RACE THIS CIRCUIT</span><small>難易度選択へ進む</small></button>
       </div>
@@ -245,6 +312,7 @@
           <p class="eyebrow">SELECTED CIRCUIT</p>
           <h3 id="difficultyCourseName">きらめきスイーツサーキット</h3>
           <p id="difficultyCourseStyle">テクニカル＆トリッキー</p>
+          <div id="cupDifficultyRoute" class="cup-difficulty-route hidden" aria-label="カップ開催コース"></div>
           <div class="difficulty-warning"><span>!</span><p>難易度は通常NPCだけでなく、乱入ボス「ミア・シャルム」の速さと粘り強さにも影響します。</p></div>
           <div id="assetPreloadStatus" class="asset-preload-status idle" aria-live="polite"><i><b></b></i><span>コース素材は選択後に先読みします</span></div>
         </section>
@@ -273,6 +341,7 @@
       <div class="position-panel"><small>POSITION</small><strong id="currentPosition">6</strong><span id="positionTotal">/18</span></div>
       <div id="rankPanel" class="rank-panel"></div>
       <div class="race-info">
+        <div id="cupRaceHud" class="cup-race-hud hidden">3 COURSE CUP · RACE 1/3</div>
         <div class="lap-label">LAP <strong id="lap">1</strong><span id="lapTotal">/2</span></div>
         <div id="timer" class="timer">◷ 00:00.000</div>
       </div>
@@ -439,6 +508,30 @@
       <div class="finish-actions"><button id="retry" class="primary-btn compact"><span>もう一度</span><small>RETRY</small></button><button id="toMenu" class="secondary-btn">メニューへ</button></div>
     </section>
 
+    <section id="cupStandings" class="screen cup-standings-screen" aria-labelledby="cupStandingsTitle">
+      <div class="cup-standings-backdrop" aria-hidden="true"><img id="cupStandingsArt" alt=""><i></i></div>
+      <header class="cup-standings-header">
+        <div><p class="eyebrow">NYAN CART 3 COURSE CUP</p><h2 id="cupStandingsTitle">CURRENT STANDINGS</h2></div>
+        <strong id="cupRoundLabel">RACE 1 / 3 COMPLETE</strong>
+      </header>
+      <div id="cupProgress" class="cup-progress" aria-label="カップ進行状況"></div>
+      <main class="cup-standings-board">
+        <section class="cup-round-result">
+          <header><small id="cupLastCourse">ROUND RESULT</small><strong>今回の順位</strong></header>
+          <div id="cupRoundRows" class="cup-result-rows"></div>
+          <footer><span id="cupRoundTime">00:00.000</span><b id="cupRoundCoins">+0 COINS</b></footer>
+        </section>
+        <section class="cup-total-result">
+          <header><small>3 COURSE TOTAL</small><strong>総合ポイント</strong><em>1位15PT / 上位12台まで得点</em></header>
+          <div id="cupTotalRows" class="cup-result-rows total"></div>
+        </section>
+      </main>
+      <div class="cup-standings-actions">
+        <button id="cupToMenu" class="secondary-btn">カップを終了</button>
+        <button id="cupNextRace" class="primary-btn compact"><span>NEXT RACE</span><small id="cupNextCourseName">次のコースへ</small></button>
+      </div>
+    </section>
+
     <div id="screenTransition" class="screen-transition" aria-hidden="true">
       <div class="screen-transition-speedlines" aria-hidden="true"></div>
       <div class="screen-transition-kart" aria-hidden="true"><i></i><b></b></div>
@@ -479,7 +572,7 @@
   </main>
   <script src="assets/sprite-bounds.js?v=3"></script>
   <script src="audio.js?v=16"></script>
-  <script src="game.js?v=125"></script>
-  <script src="quality.js?v=74"></script>
+  <script src="game.js?v=134"></script>
+  <script src="quality.js?v=88"></script>
 </body>
 </html>

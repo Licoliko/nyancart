@@ -49,9 +49,15 @@ $files.AddRange([string[]]@(
     "assets/audio/drigt_swing_nya.mp3",
     "assets/audio/CARAMEL_OVERDRIVE.mp3",
     "assets/audio/clockwork_claw.mp3",
+    "assets/audio/over_clock_nyaight_city.mp3",
+    "assets/audio/rainbow_prism_overdrive.mp3",
+    "assets/audio/crown_sugar_overdrive.mp3",
     "assets/audio/aurora_prism_break.mp3",
     "assets/audio/EMERALD_CLAW.mp3",
-    "assets/audio/phantom_gear_parade.mp3"
+    "assets/audio/yukemuri_overdrive.mp3",
+    "assets/audio/ABYSSAL_PEARL_OVERDRIVE.mp3",
+    "assets/audio/phantom_gear_parade.mp3",
+    "assets/audio/lunar_gravity_break.mp3"
 ))
 foreach ($slug in $portraitSlugs) {
     $files.Add("assets/portraits/$slug.webp")
@@ -74,9 +80,10 @@ $unlistedRuntimeImages = @(
         (Join-Path $root "assets/select-chibis"),
         (Join-Path $root "assets/select-heroes"),
         (Join-Path $root "assets/skill-cutins"),
+        (Join-Path $root "assets/costumes"),
         (Join-Path $root "assets/ui"),
         (Join-Path $root "assets/trackside")
-    ) -Filter "*.webp" -File |
+    ) -Filter "*.webp" -File -Recurse |
         ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') } |
         Where-Object { $manifestOutputs -notcontains $_ -and $ignoredRuntimeImages -notcontains $_ }
 )

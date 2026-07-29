@@ -401,8 +401,9 @@ let itemFrames=[],catCanFrames=[],drivingFxFrames=[],itemFxFrames=[],weatherDriv
 let itemSheet=null,catCanSheet=null,drivingFxAnimationSheet=null,itemFxAnimationSheet=null,weatherDrivingFxSheet=null,itemFxAssetPromise=null;
 const defaultRaceMusicFiles=['assets/audio/n(ya)itro_cat_grand_prix.mp3','assets/audio/drigt_swing_nya.mp3'];
 const defaultRaceMusicTitles=Object.freeze({'assets/audio/n(ya)itro_cat_grand_prix.mp3':'N(YA)ITRO CAT GRAND PRIX','assets/audio/drigt_swing_nya.mp3':'DRIFT SWING NYA'});
-const courseRaceMusicFiles=Object.freeze({sweets:'assets/audio/CARAMEL_OVERDRIVE.mp3',steam:'assets/audio/clockwork_claw.mp3',aurora:'assets/audio/aurora_prism_break.mp3',jungle:'assets/audio/EMERALD_CLAW.mp3',phantom:'assets/audio/phantom_gear_parade.mp3'});
-const courseRaceMusicTitles=Object.freeze({sweets:'CARAMEL OVERDRIVE',steam:'CLOCKWORK CLAW ― 秒針を噛み砕け',aurora:'オーロラ・プリズムブレイク',jungle:'EMERALD_CLAW',phantom:'PHANTOM GEAR PARADE'});
+const courseRaceMusicFiles=Object.freeze({sweets:'assets/audio/CARAMEL_OVERDRIVE.mp3',steam:'assets/audio/clockwork_claw.mp3',neon:'assets/audio/over_clock_nyaight_city.mp3',rain:'assets/audio/rainbow_prism_overdrive.mp3',royal:'assets/audio/crown_sugar_overdrive.mp3',aurora:'assets/audio/aurora_prism_break.mp3',jungle:'assets/audio/EMERALD_CLAW.mp3',sakura:'assets/audio/yukemuri_overdrive.mp3',coral:'assets/audio/ABYSSAL_PEARL_OVERDRIVE.mp3',phantom:'assets/audio/phantom_gear_parade.mp3',lunatic:'assets/audio/lunar_gravity_break.mp3'});
+const courseRaceMusicTitles=Object.freeze({sweets:'CARAMEL OVERDRIVE',steam:'CLOCKWORK CLAW ― 秒針を噛み砕け',neon:'OVER_CLOCK NYAIGHT CITY',rain:'虹雨プリズム・オーバードライブ',royal:'CROWN SUGAR OVERDRIVE',aurora:'オーロラ・プリズムブレイク',jungle:'EMERALD_CLAW',sakura:'湯煙オーバードライブ',coral:'ABYSSAL PEARL OVERDRIVE',phantom:'PHANTOM GEAR PARADE',lunatic:'LUNAR GRAVITY BREAK'});
+const unassignedCourseRaceMusic=Object.freeze(courseScenerySlugs.filter(slug=>!courseRaceMusicFiles[slug]));
 const raceMusicFiles=[...new Set([...defaultRaceMusicFiles,...Object.values(courseRaceMusicFiles)])];
 const raceMusic=raceMusicFiles.map(src=>{const audio=new Audio(src);audio.preload='metadata';audio.loop=true;return audio});
 const raceMusicByFile=new Map(raceMusicFiles.map((src,index)=>[src,raceMusic[index]]));
@@ -412,7 +413,7 @@ coursePreviewAudio.preload='metadata';
 let coursePreviewCourse=-1,coursePreviewTimer=0;
 function courseMusicInfo(index=state.selectedCourse){const slug=courseScenerySlugs[index]||'sweets',source=courseRaceMusicFiles[slug]||defaultRaceMusicFiles[index%defaultRaceMusicFiles.length];return{slug,source,title:courseRaceMusicTitles[slug]||defaultRaceMusicTitles[source]||source.split('/').pop().replace(/\.[^.]+$/,'')}}
 function updateCourseMusicPreviewUI(index=state.selectedCourse){
-  const button=$('courseMusicPreview');if(!button)return;const info=courseMusicInfo(index),playing=coursePreviewCourse===index&&!coursePreviewAudio.paused;button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',`${info.title}を${playing?'停止':'試聴'}`);button.classList.toggle('playing',playing);button.querySelector('.course-music-preview-icon').textContent=playing?'Ⅱ':'▶';$('courseMusicTitle').textContent=info.title;$('courseMusicState').textContent=playing?'NOW PLAYING':'PREVIEW';const screen=$('courseSelect');screen.dataset.musicPreviewModel='course-select-preview-v1';screen.dataset.musicPreviewTrack=info.source.split('/').pop();screen.dataset.musicPreviewTitle=info.title;screen.dataset.musicPreviewState=playing?'playing':'ready'
+  const button=$('courseMusicPreview');if(!button)return;const info=courseMusicInfo(index),playing=coursePreviewCourse===index&&!coursePreviewAudio.paused;button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',`${info.title}を${playing?'停止':'試聴'}`);button.classList.toggle('playing',playing);button.querySelector('.course-music-preview-icon').textContent=playing?'Ⅱ':'▶';$('courseMusicTitle').textContent=info.title;$('courseMusicState').textContent=playing?'NOW PLAYING':'PREVIEW';const screen=$('courseSelect');screen.dataset.musicPreviewModel='course-select-preview-v1';screen.dataset.musicPreviewTrack=info.source.split('/').pop();screen.dataset.musicPreviewTitle=info.title;screen.dataset.musicPreviewState=playing?'playing':'ready';screen.dataset.musicDedicatedCount=String(courseScenerySlugs.length-unassignedCourseRaceMusic.length);screen.dataset.musicUnassigned=unassignedCourseRaceMusic.join(',')
 }
 function stopCourseMusicPreview(reset=true){
   clearTimeout(coursePreviewTimer);coursePreviewTimer=0;coursePreviewAudio.pause();if(reset){try{coursePreviewAudio.currentTime=0}catch{}}coursePreviewCourse=-1;updateCourseMusicPreviewUI()
@@ -551,16 +552,21 @@ function updateSoundTestMeter(){
 }
 
 const state = {
-  mode:'menu', selected:0, selectedCourse:0, running:false, paused:false, elapsed:0, lap:1, progress:0,
+  mode:'menu', raceMode:'single', selected:0, selectedCourse:0, running:false, paused:false, elapsed:0, lap:1, progress:0,
   distance:0, speed:0, x:0, steer:0, boosting:false, turbo:0, drift:0, driftLevel:0,
   item:null, shield:0, invincible:0, coins:0, raceWalletEarned:0, shake:0, rank:6, last:0,
   objects:[], courseHazards:[], particles:[], collectFx:[], projectiles:[], snowTracks:[], snowTrackCursor:{}, weatherSlip:0, weatherSurface:'dry', trackCurve:0, centrifugal:0, surface:'road', trackMaterial:'asphalt', offroadAmount:0, suspension:0, suspensionVelocity:0, jumpY:0, jumpVelocity:0, jumpView:0, landingBounce:0, landingBounceVelocity:0, airborne:false, cameraHeading:0, cameraLane:0, routeCameraVelocity:0, flash:0, collisionCooldown:0,
   countdownActive:false, startCharge:0, startPenalty:false, finish:false, finishTime:0, finishCoast:0, finishOrder:null, lastRank:6,
   raceDifficulty:'normal',raceRewards:[],raceWalletStart:0,finishCoinBonus:0,resultRecord:null,overtakeUiCooldown:0,rocketWarningCooldown:0,routeSelectionPulse:0,routeSelectionSide:null,routeSelectionLap:-1,routeSelectionSerial:0,debug:{showCourseLimits:false}
 };
+const CUP_RACE_COUNT=3;
+const CUP_POINTS=Object.freeze([15,12,10,9,8,7,6,5,4,3,2,1]);
+const cupState={
+  active:false,startCourse:0,courseIndexes:[],results:[],standings:new Map(),walletStart:0,totalCoins:0,totalTime:0,final:false
+};
 const keyboardActions={},touchActions={},gamepadInput={accelerate:false,brake:false,left:false,right:false,drift:false,steer:0};
 let gamepadPrevious={item:false,pause:false,accelerate:false,confirm:false,back:false},activeGamepadIndex=null;
-const controllerUi={indexes:{menu:0,settings:0,soundTest:0,finish:0},activeElement:null,repeat:{left:0,right:0,up:0,down:0}};
+const controllerUi={indexes:{menu:0,settings:0,soundTest:0,cupStandings:1,finish:0},activeElement:null,repeat:{left:0,right:0,up:0,down:0}};
 const surfaceHaptics={wasSliding:false,cooldown:0,count:0,lastSurface:'dry'};
 const signatureFeedbackState={life:0,duration:0,strength:0,color:'#ffffff',color2:'#ffffff',family:'none',cue:'none',racer:'none',serial:0};
 const signatureHapticTimers=new Set();
@@ -604,7 +610,7 @@ function pollGamepad(){
     if(accelerate&&!gamepadPrevious.accelerate)handleStartCharge();if(item&&!gamepadPrevious.item)useItem();if(pause&&!gamepadPrevious.pause)togglePause();
   }else{
     const now=performance.now();for(const [direction,active] of Object.entries({left,right,up,down}))if(gamepadDirectionPulse(direction,active,now))navigateController(direction);
-    if(confirm&&!gamepadPrevious.confirm)activateControllerSelection();if(back&&!gamepadPrevious.back)controllerBack();if(item&&!gamepadPrevious.item&&state.mode==='course')toggleCourseMusicPreview();if(pause&&!gamepadPrevious.pause&&state.mode==='settings')closeSettings();
+    if(confirm&&!gamepadPrevious.confirm)activateControllerSelection();if(back&&!gamepadPrevious.back)controllerBack();if(item&&!gamepadPrevious.item&&state.mode==='kart')openWardrobe();else if(item&&!gamepadPrevious.item&&state.mode==='wardrobe'&&wardrobeState.inspectionMode)toggleWardrobeFrameIssue();else if(item&&!gamepadPrevious.item&&state.mode==='course')toggleCourseMusicPreview();if(pause&&!gamepadPrevious.pause&&state.mode==='settings')closeSettings();
   }
   gamepadPrevious={item,pause,accelerate,confirm,back};
 }
@@ -870,8 +876,9 @@ function updateAudioScene(){
   const racer=racers[state.selected];if(!racer){window.NyanAudio?.updateBiomeAmbience({course:'sweets',zone:'none',running:false});window.NyanAudio?.setTunnel(false);return}const running=state.mode==='race'&&state.running&&!state.finish,paused=state.paused||miaNpc.cutInActive,rivals=running&&!paused?nearbyRivalAudioPayload():[],tunnelMix=running&&!paused?audioTunnelMix(state.distance):0,surfacePan=clamp(state.steer*.3+state.weatherSlip*2.15,-.82,.82),enginePan=clamp(state.steer*.1+state.centrifugal*.08,-.22,.22),zoneState=updateBiomeZoneTransition(0),zones=biomeVolumeZones(state.selectedCourse),zoneIndex=Math.max(0,zones.findIndex(zone=>zone.id===zoneState.zone.id)),courseKey=courseScenerySlugs[state.selectedCourse]||'sweets';window.NyanAudio?.updateEngine({speed:state.speed,accelerating:actionDown('accelerate')||Boolean(activeCourse?.autoDrive),braking:actionDown('brake'),drifting:state.drift>0,steer:state.steer,boosting:state.boosting,turbo:state.turbo,surface:state.surface,weatherSurface:state.weatherSurface,weatherSlip:state.weatherSlip,surfacePan,enginePan,trackMaterial:state.trackMaterial,airborne:state.airborne,running,paused});window.NyanAudio?.updateRivals(rivals,{running,paused});window.NyanAudio?.setTunnel(tunnelMix>0,tunnelMix);window.NyanAudio?.updateBiomeAmbience({course:courseKey,zone:zoneState.zone.id,zoneIndex,running,paused,tunnelMix});const acoustics=window.NyanAudio?.getAcousticsDebug?.()||{},biomeAudio=acoustics.biomeAmbience||window.NyanAudio?.getBiomeAmbienceDebug?.()||{};canvas.dataset.rivalAudioCount=String(rivals.length);canvas.dataset.rivalAudio=rivals.map(rival=>rival.slug).join(',');canvas.dataset.rivalAudioPan=rivals.map(rival=>rival.pan.toFixed(2)).join(',');canvas.dataset.rivalAudioRelativeSpeed=rivals.map(rival=>rival.relativeSpeed.toFixed(1)).join(',');canvas.dataset.audioTunnel=tunnelMix>0?'inside':'outside';canvas.dataset.audioTunnelMix=tunnelMix.toFixed(2);canvas.dataset.surfaceAudio=acoustics.surfaceAudio||'dry';canvas.dataset.surfaceAudioLevel=Number(acoustics.surfaceAudioLevel||0).toFixed(3);canvas.dataset.surfaceAudioPan=Number(acoustics.surfacePan??surfacePan).toFixed(3);canvas.dataset.engineAudioPan=Number(acoustics.enginePan??enginePan).toFixed(3);canvas.dataset.signatureAudioCue=acoustics.lastPlayerSignatureCue||'none';canvas.dataset.signatureAudioCount=String(acoustics.playerSignatureCueCount||0);canvas.dataset.signatureWorldAudioCue=acoustics.lastSignatureCue||'none';canvas.dataset.biomeAudioModel=biomeAudio.model||'dual-bus-zone-crossfade-v1';canvas.dataset.biomeAudioCourse=biomeAudio.course||courseKey;canvas.dataset.biomeAudioZone=biomeAudio.zone||zoneState.zone.id;canvas.dataset.biomeAudioLabel=biomeAudio.label||'none';canvas.dataset.biomeAudioMix=Number(biomeAudio.mix||0).toFixed(3)
 }
 function ensureRacerSprite(index){
-  const racer=racers[index];if(!racer)return Promise.reject(new Error(`Unknown racer sprite index: ${index}`));if(racer.frames)return Promise.resolve(racer.frames);if(racer.spritePromise)return racer.spritePromise;
-  racer.spritePromise=loadImageAsync(`assets/sprites/${racer.slug}.webp`,im=>{spriteImages[index]=im;racer.frames=remapRacerFrames(racer.slug,sliceSheet(im,7,2,racer.slug))}).then(()=>racer.frames).catch(error=>{racer.spritePromise=null;throw error});
+  const racer=racers[index];if(!racer)return Promise.reject(new Error(`Unknown racer sprite index: ${index}`));const costume=activeCostume(racer),costumeId=costume.id;if(racer.frames&&racer.loadedCostume===costumeId)return Promise.resolve(racer.frames);if(racer.spritePromise&&racer.loadingCostume===costumeId)return racer.spritePromise;
+  racer.frames=null;racer.spritePromise=null;racer.loadingCostume=costumeId;const source=costume.sprite||`assets/sprites/${racer.slug}.webp`,boundsKey=costumeId==='standard'?racer.slug:`${racer.slug}-${costumeId}`;
+  racer.spritePromise=loadImageAsync(source,im=>{spriteImages[index]=im;racer.frames=remapRacerFrames(racer.slug,sliceSheet(im,7,2,boundsKey),costumeId);racer.loadedCostume=costumeId}).then(()=>racer.frames).catch(error=>{racer.spritePromise=null;racer.loadingCostume=null;throw error});
   return racer.spritePromise;
 }
 function ensureMiaSprite(){
@@ -900,7 +907,7 @@ const RACER_FRAME_REMAPS={
   // cat kart layout. Remap at load time so the source sheet can stay intact.
   'kurone-night':[0,1,4,3,2,5,6,7,8,11,10,9,12,13]
 };
-function remapRacerFrames(slug,frames){const map=RACER_FRAME_REMAPS[slug];return map?map.map(index=>frames[index]||frames[0]):frames}
+function remapRacerFrames(slug,frames,costumeId='standard'){const map=costumeId==='standard'?RACER_FRAME_REMAPS[slug]:null;return map?map.map(index=>frames[index]||frames[0]):frames}
 
 function sliceSheet(image,cols,rows,key){
   const bounds=window.SPRITE_BOUNDS?.[key];if(bounds)return bounds.map(b=>({image,sx:b[0],sy:b[1],sw:b[2],sh:b[3]}));
@@ -920,8 +927,49 @@ function resize(){const d=Math.min(devicePixelRatio||1,2),quality=performancePro
 addEventListener('resize',resize);resize();
 
 const SET_STAT_LABELS=[['speed','SPEED'],['accel','ACCEL'],['handling','HANDLING'],['boost','BOOST'],['technique','TECHNIQUE']];
+const COSTUME_CATALOG=Object.freeze({
+  'aruka-sham':Object.freeze([
+    Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'プリズム・ロイヤルと調和する、アルカのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/aruka-sham.webp',sprite:'assets/sprites/aruka-sham.webp',source:'ORIGINAL'}),
+    Object.freeze({id:'cup-champion',name:'CUP CHAMPION',kicker:'3 COURSE CUP REWARD',description:'白とネイビーを基調に、チェッカーフラッグと優勝杯をあしらったカップ制覇記念レーシングウェア。性能は通常衣装と同じです。',unlockLabel:'アルカで3 COURSE CUPを完走',select:'assets/costumes/aruka-sham/cup-champion/select.webp',sprite:'assets/costumes/aruka-sham/cup-champion/sprite.webp',source:'GPT IMAGE 2.0',unlock:'cup-clear'})
+  ]),
+  'kurone-night':Object.freeze([
+    Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'月影のマシンに合わせた、クロネのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/kurone-night.webp',sprite:'assets/sprites/kurone-night.webp',source:'ORIGINAL'}),
+    Object.freeze({id:'moonlight-ace',name:'MOONLIGHT ACE',kicker:'LUNAR RACING COLLECTION',description:'銀、ミッドナイトネイビー、紫を重ねた月光仕様。三日月のケープレットが夜のコースで輝きます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/kurone-night/moonlight-ace/select.webp',sprite:'assets/costumes/kurone-night/moonlight-ace/sprite.webp',source:'GPT IMAGE 2.0'})
+  ]),
+  'kohaku-taiga':Object.freeze([
+    Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'タイガーマシンを乗りこなす、コハクのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/kohaku-taiga.webp',sprite:'assets/sprites/kohaku-taiga.webp',source:'ORIGINAL'}),
+    Object.freeze({id:'sunset-rally',name:'SUNSET RALLY',kicker:'OFFROAD CHAMPION COLLECTION',description:'クリームホワイトと夕焼けオレンジのラリー仕様。虎柄の袖とチェッカースカーフで荒野を駆けます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/kohaku-taiga/sunset-rally/select.webp',sprite:'assets/costumes/kohaku-taiga/sunset-rally/sprite.webp',source:'GPT IMAGE 2.0'})
+  ]),
+  'ghost-rex':Object.freeze([
+    Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'幽霊船カートと調和する、ゴースのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/ghost-rex.webp',sprite:'assets/sprites/ghost-rex.webp',source:'ORIGINAL'}),
+    Object.freeze({id:'phantom-gala',name:'PHANTOM GALA',kicker:'MIDNIGHT CARNIVAL COLLECTION',description:'深い紫とアンティークシルバーをまとった夜会仕様。仮面のブローチと端正なレーシングコートが特徴です。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/ghost-rex/phantom-gala/select.webp',sprite:'assets/costumes/ghost-rex/phantom-gala/sprite.webp',source:'GPT IMAGE 2.0'})
+  ]),
+  'nerine-korat':Object.freeze([
+    Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'クラゲカートと調和する、ネリネのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/nerine-korat.webp',sprite:'assets/sprites/nerine-korat.webp',source:'ORIGINAL'}),
+    Object.freeze({id:'aqua-parade',name:'AQUA PARADE',kicker:'CORAL OCEAN COLLECTION',description:'真珠色とアクアブルーに珊瑚色を差した海のパレード仕様。小さなフィン飾りが水上コースで映えます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/nerine-korat/aqua-parade/select.webp',sprite:'assets/costumes/nerine-korat/aqua-parade/sprite.webp',source:'GPT IMAGE 2.0'})
+  ])
+});
+function costumesFor(racer){
+  return COSTUME_CATALOG[racer.slug]||[{id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:`${racer.name}の専用レーシングスタイル。`,unlockLabel:'最初から使用できます',select:racer.selectHero,sprite:`assets/sprites/${racer.slug}.webp`,source:'ORIGINAL'}]
+}
+function costumeKey(racer,costumeId){return`${racer.slug}:${costumeId}`}
+function isCostumeUnlocked(racer,costume){return!costume.unlock||playerProgress.costumeUnlocks.includes(costumeKey(racer,costume.id))}
+function activeCostumeId(racer){
+  const requested=playerProgress.equippedCostumes[racer.slug]||'standard',costumes=costumesFor(racer),costume=costumes.find(entry=>entry.id===requested);return costume&&isCostumeUnlocked(racer,costume)?requested:'standard'
+}
+function activeCostume(racer){const id=activeCostumeId(racer);return costumesFor(racer).find(costume=>costume.id===id)||costumesFor(racer)[0]}
+function racerSelectHero(racer){return activeCostume(racer).select||racer.selectHero}
+function resetRacerCostumeVisual(racer){
+  const index=racers.indexOf(racer);racer.frames=null;racer.spritePromise=null;racer.queuedSpritePromise=null;racer.loadingCostume=null;racer.loadedCostume=null;if(index>=0)spriteImages[index]=null
+}
 const PROGRESS_KEY='nyan-cart-progress-v1',INITIAL_FREE_RACER_COUNT=18,RACER_UNLOCK_COST=150;
-function loadProgress(){try{const saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'),bestTimes=saved.bestTimes&&typeof saved.bestTimes==='object'?Object.fromEntries(Object.entries(saved.bestTimes).filter(([,value])=>Number.isFinite(Number(value))&&Number(value)>0).map(([key,value])=>[key,Number(value)])):{};return{coins:Math.max(0,Math.floor(Number(saved.coins)||0)),unlocked:Array.isArray(saved.unlocked)?saved.unlocked.filter(value=>typeof value==='string'):[],hardClears:Array.isArray(saved.hardClears)?saved.hardClears.filter(value=>typeof value==='string'):[],miaDefeats:Array.isArray(saved.miaDefeats)?saved.miaDefeats.filter(value=>typeof value==='string'):[],tutorialComplete:!!saved.tutorialComplete,bestTimes}}catch{return{coins:0,unlocked:[],hardClears:[],miaDefeats:[],tutorialComplete:false,bestTimes:{}}}}
+function loadProgress(){
+  const empty={coins:0,unlocked:[],hardClears:[],miaDefeats:[],cupClears:[],costumeUnlocks:[],equippedCostumes:{},tutorialComplete:false,bestTimes:{}};
+  try{
+    const saved=JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'),bestTimes=saved.bestTimes&&typeof saved.bestTimes==='object'?Object.fromEntries(Object.entries(saved.bestTimes).filter(([,value])=>Number.isFinite(Number(value))&&Number(value)>0).map(([key,value])=>[key,Number(value)])):{};
+    return{coins:Math.max(0,Math.floor(Number(saved.coins)||0)),unlocked:Array.isArray(saved.unlocked)?saved.unlocked.filter(value=>typeof value==='string'):[],hardClears:Array.isArray(saved.hardClears)?saved.hardClears.filter(value=>typeof value==='string'):[],miaDefeats:Array.isArray(saved.miaDefeats)?saved.miaDefeats.filter(value=>typeof value==='string'):[],cupClears:Array.isArray(saved.cupClears)?saved.cupClears.filter(value=>typeof value==='string'):[],costumeUnlocks:Array.isArray(saved.costumeUnlocks)?saved.costumeUnlocks.filter(value=>typeof value==='string'):[],equippedCostumes:saved.equippedCostumes&&typeof saved.equippedCostumes==='object'?Object.fromEntries(Object.entries(saved.equippedCostumes).filter(([slug,id])=>typeof slug==='string'&&typeof id==='string')):{},tutorialComplete:!!saved.tutorialComplete,bestTimes}
+  }catch{return empty}
+}
 const playerProgress=loadProgress();
 function saveProgress(){try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(playerProgress))}catch{}}
 function racerUnlockCost(index){return index<INITIAL_FREE_RACER_COUNT?0:RACER_UNLOCK_COST}
@@ -936,13 +984,13 @@ function makeConfetti(container,count=34){
 }
 function playUnlockAnimation(racer,cost){
   const fx=$('unlockFx');if(!fx||!racer)return;
-  $('unlockHero').src=racer.selectHero;$('unlockHero').alt=racer.name;$('unlockName').textContent=racer.name;$('unlockCopy').textContent=`${cost} COINSで専用セットを開放！`;
+  $('unlockHero').src=racerSelectHero(racer);$('unlockHero').alt=racer.name;$('unlockName').textContent=racer.name;$('unlockCopy').textContent=`${cost} COINSで専用セットを開放！`;
   makeConfetti($('unlockConfetti'),42);
   fx.classList.remove('hidden','show');void fx.offsetWidth;fx.classList.add('show');
   clearTimeout(playUnlockAnimation.t);playUnlockAnimation.t=setTimeout(()=>{fx.classList.add('hidden');fx.classList.remove('show');$('unlockConfetti').innerHTML=''},2100);
 }
 const setCarousel={dragging:false,springing:false,moved:false,dragDistance:0,pointerId:null,pointerType:'mouse',lastX:0,lastTime:0,velocity:0,inertia:0,settle:0,targetIndex:null,targetTimer:0,virtualIndex:racers.length+state.selected,previewVirtualIndex:racers.length+state.selected,lastPreviewAt:0,motionStartedAt:0};
-function setupSetGrid(){const rail=$('setGrid'),count=racers.length;rail.innerHTML='';setCarousel.virtualIndex=count+state.selected;setCarousel.previewVirtualIndex=setCarousel.virtualIndex;rail.dataset.motionSystem='nyan-motion-v1';for(let cycle=0;cycle<3;cycle++)racers.forEach((r,i)=>{const virtualIndex=cycle*count+i,button=document.createElement('button'),stars=r.set.rank==='S'?5:4,locked=!isRacerUnlocked(i),cost=racerUnlockCost(i),active=virtualIndex===setCarousel.virtualIndex;button.className='set-card'+(active?' selected':'')+(locked?' locked':'');button.style.setProperty('--set-color',r.color);button.style.setProperty('--hero-scale',r.selectPresentation.scale);button.dataset.setIndex=String(i);button.dataset.virtualIndex=String(virtualIndex);button.setAttribute('role','option');button.setAttribute('aria-selected',String(active));button.setAttribute('aria-setsize',String(count));button.setAttribute('aria-posinset',String(i+1));button.innerHTML=`<img src="${r.selectHero}" alt="${r.name}と${r.set.kart}" draggable="false" loading="lazy" decoding="async"><span class="set-card-copy"><strong>${r.name}</strong><small>${r.set.kart}</small><em>★${stars}</em></span><span class="set-card-badge">${locked?'LOCKED':active?'EQUIPPED':'SELECT'}</span><span class="set-card-lock">🔒 ${cost} COINS</span>`;button.onclick=()=>{if(!setCarousel.moved)selectRacerSet(i,true,virtualIndex)};rail.appendChild(button)});rail.addEventListener('scroll',()=>{updateSetCarousel();if(setCarousel.targetIndex!==null)return;clearTimeout(setCarousel.settle);if(!setCarousel.dragging)setCarousel.settle=setTimeout(snapSetCarousel,120)},{passive:true});rail.addEventListener('pointerdown',startSetDrag);rail.addEventListener('pointermove',moveSetDrag);rail.addEventListener('pointerup',endSetDrag);rail.addEventListener('pointercancel',endSetDrag);rail.addEventListener('wheel',wheelSetCarousel,{passive:false});rail.addEventListener('keydown',keySetCarousel);if($('positionTotal'))$('positionTotal').textContent=`/${count}`;updateWalletUI()}
+function setupSetGrid(){const rail=$('setGrid'),count=racers.length;rail.innerHTML='';setCarousel.virtualIndex=count+state.selected;setCarousel.previewVirtualIndex=setCarousel.virtualIndex;rail.dataset.motionSystem='nyan-motion-v1';for(let cycle=0;cycle<3;cycle++)racers.forEach((r,i)=>{const virtualIndex=cycle*count+i,button=document.createElement('button'),stars=r.set.rank==='S'?5:4,locked=!isRacerUnlocked(i),cost=racerUnlockCost(i),active=virtualIndex===setCarousel.virtualIndex;button.className='set-card'+(active?' selected':'')+(locked?' locked':'');button.style.setProperty('--set-color',r.color);button.style.setProperty('--hero-scale',r.selectPresentation.scale);button.dataset.setIndex=String(i);button.dataset.virtualIndex=String(virtualIndex);button.setAttribute('role','option');button.setAttribute('aria-selected',String(active));button.setAttribute('aria-setsize',String(count));button.setAttribute('aria-posinset',String(i+1));button.innerHTML=`<img src="${racerSelectHero(r)}" alt="${r.name}と${r.set.kart}" draggable="false" loading="lazy" decoding="async"><span class="set-card-copy"><strong>${r.name}</strong><small>${r.set.kart}</small><em>★${stars}</em></span><span class="set-card-badge">${locked?'LOCKED':active?'EQUIPPED':'SELECT'}</span><span class="set-card-lock">🔒 ${cost} COINS</span>`;button.onclick=()=>{if(!setCarousel.moved)selectRacerSet(i,true,virtualIndex)};rail.appendChild(button)});rail.addEventListener('scroll',()=>{updateSetCarousel();if(setCarousel.targetIndex!==null)return;clearTimeout(setCarousel.settle);if(!setCarousel.dragging)setCarousel.settle=setTimeout(snapSetCarousel,120)},{passive:true});rail.addEventListener('pointerdown',startSetDrag);rail.addEventListener('pointermove',moveSetDrag);rail.addEventListener('pointerup',endSetDrag);rail.addEventListener('pointercancel',endSetDrag);rail.addEventListener('wheel',wheelSetCarousel,{passive:false});rail.addEventListener('keydown',keySetCarousel);if($('positionTotal'))$('positionTotal').textContent=`/${count}`;updateWalletUI()}
 function cancelSetTarget(){clearTimeout(setCarousel.targetTimer);cancelAnimationFrame(setCarousel.inertia);setCarousel.inertia=0;setCarousel.targetIndex=null;setCarousel.springing=false;$('setGrid')?.classList.remove('springing','moving')}
 function normalizeSetLoop(){const count=racers.length;let virtualIndex=setCarousel.virtualIndex;if(virtualIndex<count)virtualIndex+=count;else if(virtualIndex>=count*2)virtualIndex-=count;if(virtualIndex===setCarousel.virtualIndex)return;setCarousel.virtualIndex=virtualIndex;setCarousel.previewVirtualIndex=virtualIndex;const rail=$('setGrid'),card=rail.querySelector(`[data-virtual-index="${virtualIndex}"]`);if(card)rail.scrollLeft=Math.max(0,card.offsetLeft-(rail.clientWidth-card.clientWidth)/2);updateSetUI();updateSetCarousel()}
 function centerSelectedSetCard(smooth=false,virtualIndex=setCarousel.virtualIndex){const rail=$('setGrid'),card=rail.querySelector(`[data-virtual-index="${virtualIndex}"]`);if(!card)return;setCarousel.virtualIndex=virtualIndex;if(smooth){springSetCarouselTo(virtualIndex,0);return}cancelSetTarget();setCarousel.velocity=0;rail.scrollTo({left:Math.max(0,card.offsetLeft-(rail.clientWidth-card.clientWidth)/2),behavior:'auto'});normalizeSetLoop();updateSetCarousel()}
@@ -971,11 +1019,129 @@ function updateSetUI(){
   const racer=racers[state.selected],meta=racer.set,trait=racer.trait,signature=racer.signature,title=`${racer.name} & ${meta.kart}`,locked=!isRacerUnlocked(state.selected),cost=racerUnlockCost(state.selected),stats=$('setStats');
   $('setName').textContent=title;$('setStageLabel').textContent=meta.kart.toUpperCase();$('setSubtitle').textContent=`${meta.rank} RANK EXCLUSIVE SET`;playSetRankAnimation(meta);$('setDescription').textContent=meta.description;$('setPosition').textContent=`${String(state.selected+1).padStart(2,'0')} / ${String(racers.length).padStart(2,'0')}`;
   const machineSound=window.NyanAudio?.getMachineInfo(racer.slug);$('setTrait').style.setProperty('--signature-color',signature.color);$('setTrait').innerHTML=`<b>${signature.glyph} ${signature.label}</b><span>${signature.copy}</span><small>PASSIVE · ${trait.label}<em>${trait.copy}</em></small>${machineSound?`<small>ENGINE SOUND · ${machineSound.label}<em>${machineSound.concept}</em></small>`:''}`;window.NyanAudio?.previewMachine(racer.slug,meta.stats);
-  const hero=$('setHeroImage');hero.src=racer.selectHero;hero.alt=`${racer.name}と専用カート ${meta.kart}`;hero.style.setProperty('--hero-scale',racer.selectPresentation.scale);hero.style.setProperty('--hero-y',`${racer.selectPresentation.y}px`);hero.classList.remove('changed');requestAnimationFrame(()=>hero.classList.add('changed'));
+  const costume=activeCostume(racer),hero=$('setHeroImage');hero.src=racerSelectHero(racer);hero.alt=`${racer.name}と専用カート ${meta.kart}・${costume.name}`;hero.style.setProperty('--hero-scale',racer.selectPresentation.scale);hero.style.setProperty('--hero-y',`${racer.selectPresentation.y}px`);hero.classList.remove('changed');requestAnimationFrame(()=>hero.classList.add('changed'));if($('wardrobeCurrentLabel'))$('wardrobeCurrentLabel').textContent=costume.name;
   stats.classList.remove('stat-animate');stats.innerHTML=SET_STAT_LABELS.map(([key,label],i)=>`<div class="set-stat-row"><span>${label}</span><i><b style="--stat:${meta.stats[key]}%;--delay:${i*55}ms"></b></i><em data-target="${meta.stats[key]}">0</em></div>`).join('');
   requestAnimationFrame(()=>{stats.classList.add('stat-animate');animateStatNumbers(stats)});
-  document.querySelectorAll('.set-card').forEach(card=>{const index=Number(card.dataset.setIndex),active=Number(card.dataset.virtualIndex)===setCarousel.virtualIndex,cardLocked=!isRacerUnlocked(index);card.classList.toggle('selected',active);card.classList.toggle('locked',cardLocked);card.setAttribute('aria-selected',String(active));card.querySelector('.set-card-badge').textContent=cardLocked?'LOCKED':active?'EQUIPPED':'SELECT'});
+  document.querySelectorAll('.set-card').forEach(card=>{const index=Number(card.dataset.setIndex),active=Number(card.dataset.virtualIndex)===setCarousel.virtualIndex,cardLocked=!isRacerUnlocked(index),cardRacer=racers[index],cardImage=card.querySelector('img');card.classList.toggle('selected',active);card.classList.toggle('locked',cardLocked);card.setAttribute('aria-selected',String(active));card.querySelector('.set-card-badge').textContent=cardLocked?'LOCKED':active?'EQUIPPED':'SELECT';if(cardImage&&cardRacer)cardImage.src=racerSelectHero(cardRacer)});
   const confirm=$('confirmSet');confirm.classList.toggle('unlock',locked);confirm.querySelector('span').textContent=locked?'UNLOCK':'COURSE SELECT';confirm.querySelector('small').textContent=locked?`${cost} COINS で開放`:'このセットで決定';updateWalletUI();
+}
+const WARDROBE_ROTATION_ORDER=Object.freeze([3,4,5,6,13,12,11,10,9,8,7,0,1,2]);
+const WARDROBE_ROTATION_LABELS=Object.freeze(['REAR','REAR · R15°','REAR · R45°','RIGHT · REAR','RIGHT · FRONT','FRONT · R45°','FRONT · R15°','FRONT','FRONT · L15°','FRONT · L45°','LEFT · FRONT','LEFT · REAR','REAR · L45°','REAR · L15°']);
+const WARDROBE_ROTATION_INTERVAL=340,wardrobeSpritePreviewCache=new Map();
+const WARDROBE_REVIEW_KEY='nyan-cart-costume-frame-review-v1';
+function loadWardrobeReview(){
+  try{const saved=JSON.parse(localStorage.getItem(WARDROBE_REVIEW_KEY)||'{}'),marks={};for(const[key,frames]of Object.entries(saved.marks||{})){if(typeof key!=='string'||!Array.isArray(frames))continue;marks[key]=[...new Set(frames.map(Number).filter(frame=>Number.isInteger(frame)&&frame>=0&&frame<14))].sort((a,b)=>a-b)}return{marks}}catch{return{marks:{}}}
+}
+const wardrobeReview=loadWardrobeReview();
+function saveWardrobeReview(){if(new URLSearchParams(location.search).has('qaScene'))return;try{localStorage.setItem(WARDROBE_REVIEW_KEY,JSON.stringify(wardrobeReview))}catch{}}
+const wardrobeState={previewId:'standard',previewSource:'',previewImage:null,previewFrame:-1,previewStarted:0,rotationPaused:false,inspectionMode:false,manualSteps:0,loadToken:0};
+function wardrobeReviewKey(racer=racers[state.selected],costume=selectedWardrobeCostume()){return`${racer.slug}:${costume.id}`}
+function markedWardrobeFrames(racer=racers[state.selected],costume=selectedWardrobeCostume()){return new Set(wardrobeReview.marks[wardrobeReviewKey(racer,costume)]||[])}
+function loadWardrobePreviewImage(source){
+  if(wardrobeSpritePreviewCache.has(source))return wardrobeSpritePreviewCache.get(source);
+  const promise=new Promise((resolve,reject)=>{const image=new Image();image.decoding='async';image.onload=()=>resolve(image);image.onerror=()=>reject(new Error(`Wardrobe sprite unavailable: ${source}`));image.src=source});wardrobeSpritePreviewCache.set(source,promise);return promise
+}
+function renderWardrobeFrameStrip(){
+  const strip=$('wardrobeFrameStrip');if(!strip)return;const marked=markedWardrobeFrames();strip.innerHTML=WARDROBE_ROTATION_ORDER.map((frameIndex,sequenceIndex)=>`<button type="button" class="wardrobe-frame-button ${marked.has(frameIndex)?'issue':''}" data-sequence="${sequenceIndex}" data-frame="${frameIndex}" role="option" aria-selected="${sequenceIndex===wardrobeState.previewFrame}" aria-label="${String(sequenceIndex+1).padStart(2,'0')} ${WARDROBE_ROTATION_LABELS[sequenceIndex]}${marked.has(frameIndex)?' 問題あり':''}">${String(sequenceIndex+1).padStart(2,'0')}</button>`).join('');strip.querySelectorAll('.wardrobe-frame-button').forEach(button=>button.onclick=()=>selectWardrobeInspectionFrame(Number(button.dataset.sequence)));updateWardrobeInspectionSelection()
+}
+function updateWardrobeInspectionSelection(){
+  const screen=$('wardrobe'),marked=markedWardrobeFrames(),sequenceIndex=Math.max(0,wardrobeState.previewFrame),frameIndex=WARDROBE_ROTATION_ORDER[sequenceIndex]??3,currentMarked=marked.has(frameIndex);$('wardrobeFrameStrip')?.querySelectorAll('.wardrobe-frame-button').forEach(button=>{const current=Number(button.dataset.sequence)===sequenceIndex,issue=marked.has(Number(button.dataset.frame));button.classList.toggle('current',current);button.classList.toggle('issue',issue);button.setAttribute('aria-selected',String(current));button.setAttribute('aria-label',`${button.textContent} ${WARDROBE_ROTATION_LABELS[Number(button.dataset.sequence)]}${issue?' 問題あり':''}`)});
+  const mark=$('wardrobeMarkIssue');if(mark){mark.setAttribute('aria-pressed',String(currentMarked));mark.setAttribute('aria-label',`${WARDROBE_ROTATION_LABELS[sequenceIndex]}を${currentMarked?'問題なしへ戻す':'問題ありとしてマーク'}`);mark.querySelector('span').textContent=currentMarked?'UNMARK ISSUE':'⚠ MARK ISSUE';$('wardrobeIssueCount').textContent=`ISSUES ${String(marked.size).padStart(2,'0')}`}document.querySelector('.wardrobe-angle-readout')?.classList.toggle('current-issue',currentMarked);
+  if(screen){screen.dataset.inspectionMode=wardrobeState.inspectionMode?'on':'off';screen.dataset.inspectionIssues=String(marked.size);screen.dataset.inspectionCurrentMarked=String(currentMarked);screen.dataset.inspectionMarkedFrames=[...marked].sort((a,b)=>a-b).join(',')||'none';screen.dataset.inspectionManualSteps=String(wardrobeState.manualSteps)}updateWardrobeReviewReportUI()
+}
+function setWardrobeInspectionMode(enabled,{silent=false}={}){
+  wardrobeState.inspectionMode=!!enabled;wardrobeState.rotationPaused=wardrobeState.inspectionMode;const stage=document.querySelector('.wardrobe-hero-stage'),panel=$('wardrobeInspectionPanel'),toggle=$('wardrobeInspectionToggle');stage?.classList.toggle('inspection-active',wardrobeState.inspectionMode);panel?.setAttribute('aria-hidden',String(!wardrobeState.inspectionMode));toggle?.setAttribute('aria-pressed',String(wardrobeState.inspectionMode));toggle?.setAttribute('aria-label',wardrobeState.inspectionMode?'検品モードを終了':'14方向の検品モードを開始');if(toggle){toggle.querySelector('span').textContent=wardrobeState.inspectionMode?'✓':'◎';toggle.querySelector('b').textContent=wardrobeState.inspectionMode?'INSPECTING':'INSPECT';toggle.querySelector('small').textContent=wardrobeState.inspectionMode?'MANUAL REVIEW':'FRAME REVIEW'}if(wardrobeState.inspectionMode){if(wardrobeState.previewFrame<0&&wardrobeState.previewImage)drawWardrobeRotationFrame(0);renderWardrobeFrameStrip()}else{wardrobeState.previewStarted=performance.now()-Math.max(0,wardrobeState.previewFrame)*WARDROBE_ROTATION_INTERVAL}updateWardrobeRotationToggle();updateWardrobeInspectionSelection();if(!silent)playSfx(wardrobeState.inspectionMode?'uiConfirm':'uiBack',{intensity:.4})
+}
+function toggleWardrobeInspection(){setWardrobeInspectionMode(!wardrobeState.inspectionMode)}
+function selectWardrobeInspectionFrame(sequenceIndex){
+  if(!wardrobeState.previewImage)return;if(!wardrobeState.inspectionMode)setWardrobeInspectionMode(true,{silent:true});wardrobeState.rotationPaused=true;wardrobeState.manualSteps++;drawWardrobeRotationFrame(sequenceIndex);updateWardrobeRotationToggle();playSfx('uiMove',{intensity:.3})
+}
+function stepWardrobeInspectionFrame(direction){
+  const current=Math.max(0,wardrobeState.previewFrame),next=(current+(direction<0?-1:1)+WARDROBE_ROTATION_ORDER.length)%WARDROBE_ROTATION_ORDER.length;selectWardrobeInspectionFrame(next)
+}
+function toggleWardrobeFrameIssue(){
+  if(!wardrobeState.previewImage)return;if(!wardrobeState.inspectionMode)setWardrobeInspectionMode(true,{silent:true});const racer=racers[state.selected],costume=selectedWardrobeCostume(),key=wardrobeReviewKey(racer,costume),sequenceIndex=Math.max(0,wardrobeState.previewFrame),frameIndex=WARDROBE_ROTATION_ORDER[sequenceIndex],marked=markedWardrobeFrames(racer,costume);if(marked.has(frameIndex))marked.delete(frameIndex);else marked.add(frameIndex);wardrobeReview.marks[key]=[...marked].sort((a,b)=>a-b);saveWardrobeReview();renderWardrobeFrameStrip();drawWardrobeRotationFrame(sequenceIndex);playSfx(marked.has(frameIndex)?'resultStamp':'uiBack',{intensity:.52})
+}
+const WARDROBE_REVIEW_COLUMNS=Object.freeze([
+  ['racerName','キャラ名'],['racerSlug','キャラID'],['costumeName','衣装名'],['costumeId','衣装ID'],['direction','方向'],['sequenceNumber','回転順'],['sourceCell','元セル番号'],['sourceRow','元行'],['sourceColumn','元列'],['sprite','スプライト画像']
+]);
+function buildWardrobeReviewRows(){
+  const rows=[];for(const[key,markedFrames]of Object.entries(wardrobeReview.marks)){if(!Array.isArray(markedFrames)||!markedFrames.length)continue;const separator=key.indexOf(':'),racerSlug=separator>=0?key.slice(0,separator):key,costumeId=separator>=0?key.slice(separator+1):'standard',racer=racers.find(entry=>entry.slug===racerSlug);if(!racer)continue;const costumes=costumesFor(racer),costume=costumes.find(entry=>entry.id===costumeId);if(!costume)continue;for(const frameIndex of markedFrames){const sequenceIndex=WARDROBE_ROTATION_ORDER.indexOf(frameIndex);if(sequenceIndex<0)continue;rows.push({racerName:racer.name,racerSlug,costumeName:costume.name,costumeId:costume.id,direction:WARDROBE_ROTATION_LABELS[sequenceIndex],sequenceNumber:sequenceIndex+1,sourceCell:frameIndex+1,sourceRow:Math.floor(frameIndex/7)+1,sourceColumn:frameIndex%7+1,sprite:costume.sprite,frameIndex,racerOrder:racers.indexOf(racer),costumeOrder:costumes.indexOf(costume)})}}
+  return rows.sort((a,b)=>a.racerOrder-b.racerOrder||a.costumeOrder-b.costumeOrder||a.sequenceNumber-b.sequenceNumber)
+}
+function wardrobeCsvCell(value){const text=String(value??'');return/[",\r\n]/.test(text)?`"${text.replaceAll('"','""')}"`:text}
+function wardrobeReportDate(){return new Date().toISOString().slice(0,10)}
+function downloadWardrobeBlob(blob,filename){const anchor=document.createElement('a'),url=URL.createObjectURL(blob);anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(url),1400)}
+function updateWardrobeReviewReportUI(message=''){
+  const rows=buildWardrobeReviewRows(),count=$('wardrobeReportCount'),status=$('wardrobeReportStatus'),csv=$('wardrobeExportCsv'),sheet=$('wardrobeExportSheet');if(count)count.textContent=`${String(rows.length).padStart(2,'0')} FRAMES`;if(csv)csv.disabled=!rows.length;if(sheet)sheet.disabled=!rows.length;if(status)status.textContent=message||(rows.length?`${new Set(rows.map(row=>`${row.racerSlug}:${row.costumeId}`)).size}衣装・${rows.length}コマを出力できます。`:'問題コマをマークすると、全キャラ・全衣装をまとめて出力できます。');const screen=$('wardrobe');if(screen){screen.dataset.reviewReportRows=String(rows.length);screen.dataset.reviewReportOutfits=String(new Set(rows.map(row=>`${row.racerSlug}:${row.costumeId}`)).size)}return rows
+}
+function buildWardrobeReviewCsv(rows=buildWardrobeReviewRows()){const header=WARDROBE_REVIEW_COLUMNS.map(([,label])=>wardrobeCsvCell(label)).join(','),body=rows.map(row=>WARDROBE_REVIEW_COLUMNS.map(([key])=>wardrobeCsvCell(row[key])).join(',')).join('\r\n');return`\uFEFF${header}\r\n${body}${body?'\r\n':''}`}
+function exportWardrobeReviewCsv(){
+  const rows=buildWardrobeReviewRows();if(!rows.length){updateWardrobeReviewReportUI('出力する問題コマがありません。');playSfx('uiBack',{intensity:.35});return false}downloadWardrobeBlob(new Blob([buildWardrobeReviewCsv(rows)],{type:'text/csv;charset=utf-8'}),`nyan-cart-frame-review-${wardrobeReportDate()}.csv`);updateWardrobeReviewReportUI(`CSVへ${rows.length}コマを書き出しました。`);playSfx('resultStamp',{intensity:.64});return true
+}
+function wardrobeContactSheetCard(context,row,image,x,y,width,height){
+  context.save();context.fillStyle='#101c35';context.strokeStyle='#5be9ff66';context.lineWidth=2;context.beginPath();context.roundRect?.(x,y,width,height,18);if(!context.roundRect)context.rect(x,y,width,height);context.fill();context.stroke();
+  context.fillStyle='#67edff';context.font='900 15px Fredoka, sans-serif';context.fillText(row.racerName,x+18,y+26);context.fillStyle='#ffffff';context.font='900 24px Fredoka, Noto Sans JP, sans-serif';context.fillText(row.costumeName,x+18,y+54);
+  const frameX=x+18,frameY=y+70,frameW=width-36,frameH=174;context.fillStyle='#07111f';context.fillRect(frameX,frameY,frameW,frameH);context.strokeStyle='#ffffff18';context.strokeRect(frameX+.5,frameY+.5,frameW-1,frameH-1);
+  if(image?.naturalWidth){const cellW=image.naturalWidth/7,cellH=image.naturalHeight/2,sx=(row.frameIndex%7)*cellW,sy=Math.floor(row.frameIndex/7)*cellH,scale=Math.min((frameW-14)/cellW,(frameH-10)/cellH),drawW=cellW*scale,drawH=cellH*scale;context.drawImage(image,sx,sy,cellW,cellH,frameX+(frameW-drawW)/2,frameY+(frameH-drawH)/2,drawW,drawH)}
+  context.fillStyle='#ffe170';context.font='900 18px Fredoka, sans-serif';context.fillText(row.direction,x+18,y+271);context.fillStyle='#ff7dbd';context.font='900 14px Fredoka, sans-serif';context.fillText(`SOURCE CELL ${String(row.sourceCell).padStart(2,'0')}  ·  ROW ${row.sourceRow} / COL ${row.sourceColumn}`,x+18,y+299);context.fillStyle='#b5c9dc';context.font='700 11px Fredoka, sans-serif';context.fillText(`${row.racerSlug} / ${row.costumeId}`,x+18,y+320);context.restore()
+}
+async function buildWardrobeReviewContactSheets(rows=buildWardrobeReviewRows()){
+  if(!rows.length)return[];const sources=[...new Set(rows.map(row=>row.sprite))],images=new Map(await Promise.all(sources.map(async source=>{try{return[source,await loadWardrobePreviewImage(source)]}catch{return[source,null]}}))),columns=4,rowsPerPage=12,cardsPerPage=columns*rowsPerPage,width=1600,margin=42,gap=16,headerHeight=142,cardWidth=(width-margin*2-gap*(columns-1))/columns,cardHeight=338,pages=[];
+  for(let offset=0,pageIndex=0;offset<rows.length;offset+=cardsPerPage,pageIndex++){const pageRows=rows.slice(offset,offset+cardsPerPage),rowCount=Math.ceil(pageRows.length/columns),height=headerHeight+margin+rowCount*cardHeight+Math.max(0,rowCount-1)*gap+46,canvasSheet=document.createElement('canvas');canvasSheet.width=width;canvasSheet.height=height;const context=canvasSheet.getContext('2d'),gradient=context.createLinearGradient(0,0,width,height);gradient.addColorStop(0,'#060b18');gradient.addColorStop(.55,'#111d38');gradient.addColorStop(1,'#281333');context.fillStyle=gradient;context.fillRect(0,0,width,height);context.fillStyle='#55edff';context.fillRect(0,0,width,10);context.fillStyle='#ffffff';context.font='900 46px Fredoka, Noto Sans JP, sans-serif';context.fillText('NYAN CART · FRAME REVIEW',margin,67);context.fillStyle='#ff7bc9';context.font='900 18px Fredoka, Noto Sans JP, sans-serif';context.fillText(`GPT Image 2.0 作り直し対象 · ${rows.length} MARKED FRAMES`,margin,101);context.textAlign='right';context.fillStyle='#ffe478';context.font='900 22px Fredoka, sans-serif';context.fillText(`PAGE ${String(pageIndex+1).padStart(2,'0')} / ${String(Math.ceil(rows.length/cardsPerPage)).padStart(2,'0')}`,width-margin,68);context.fillStyle='#9cb4cc';context.font='700 14px Fredoka, sans-serif';context.fillText(wardrobeReportDate(),width-margin,100);context.textAlign='left';pageRows.forEach((row,index)=>{const column=index%columns,line=Math.floor(index/columns),x=margin+column*(cardWidth+gap),y=headerHeight+line*(cardHeight+gap);wardrobeContactSheetCard(context,row,images.get(row.sprite),x,y,cardWidth,cardHeight)});canvasSheet.dataset.reviewCards=String(pageRows.length);canvasSheet.dataset.reviewPage=String(pageIndex+1);pages.push(canvasSheet)}
+  return pages
+}
+function downloadWardrobeCanvas(canvasSheet,filename){return new Promise((resolve,reject)=>canvasSheet.toBlob(blob=>{if(!blob){reject(new Error('PNG encoding failed'));return}downloadWardrobeBlob(blob,filename);resolve(blob)},'image/png'))}
+async function exportWardrobeReviewContactSheets(){
+  const rows=buildWardrobeReviewRows();if(!rows.length){updateWardrobeReviewReportUI('出力する問題コマがありません。');playSfx('uiBack',{intensity:.35});return false}const button=$('wardrobeExportSheet');if(button)button.disabled=true;updateWardrobeReviewReportUI('コンタクトシート画像を作成中…');try{const sheets=await buildWardrobeReviewContactSheets(rows);for(let index=0;index<sheets.length;index++)await downloadWardrobeCanvas(sheets[index],`nyan-cart-frame-review-${wardrobeReportDate()}-${String(index+1).padStart(2,'0')}.png`);updateWardrobeReviewReportUI(`PNGへ${rows.length}コマを書き出しました${sheets.length>1?`（${sheets.length}枚）`:''}。`);playSfx('resultStamp',{intensity:.7});return true}catch(error){console.warn('Wardrobe review contact sheet failed',error);updateWardrobeReviewReportUI('PNGの作成に失敗しました。もう一度お試しください。');playSfx('uiBack',{intensity:.4});return false}finally{if(button)button.disabled=!buildWardrobeReviewRows().length}
+}
+function drawWardrobeRotationFrame(sequenceIndex=0){
+  const canvasPreview=$('wardrobeSpritePreview'),image=wardrobeState.previewImage;if(!canvasPreview||!image?.naturalWidth)return false;
+  const cols=7,rows=2,cellW=image.naturalWidth/cols,cellH=image.naturalHeight/rows;if(!Number.isInteger(cellW)||!Number.isInteger(cellH))return false;
+  const slot=((sequenceIndex%WARDROBE_ROTATION_ORDER.length)+WARDROBE_ROTATION_ORDER.length)%WARDROBE_ROTATION_ORDER.length,frameIndex=WARDROBE_ROTATION_ORDER[slot],col=frameIndex%cols,row=Math.floor(frameIndex/cols),context=canvasPreview.getContext('2d'),scale=Math.min(canvasPreview.width*.91/cellW,canvasPreview.height*.92/cellH),width=cellW*scale,height=cellH*scale,x=(canvasPreview.width-width)/2,y=canvasPreview.height-height-5;
+  context.clearRect(0,0,canvasPreview.width,canvasPreview.height);context.imageSmoothingEnabled=true;context.drawImage(image,col*cellW,row*cellH,cellW,cellH,x,y,width,height);
+  wardrobeState.previewFrame=slot;$('wardrobeAngleLabel').textContent=WARDROBE_ROTATION_LABELS[slot];$('wardrobeFrameCounter').textContent=`${String(slot+1).padStart(2,'0')} / 14`;
+  canvasPreview.dataset.previewModel='uniform-7x2-turntable-v1';canvasPreview.dataset.frameCount='14';canvasPreview.dataset.sequenceFrame=String(slot);canvasPreview.dataset.sheetFrame=String(frameIndex);canvasPreview.dataset.direction=WARDROBE_ROTATION_LABELS[slot];canvasPreview.dataset.cellWidth=String(cellW);canvasPreview.dataset.cellHeight=String(cellH);canvasPreview.dataset.source=wardrobeState.previewSource;
+  const screen=$('wardrobe');screen.dataset.rotationFrame=String(frameIndex);screen.dataset.rotationSequence=String(slot);screen.dataset.rotationDirection=WARDROBE_ROTATION_LABELS[slot];updateWardrobeInspectionSelection();return true
+}
+function updateWardrobeRotation(now=performance.now()){
+  if(state.mode!=='wardrobe'||!wardrobeState.previewImage)return;
+  const sequenceIndex=wardrobeState.rotationPaused?Math.max(0,wardrobeState.previewFrame):Math.floor((now-wardrobeState.previewStarted)/WARDROBE_ROTATION_INTERVAL)%WARDROBE_ROTATION_ORDER.length;if(sequenceIndex!==wardrobeState.previewFrame)drawWardrobeRotationFrame(sequenceIndex)
+}
+function updateWardrobeRotationToggle(){
+  const toggle=$('wardrobeRotationToggle');if(!toggle)return;const inspecting=wardrobeState.inspectionMode;toggle.setAttribute('aria-pressed',String(wardrobeState.rotationPaused));toggle.setAttribute('aria-label',inspecting?'検品モードを終了して自動回転を再開':wardrobeState.rotationPaused?'14方向の自動回転を再開':'14方向の自動回転を一時停止');toggle.querySelector('span').textContent=wardrobeState.rotationPaused?'▶':'Ⅱ';toggle.querySelector('b').textContent=inspecting?'EXIT + AUTO':wardrobeState.rotationPaused?'RESUME':'AUTO ROTATE';toggle.querySelector('small').textContent=inspecting?'LEAVE REVIEW':wardrobeState.rotationPaused?'ANGLE CHECK PAUSED':'14 DIRECTIONS';$('wardrobe').dataset.rotation=wardrobeState.rotationPaused?'paused':'running'
+}
+function toggleWardrobeRotation(){
+  if(wardrobeState.inspectionMode){setWardrobeInspectionMode(false);return}wardrobeState.rotationPaused=!wardrobeState.rotationPaused;if(!wardrobeState.rotationPaused)wardrobeState.previewStarted=performance.now()-Math.max(0,wardrobeState.previewFrame)*WARDROBE_ROTATION_INTERVAL;updateWardrobeRotationToggle();playSfx(wardrobeState.rotationPaused?'uiBack':'uiConfirm',{intensity:.34})
+}
+function ensureWardrobeRotationPreview(){
+  const racer=racers[state.selected],costume=selectedWardrobeCostume(),source=costume.sprite,stage=document.querySelector('.wardrobe-hero-stage'),canvasPreview=$('wardrobeSpritePreview'),token=++wardrobeState.loadToken;wardrobeState.previewSource=source;wardrobeState.previewImage=null;wardrobeState.previewFrame=-1;wardrobeState.previewStarted=performance.now();wardrobeState.rotationPaused=wardrobeState.inspectionMode;stage?.classList.remove('sprite-ready','sprite-error');if(canvasPreview){canvasPreview.getContext('2d').clearRect(0,0,canvasPreview.width,canvasPreview.height);canvasPreview.dataset.previewModel='loading';canvasPreview.dataset.source=source}updateWardrobeRotationToggle();
+  return loadWardrobePreviewImage(source).then(image=>{if(token!==wardrobeState.loadToken||state.mode!=='wardrobe')return false;const cellW=image.naturalWidth/7,cellH=image.naturalHeight/2;if(!Number.isInteger(cellW)||!Number.isInteger(cellH))throw new Error(`Wardrobe sprite grid must be 7x2: ${source}`);wardrobeState.previewImage=image;wardrobeState.previewStarted=performance.now();stage?.classList.add('sprite-ready');drawWardrobeRotationFrame(0);renderWardrobeFrameStrip();setWardrobeInspectionMode(wardrobeState.inspectionMode,{silent:true});$('wardrobe').dataset.rotationModel='uniform-14-direction-turntable-v1';$('wardrobe').dataset.rotationFrames='14';$('wardrobe').dataset.rotationCostume=costume.id;return true}).catch(error=>{if(token!==wardrobeState.loadToken)return false;stage?.classList.add('sprite-error');if(canvasPreview)canvasPreview.dataset.previewModel='error';$('wardrobe').dataset.rotation='error';console.warn('Wardrobe rotation preview failed',error);return false})
+}
+function selectedWardrobeCostume(){
+  const racer=racers[state.selected],costumes=costumesFor(racer);return costumes.find(costume=>costume.id===wardrobeState.previewId)||costumes[0]
+}
+function renderWardrobe(){
+  const racer=racers[state.selected],costumes=costumesFor(racer),costume=selectedWardrobeCostume(),unlocked=isCostumeUnlocked(racer,costume),equipped=activeCostumeId(racer)===costume.id,index=Math.max(0,costumes.indexOf(costume)),hero=$('wardrobeHero');
+  $('wardrobeCounter').textContent=`${String(index+1).padStart(2,'0')} / ${String(costumes.length).padStart(2,'0')}`;$('wardrobeRacerName').textContent=racer.name;$('wardrobeKicker').textContent=costume.kicker;$('wardrobeName').textContent=costume.name;$('wardrobeDescription').textContent=costume.description;$('wardrobeStatus').textContent=equipped?'EQUIPPED':unlocked?'AVAILABLE':'LOCKED';$('wardrobeStatus').classList.toggle('locked',!unlocked);
+  const condition=$('wardrobeUnlockCondition');condition.classList.toggle('locked',!unlocked);condition.querySelector('b').textContent=unlocked?'UNLOCKED':'CLEAR CONDITION';condition.querySelector('span').textContent=costume.unlockLabel;hero.src=costume.select;hero.alt=`${racer.name} ${costume.name}`;hero.classList.remove('changed');requestAnimationFrame(()=>hero.classList.add('changed'));
+  $('wardrobeGrid').innerHTML=costumes.map(entry=>{const entryUnlocked=isCostumeUnlocked(racer,entry),selected=entry.id===costume.id;return`<button type="button" class="wardrobe-card ${selected?'selected':''} ${entryUnlocked?'':'locked'}" data-costume="${entry.id}" role="option" aria-selected="${selected}" aria-label="${entry.name} ${entryUnlocked?'使用可能':'未解放'}"><img src="${entry.select}" alt="" draggable="false"><span><small>${entry.source}</small><strong>${entry.name}</strong><em>${entryUnlocked?'READY':'CUP CLEAR'}</em></span></button>`}).join('');
+  $('wardrobeGrid').querySelectorAll('.wardrobe-card').forEach(card=>card.onclick=()=>selectWardrobeCostume(card.dataset.costume));
+  const equip=$('wardrobeEquip');equip.disabled=!unlocked||equipped;equip.querySelector('span').textContent=equipped?'EQUIPPED':unlocked?'USE THIS OUTFIT':'LOCKED';equip.querySelector('small').textContent=equipped?'現在使用中の衣装です':unlocked?'衣装を装備する':costume.unlockLabel;
+  $('wardrobe').dataset.racer=racer.slug;$('wardrobe').dataset.preview=costume.id;$('wardrobe').dataset.equipped=activeCostumeId(racer);$('wardrobe').dataset.unlocked=String(unlocked);ensureWardrobeRotationPreview()
+}
+function selectWardrobeCostume(costumeId){
+  const racer=racers[state.selected],costume=costumesFor(racer).find(entry=>entry.id===costumeId);if(!costume)return;wardrobeState.previewId=costume.id;renderWardrobe();uiMotionDirector.select($('wardrobeGrid').querySelector(`[data-costume="${costume.id}"]`),'outfit');if(state.mode==='wardrobe')syncControllerFocus()
+}
+function openWardrobe(){
+  const racer=racers[state.selected];wardrobeState.previewId=activeCostumeId(racer);wardrobeState.inspectionMode=false;wardrobeState.manualSteps=0;document.querySelector('.wardrobe-hero-stage')?.classList.remove('inspection-active');$('wardrobeInspectionPanel')?.setAttribute('aria-hidden','true');state.mode='wardrobe';showScreen('wardrobe');renderWardrobe()
+}
+function closeWardrobe(){wardrobeState.inspectionMode=false;wardrobeState.rotationPaused=false;document.querySelector('.wardrobe-hero-stage')?.classList.remove('inspection-active');state.mode='kart';showScreen('kartSelect');updateSetUI();requestAnimationFrame(()=>syncControllerFocus())}
+function equipWardrobeCostume(){
+  const racer=racers[state.selected],costume=selectedWardrobeCostume();if(!isCostumeUnlocked(racer,costume))return;playerProgress.equippedCostumes[racer.slug]=costume.id;saveProgress();resetRacerCostumeVisual(racer);ensureRacerSprite(state.selected).catch(error=>console.warn('Costume sprite load failed',error));renderWardrobe();updateSetUI();playSfx('resultStamp',{intensity:.82});uiMotionDirector.reward($('wardrobeHero'));canvas.dataset.playerCostume=costume.id
+}
+function unlockCupCostume(racer){
+  const persist=!new URLSearchParams(location.search).has('qaScene'),clearKey=`${racer.slug}:three-course-cup`;if(!playerProgress.cupClears.includes(clearKey))playerProgress.cupClears.push(clearKey);const costume=costumesFor(racer).find(entry=>entry.unlock==='cup-clear'),key=costume&&costumeKey(racer,costume.id);if(!costume||playerProgress.costumeUnlocks.includes(key)){if(persist)saveProgress();return null}playerProgress.costumeUnlocks.push(key);if(persist)saveProgress();return{type:'costume',label:`${costume.name} UNLOCKED`,detail:`${racer.name}の新しい衣装`,coins:0,new:true,costume:costume.id}
 }
 function selectRacerSet(i,center=true,virtualIndex=null){const count=racers.length,previous=state.selected;state.selected=((i%count)+count)%count;if(virtualIndex===null){const candidates=[state.selected,state.selected+count,state.selected+count*2];virtualIndex=candidates.reduce((best,value)=>Math.abs(value-setCarousel.virtualIndex)<Math.abs(best-setCarousel.virtualIndex)?value:best,candidates[1])}setCarousel.virtualIndex=virtualIndex;setCarousel.previewVirtualIndex=virtualIndex;updateSetUI();ensureRacerSprite(state.selected);if(previous!==state.selected)uiMotionDirector.select($('setGrid')?.querySelector(`[data-virtual-index="${virtualIndex}"]`),'carousel');if(center)centerSelectedSetCard(true,virtualIndex);updateSetCarousel();if(state.mode==='kart')syncControllerFocus()}
 function openKartSelect(){state.mode='kart';showScreen('kartSelect');updateSetUI();requestAnimationFrame(()=>{centerSelectedSetCard(false,setCarousel.virtualIndex);updateSetCarousel()})}
@@ -996,6 +1162,31 @@ const COURSE_SHOWCASE_META=[
 const COURSE_WEATHER_LABELS={stardust:'STAR DUST',steam:'STEAM',rain:'RAIN',snow:'SNOW',fireflies:'FIREFLIES',sakura:'SAKURA',bubbles:'BUBBLES'};
 const courseCarousel={indexes:[],dragging:false,moved:false,dragDistance:0,pointerId:null,pointerType:'mouse',lastX:0,lastTime:0,velocity:0,inertia:0,settle:0,targetIndex:null,targetTimer:0,virtualIndex:0,revealStart:0};
 function visibleCourseIndexes(){return courseData.map((course,index)=>({course,index})).filter(({course})=>!course.debugOnly||DEV_COURSES_ENABLED).map(({index})=>index)}
+function releaseCourseIndexes(){return courseData.map((course,index)=>({course,index})).filter(({course})=>!course.debugOnly).map(({index})=>index)}
+function cupCourseSequence(startIndex=state.selectedCourse){
+  const available=releaseCourseIndexes(),startPosition=Math.max(0,available.indexOf(startIndex));
+  return Array.from({length:CUP_RACE_COUNT},(_,offset)=>available[(startPosition+offset)%available.length])
+}
+function clearCupState(){
+  cupState.active=false;cupState.startCourse=state.selectedCourse;cupState.courseIndexes=[];cupState.results=[];cupState.standings=new Map();cupState.walletStart=playerProgress.coins;cupState.totalCoins=0;cupState.totalTime=0;cupState.final=false;canvas.dataset.cupMode='single';canvas.dataset.cupRound='0';canvas.dataset.cupCourses='';canvas.dataset.cupStandings=''
+}
+function beginCup(startIndex=state.selectedCourse){
+  const sequence=cupCourseSequence(startIndex);Object.assign(cupState,{active:true,startCourse:sequence[0],courseIndexes:sequence,results:[],standings:new Map(),walletStart:playerProgress.coins,totalCoins:0,totalTime:0,final:false});
+  racers.forEach((racer,index)=>cupState.standings.set(racer.slug,{racer,points:0,wins:0,podiums:0,positionSum:0,lastRank:racers.length,index,races:[]}));
+  state.selectedCourse=sequence[0];canvas.dataset.cupMode='three-course-points-v1';canvas.dataset.cupRound='1';canvas.dataset.cupCourses=sequence.map(index=>courseScenerySlugs[index]).join(',');canvas.dataset.cupStandings='ready'
+}
+function setRaceMode(mode='single'){
+  state.raceMode=mode==='cup'?'cup':'single';if(state.raceMode==='single')clearCupState();else{cupState.active=false;cupState.results=[];cupState.final=false;canvas.dataset.cupMode='three-course-points-v1'}
+  document.documentElement.dataset.raceMode=state.raceMode
+}
+function updateCupCoursePreview(index=state.selectedCourse){
+  const cup=state.raceMode==='cup',sequence=cupCourseSequence(index),preview=$('cupRoutePreview'),guide=document.querySelector('.course-dock-guide'),dock=document.querySelector('.course-dock'),confirm=$('confirmCourse');
+  dock?.classList.toggle('cup-mode',cup);guide?.classList.toggle('hidden',cup);preview?.classList.toggle('hidden',!cup);
+  if(cup&&preview)preview.innerHTML=sequence.map((courseIndex,round)=>{const course=courseData[courseIndex];return`<span><img src="${course.art}" alt=""><i><b>RACE ${round+1}</b><em>${course.short}</em></i></span>`}).join('');
+  if(confirm){confirm.querySelector('span').textContent=cup?'SELECT CUP START':'RACE THIS CIRCUIT';confirm.querySelector('small').textContent=cup?'この3コースで難易度選択へ':'難易度選択へ進む'}
+  if($('courseSelectTitle'))$('courseSelectTitle').textContent=cup?'カップの第1コースを選ぼう！':'レース会場を選ぼう！';
+  if($('courseSelect')){$('courseSelect').dataset.raceMode=state.raceMode;$('courseSelect').dataset.cupCourses=cup?sequence.map(courseIndex=>courseScenerySlugs[courseIndex]).join(','):''}
+}
 function coursePosition(index){const position=courseCarousel.indexes.indexOf(index);return position<0?0:position}
 function courseWeatherType(index){return COURSE_AMBIENCE_PROFILES[index]?.effects?.[0]?.type||'stardust'}
 function buildCourseWeather(type){const weather=$('courseWeatherFx');if(!weather)return;weather.className=`course-showcase-weather weather-${type}`;weather.innerHTML=Array.from({length:type==='rain'?18:type==='steam'?7:13},(_,i)=>{const x=(i*37+11)%101,y=(i*53+17)%83,size=type==='rain'?2:type==='steam'?34:4+(i*7)%11,duration=(type==='rain'?1.1:type==='steam'?5.8:3.8)+(i%5)*.47,delay=-(i%9)*.53;return`<i style="--x:${x}%;--y:${y}%;--size:${size}px;--duration:${duration}s;--delay:${delay}s"></i>`}).join('')}
@@ -1009,7 +1200,7 @@ function updateCourseShowcase(index){
   $('courseShowcaseNumber').textContent=course.debugOnly?'DBG':String(position+1).padStart(2,'0');$('courseShowcaseShort').textContent=course.short;$('selectedCourseName').textContent=course.name;$('selectedCourseInfo').textContent=`${course.style}  ・  難易度 ${course.difficulty}`;$('courseShowcaseDescription').textContent=meta.description;$('courseRaceType').textContent=meta.raceType;$('courseDistance').textContent=`${Math.round(course.finishDistance||TRACK_LENGTH)}m × ${course.totalLaps||2}`;$('courseRating').textContent=course.difficulty;$('courseWeatherLabel').textContent=COURSE_WEATHER_LABELS[effect]||effect.toUpperCase();$('courseSelectCounter').textContent=`${String(position+1).padStart(2,'0')} / ${String(count).padStart(2,'0')}`;$('courseDockPosition').textContent=String(position+1).padStart(2,'0');$('courseDockTotal').textContent=`/ ${String(count).padStart(2,'0')}`;
   $('courseFeatureChips').innerHTML=[meta.surface,`${ramps} JUMP RAMPS`,`${tunnels} TUNNELS`,graph?'SPLIT ROUTE':'ONE WAY'].map(label=>`<span>${label}</span>`).join('');
   const left=graph?.branches?.left,right=graph?.branches?.right;$('courseLeftRoute').textContent=left?.label||'STANDARD LINE';$('courseRightRoute').textContent=right?.label||'STANDARD LINE';$('courseLeftMetric').textContent=left?`${left.perk} · ${left.timeDelta>0?'+':''}${left.timeDelta}m`:'NO BRANCH';$('courseRightMetric').textContent=right?`${right.perk} · ${right.timeDelta>0?'+':''}${right.timeDelta}m`:'NO BRANCH';
-  buildCourseWeather(effect);renderCourseZoneSequence(index);updateCourseMusicPreviewUI(index);courseCarousel.revealStart=performance.now();
+  buildCourseWeather(effect);renderCourseZoneSequence(index);updateCourseMusicPreviewUI(index);updateCupCoursePreview(index);courseCarousel.revealStart=performance.now();
   document.querySelectorAll('.course-card').forEach(card=>{const active=Number(card.dataset.virtualIndex)===courseCarousel.virtualIndex;card.classList.toggle('selected',active);card.setAttribute('aria-selected',String(active));const badge=card.querySelector('.course-card-status');if(badge)badge.textContent=active?'NOW VIEWING':'PREVIEW'});
 }
 function setupCourseGrid(){
@@ -1034,10 +1225,17 @@ addEventListener('resize',()=>{if(state.mode==='course')requestAnimationFrame(()
 function selectCourse(i,center=true,virtualIndex=null){const count=courseCarousel.indexes.length,position=coursePosition(i);if(i!==state.selectedCourse)stopCourseMusicPreview();if(virtualIndex===null){const candidates=[position,position+count,position+count*2];virtualIndex=candidates.reduce((best,value)=>Math.abs(value-courseCarousel.virtualIndex)<Math.abs(best-courseCarousel.virtualIndex)?value:best,candidates[1])}courseCarousel.virtualIndex=virtualIndex;state.selectedCourse=i;activateCourse(i);updateCourseShowcase(i);if(center)centerSelectedCourseCard(true,virtualIndex);updateCourseCarousel();if(state.mode==='course')syncControllerFocus()}
 function activateCourse(i){const course=courseData[i];activeCourse=course;trackNodes=course.nodes;trackArc=buildTrackArc();trackHeights=course.heights;tunnelSections=course.tunnels;rebuildTrackSampleCache();environment=courseImages[i]||menuEnvironment;environmentCrop=course.crop;drawMinimap();ensureCourseEnvironment(i).then(image=>{if(state.selectedCourse===i)environment=image}).catch(error=>console.warn('Course environment load failed',error))}
 function openCourseSelect(){state.mode='course';showScreen('courseSelect');selectCourse(state.selectedCourse,false,courseCarousel.virtualIndex);requestAnimationFrame(()=>{centerSelectedCourseCard(false,courseCarousel.virtualIndex);updateCourseCarousel()})}
-function openDifficultySelect(){stopCourseMusicPreview();activateCourse(state.selectedCourse);const course=activeCourse;$('difficultyCourseArt').src=course.art;$('difficultyCourseArt').alt=course.name;$('difficultyCourseName').textContent=course.name;$('difficultyCourseStyle').textContent=`${course.style} ・ コース難易度 ${course.difficulty}`;state.mode='difficulty';applyDifficultySettings();showScreen('difficultySelect');if(settings.preloadCourseAssets)preloadRacePackage(state.selectedCourse,true).catch(()=>{});else setAssetPreloadStatus('idle','スタート時にレース素材を読み込みます',0)}
+function openDifficultySelect(){
+  stopCourseMusicPreview();activateCourse(state.selectedCourse);const course=activeCourse,cup=state.raceMode==='cup',sequence=cupCourseSequence(state.selectedCourse),route=$('cupDifficultyRoute'),confirm=$('confirmDifficulty');
+  $('difficultyCourseArt').src=course.art;$('difficultyCourseArt').alt=course.name;$('difficultyCourseName').textContent=cup?'3 COURSE CUP':course.name;$('difficultyCourseStyle').textContent=cup?'3コースの合計ポイントで総合優勝を競います':`${course.style} ・ コース難易度 ${course.difficulty}`;
+  route?.classList.toggle('hidden',!cup);if(cup&&route)route.innerHTML=sequence.map((courseIndex,round)=>`<span><b>${round+1}</b><strong>${courseData[courseIndex].name}</strong><em>${round===0?'START':round===2?'FINAL':'NEXT'}</em></span>`).join('');
+  if(confirm){confirm.querySelector('span').textContent=cup?'START 3 COURSE CUP!':'START GRAND PRIX!';confirm.querySelector('small').textContent=cup?'第1戦をスタート':'この難易度でスタート'}
+  $('difficultySelect').dataset.raceMode=state.raceMode;$('difficultySelect').dataset.cupCourses=cup?sequence.map(index=>courseScenerySlugs[index]).join(','):'';
+  state.mode='difficulty';applyDifficultySettings();showScreen('difficultySelect');if(settings.preloadCourseAssets)preloadRacePackage(state.selectedCourse,true).catch(()=>{});else setAssetPreloadStatus('idle','スタート時にレース素材を読み込みます',0)
+}
 function controllerFocusElement(element,scroll=false){document.querySelectorAll('.controller-focus').forEach(node=>node.classList.remove('controller-focus'));controllerUi.activeElement=element||null;if(!element)return;element.classList.add('controller-focus');try{element.focus({preventScroll:true})}catch{}if(scroll)element.scrollIntoView?.({block:'nearest',inline:'nearest',behavior:'smooth'})}
 function visibleControllerElements(selector,root=document){return[...root.querySelectorAll(selector)].filter(element=>!element.disabled&&element.getClientRects().length&&getComputedStyle(element).visibility!=='hidden')}
-function controllerList(mode=state.mode){if(mode==='menu')return[$('openSelect'),$('openSettings')].filter(Boolean);if(mode==='settings')return visibleControllerElements('button,input[type="range"]',$('settings'));if(mode==='soundTest')return visibleControllerElements('button',$('soundTest'));if(mode==='finish')return[$('retry'),$('toMenu')].filter(Boolean);return[]}
+function controllerList(mode=state.mode){if(mode==='menu')return[$('openSelect'),$('openCupSelect'),$('openSettings')].filter(Boolean);if(mode==='settings')return visibleControllerElements('button,input[type="range"]',$('settings'));if(mode==='soundTest')return visibleControllerElements('button',$('soundTest'));if(mode==='wardrobe')return visibleControllerElements('button',$('wardrobe'));if(mode==='cupStandings')return[$('cupToMenu'),$('cupNextRace')].filter(Boolean);if(mode==='finish')return[$('retry'),$('toMenu')].filter(Boolean);return[]}
 function syncControllerFocus(){
   if(activeGamepadIndex===null){controllerFocusElement(null);setControllerConnected(false);return}
   if(state.mode==='kart'){controllerFocusElement($('setGrid')?.querySelector(`[data-virtual-index="${setCarousel.virtualIndex}"]`));return}
@@ -1051,7 +1249,7 @@ function moveControllerList(mode,direction){const list=controllerList(mode);if(!
 function moveCourseController(direction){if(direction==='left')stepCourseCarousel(-1);else if(direction==='right')stepCourseCarousel(1)}
 function navigateController(direction){
   if(screenTransitionState.busy)return;
-  if(state.mode==='menu'||state.mode==='settings'||state.mode==='soundTest'||state.mode==='finish'){moveControllerList(state.mode,direction);return}
+  if(state.mode==='menu'||state.mode==='settings'||state.mode==='soundTest'||state.mode==='wardrobe'||state.mode==='cupStandings'||state.mode==='finish'){moveControllerList(state.mode,direction);return}
   if(state.mode==='kart'&&(direction==='left'||direction==='right')){const step=direction==='right'?1:-1,virtualIndex=setCarousel.virtualIndex+step,index=((virtualIndex%racers.length)+racers.length)%racers.length;selectRacerSet(index,true,virtualIndex);return}
   if(state.mode==='course'){moveCourseController(direction);return}
   if(state.mode==='difficulty'){const keys=Object.keys(DIFFICULTY_PROFILES),current=Math.max(0,keys.indexOf(settings.raceDifficulty)),step=direction==='left'||direction==='up'?-1:1;selectRaceDifficulty(keys[(current+step+keys.length)%keys.length])}
@@ -1064,7 +1262,7 @@ function activateControllerSelection(){
 function controllerBack(){
   if(screenTransitionState.busy)return;
   if(captureAction){captureAction=null;renderKeyConfig();$('keyCaptureHelp').textContent='キー変更をキャンセルしました。';requestAnimationFrame(syncControllerFocus);return}
-  if(state.mode==='kart')$('backKartSelect')?.click();else if(state.mode==='course')$('backCourseSelect')?.click();else if(state.mode==='difficulty')$('backDifficultySelect')?.click();else if(state.mode==='soundTest')closeSoundTest();else if(state.mode==='settings')closeSettings();else if(state.mode==='finish')$('toMenu')?.click()
+  if(state.mode==='kart')$('backKartSelect')?.click();else if(state.mode==='wardrobe')closeWardrobe();else if(state.mode==='course')$('backCourseSelect')?.click();else if(state.mode==='difficulty')$('backDifficultySelect')?.click();else if(state.mode==='soundTest')closeSoundTest();else if(state.mode==='settings')closeSettings();else if(state.mode==='cupStandings')$('cupToMenu')?.click();else if(state.mode==='finish')$('toMenu')?.click()
 }
 const UI_MOTION_SYSTEM={
   version:'nyan-motion-v1',
@@ -1088,9 +1286,9 @@ window.NyanUiMotion={...UI_MOTION_SYSTEM,director:uiMotionDirector};
 document.documentElement.dataset.uiMotionSystem=UI_MOTION_SYSTEM.version;
 document.addEventListener('pointerdown',event=>{const target=event.target.closest('button,[role="option"]');if(target)target.classList.add('ui-pressed')},{passive:true});
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,()=>document.querySelectorAll('.ui-pressed').forEach(element=>element.classList.remove('ui-pressed')),{passive:true});
-document.addEventListener('click',event=>{const target=event.target.closest('.screen button');if(!target)return;if(target.matches('.primary-btn,.set-confirm-btn,.difficulty-card'))uiMotionDirector.confirm(target);else if(target.matches('.icon-btn,.course-card,.set-card,.setting-toggle'))uiMotionDirector.select(target)},{capture:true});
+document.addEventListener('click',event=>{const target=event.target.closest('.screen button');if(!target)return;if(target.matches('.primary-btn,.set-confirm-btn,.difficulty-card'))uiMotionDirector.confirm(target);else if(target.matches('.icon-btn,.course-card,.set-card,.wardrobe-card,.setting-toggle'))uiMotionDirector.select(target)},{capture:true});
 const screenTransitionState={busy:false,serial:0,swapTimer:0,endTimer:0,count:0};
-const SCREEN_FLOW_ORDER={menu:0,kartSelect:1,courseSelect:2,difficultySelect:3,race:4,finish:5,settings:6,soundTest:6};
+const SCREEN_FLOW_ORDER={menu:0,kartSelect:1,wardrobe:1.5,courseSelect:2,difficultySelect:3,race:4,cupStandings:5,finish:6,settings:7,soundTest:7};
 function applyScreenState(next,id){
   document.querySelectorAll('.screen').forEach(screen=>screen.classList.remove('active','ui-screen-enter','ui-screen-exit'));
   if(next){next.classList.add('active');uiMotionDirector.enter(next)}
@@ -1107,11 +1305,13 @@ function openSettings(){settingsReturnMode=state.mode;settingsReturnPaused=state
 function closeSettings(){captureAction=null;saveSettings();const returnMode=settingsReturnMode;state.mode=returnMode;if(returnMode==='race'){const racer=racers[state.selected];window.NyanAudio?.startEngine(racer.slug,racer.set.stats,{silent:true});showScreen(null);state.paused=settingsReturnPaused;if(!state.paused)resumeRaceMusic()}else showScreen(returnMode==='kart'?'kartSelect':returnMode==='course'?'courseSelect':returnMode==='difficulty'?'difficultySelect':returnMode==='finish'?'finish':'menu')}
 function updateDebugUI(){const enabled=state.debug.showCourseLimits,button=$('debugCourseBounds');button.setAttribute('aria-pressed',String(enabled));button.textContent=`コース枠 ${enabled?'ON':'OFF'}`;$('debugToggle').classList.toggle('active',enabled)}
 function setDebugPanel(open){$('debugPanel').classList.toggle('hidden',!open);$('debugToggle').setAttribute('aria-expanded',String(open))}
-$('openSelect').onclick=()=>{environment=menuEnvironment;environmentCrop=null;openKartSelect()};
+function returnToMenu(){environment=menuEnvironment;environmentCrop=null;state.mode='menu';pauseRaceMusic();window.NyanAudio?.stopEngine();setDebugPanel(false);setRaceMode('single');showScreen('menu');$('hud').classList.add('hidden');$('mobileControls').classList.add('hidden')}
+$('openSelect').onclick=()=>{environment=menuEnvironment;environmentCrop=null;setRaceMode('single');openKartSelect()};
+$('openCupSelect').onclick=()=>{environment=menuEnvironment;environmentCrop=null;setRaceMode('cup');openKartSelect()};
 $('openSettings').onclick=openSettings;$('raceSettings').onclick=openSettings;$('closeSettings').onclick=closeSettings;$('settingsDone').onclick=closeSettings;
-$('backKartSelect').onclick=()=>{environment=menuEnvironment;environmentCrop=null;state.mode='menu';showScreen('menu')};$('confirmSet').onclick=confirmRacerSet;$('backCourseSelect').onclick=()=>{stopCourseMusicPreview();openKartSelect()};$('confirmCourse').onclick=openDifficultySelect;$('courseMusicPreview').onclick=toggleCourseMusicPreview;$('backDifficultySelect').onclick=openCourseSelect;$('confirmDifficulty').onclick=startRace;$('retry').onclick=startRace;
+$('backKartSelect').onclick=returnToMenu;$('openWardrobe').onclick=openWardrobe;$('backWardrobe').onclick=closeWardrobe;$('wardrobeInspectionToggle').onclick=toggleWardrobeInspection;$('wardrobeRotationToggle').onclick=toggleWardrobeRotation;$('wardrobePrevFrame').onclick=()=>stepWardrobeInspectionFrame(-1);$('wardrobeNextFrame').onclick=()=>stepWardrobeInspectionFrame(1);$('wardrobeMarkIssue').onclick=toggleWardrobeFrameIssue;$('wardrobeExportCsv').onclick=exportWardrobeReviewCsv;$('wardrobeExportSheet').onclick=exportWardrobeReviewContactSheets;$('wardrobeEquip').onclick=equipWardrobeCostume;$('confirmSet').onclick=confirmRacerSet;$('backCourseSelect').onclick=()=>{stopCourseMusicPreview();openKartSelect()};$('confirmCourse').onclick=openDifficultySelect;$('courseMusicPreview').onclick=toggleCourseMusicPreview;$('backDifficultySelect').onclick=openCourseSelect;$('confirmDifficulty').onclick=startSelectedRaceMode;$('retry').onclick=retrySelectedRaceMode;
 $('courseLoadingRetry').onclick=()=>startRace();
-$('toMenu').onclick=()=>{environment=menuEnvironment;environmentCrop=null;state.mode='menu';pauseRaceMusic();window.NyanAudio?.stopEngine();setDebugPanel(false);showScreen('menu');$('hud').classList.add('hidden');$('mobileControls').classList.add('hidden')};
+$('toMenu').onclick=returnToMenu;$('cupToMenu').onclick=returnToMenu;$('cupNextRace').onclick=startCupNextRace;
 $('musicToggle').onclick=()=>{if(!raceBgm)playRaceMusic();else raceBgm.paused?resumeRaceMusic():pauseRaceMusic()};
 $('debugToggle').onclick=()=>setDebugPanel($('debugPanel').classList.contains('hidden'));
 $('debugClose').onclick=()=>setDebugPanel(false);
@@ -1257,7 +1457,7 @@ function resetRace(){
   Object.assign(catCanReveal,{active:false,time:0,final:null,lastFrame:-1});drawHeldItem();
   Object.assign(surfaceHaptics,{wasSliding:false,cooldown:0,count:0,lastSurface:'dry'});clearSignatureHaptics();Object.assign(signatureFeedbackState,{life:0,duration:0,strength:0,family:'none',cue:'none',racer:'none'});canvas.dataset.hapticModel='slip-onset-v1';canvas.dataset.hapticCount='0';canvas.dataset.hapticEnabled=String(!!settings.controllerVibration);canvas.dataset.signatureFeedbackModel='color-audio-haptic-v1';canvas.dataset.signatureFeedbackFamily='none';canvas.dataset.signatureFeedbackCue='none';canvas.dataset.signatureFeedbackLife='0';canvas.dataset.routeHazardWarnings='0';canvas.dataset.routeHazardClosures='0';canvas.dataset.routeHazardLastCue='none';canvas.dataset.routeHazardHapticDelivered='false';
   const overtake=$('overtakeCallout'),lockWarning=$('lockOnWarning'),signatureCallout=$('signatureCallout'),zoneCallout=$('zoneEntryCallout');if(overtake)overtake.className='overtake-callout';if(lockWarning)lockWarning.className='lock-on-warning';if(signatureCallout)signatureCallout.className='signature-callout';if(zoneCallout){zoneCallout.className='zone-entry-callout';zoneCallout.setAttribute('aria-hidden','true')}clearTimeout(showBiomeZoneCallout.timer);canvas.dataset.biomeZoneCalloutCount='0';$('hud')?.classList.remove('rocket-locked');clearTimeout(showFinalLapCallout.t);clearTimeout(showSignatureCallout.timer);if($('finalLapCallout'))$('finalLapCallout').className='final-lap-callout';clearRaceTutorial();
-  $('itemIcon')?.closest('.item-box')?.classList.remove('ready','opening');$('goalFx')?.classList.add('hidden');$('app').classList.remove('goal-slow');
+  $('itemIcon')?.closest('.item-box')?.classList.remove('ready','opening');$('goalFx')?.classList.add('hidden');$('app').classList.remove('goal-slow');$('finish')?.classList.remove('cup-final');const cupHud=$('cupRaceHud');cupHud?.classList.toggle('hidden',!cupState.active);if(cupHud&&cupState.active)cupHud.textContent=`3 COURSE CUP · RACE ${cupState.results.length+1}/${CUP_RACE_COUNT}`;
   const lanePattern=[-.62,.62,-.31,.31,0,-.7,.7,-.18,.18],length=raceLength(),laps=raceLaps();let ai=0;
   racers.forEach((r,i)=>{const player=i===state.selected,trait=r.trait,personality=r.aiPersonality;r.distance=player?0:38-ai*5.8;r.progress=r.distance/length;r.lane=player?0:lanePattern[ai%lanePattern.length];r.aiTargetLane=r.lane;r.laneTimer=(.48+(ai%4)*.16)*personality.rhythm;r.aiDecisionSeed=(i*7+state.selectedCourse*3)%11;r.aiBoostCooldown=1.1+(i%5)*.23;r.aiPassCommit=0;r.aiPassTarget=null;r.hit=0;r.spin=0;r.shield=0;r.invincible=0;r.aiSpeed=(136+r.set.stats.speed*.26+(ai%6)*2.2)*trait.topSpeed;r.aiAcceleration=trait.acceleration;r.aiVelocity=0;r.aiCoins=0;r.aiItem=null;r.aiItemAge=0;r.aiBoost=0;r.jumpY=0;r.jumpVelocity=0;r.airborne=false;r.lastPlayerGap=r.distance;r.routeChoice=null;r.routeLap=-1;r.routeMerged=false;r.routePhysicalProgress=0;r.routeNormalizedProgress=0;r.routeComparableDistance=r.distance;r.signatureActive=0;r.signatureCooldown=player?3.2:4.2+ai*.42;r.signatureUseCount=0;r.signaturePulse=0;r.signatureReason='';ai+=player?0:1});
   canvas.dataset.aiPersonalities=[...new Set(racers.map(r=>r.aiPersonality.key))].join(',');
@@ -1440,12 +1640,24 @@ async function playRaceIntroSequence(){
   showBiomeZoneCallout(biomeVolumeZoneAt());
   startRaceTutorial();
 }
+function startSelectedRaceMode(){
+  if(state.raceMode==='cup')beginCup(state.selectedCourse);else clearCupState();
+  return startRace()
+}
+function retrySelectedRaceMode(){
+  if(state.raceMode==='cup'||cupState.final){state.raceMode='cup';beginCup(cupState.startCourse||state.selectedCourse)}
+  return startRace()
+}
+function startCupNextRace(){
+  if(!cupState.active||cupState.results.length>=CUP_RACE_COUNT)return;
+  const nextIndex=cupState.courseIndexes[cupState.results.length];state.selectedCourse=nextIndex;activateCourse(nextIndex);canvas.dataset.cupRound=String(cupState.results.length+1);return startRace()
+}
 async function startRace(){
   if(startRace.loading)return;startRace.loading=true;
-  const fromResult=state.mode==='finish',button=fromResult?$('retry'):$('confirmDifficulty'),small=button.querySelector('small'),readyText=fromResult?'RETRY':'この難易度でスタート';button.disabled=true;small.textContent='RACE DATA LOADING...';showCourseLoading(state.selectedCourse);
+  const fromResult=state.mode==='finish',fromCupStandings=state.mode==='cupStandings',button=fromCupStandings?$('cupNextRace'):fromResult?$('retry'):$('confirmDifficulty'),small=button.querySelector('small'),readyText=fromCupStandings?'次のコースへ':fromResult?'RETRY':state.raceMode==='cup'?'第1戦をスタート':'この難易度でスタート';button.disabled=true;small.textContent='RACE DATA LOADING...';showCourseLoading(state.selectedCourse);
   try{await Promise.all([preloadRacePackage(state.selectedCourse,!fromResult,renderCourseLoadingProgress),sleep(420)])}catch(error){startRace.loading=false;button.disabled=false;small.textContent='読み込みを再試行';failCourseLoading(error);toast('ASSET LOAD ERROR');return}
   button.disabled=false;small.textContent=readyText;activateCourse(state.selectedCourse);
-  resetRace();$('finish').querySelector('.eyebrow').textContent=activeCourse.short;state.mode='race';showScreen(null,{immediate:true});$('hud').classList.remove('hidden');
+  resetRace();$('finish').querySelector('.eyebrow').textContent=cupState.active?`3 COURSE CUP · RACE ${cupState.results.length+1}/${CUP_RACE_COUNT}`:activeCourse.short;state.mode='race';showScreen(null,{immediate:true});$('hud').classList.remove('hidden');canvas.dataset.raceMode=cupState.active?'cup':'single';canvas.dataset.cupRound=String(cupState.active?cupState.results.length+1:0);
   const selected=racers[state.selected];window.NyanAudio?.startEngine(selected.slug,selected.set.stats);
   if(matchMedia('(pointer:coarse)').matches)$('mobileControls').classList.remove('hidden');
   playRaceMusic();await completeCourseLoading();startRace.loading=false;
@@ -2121,6 +2333,37 @@ function burstAnimationFrame(p,progress){
 }
 function ordinal(n){return`${n}<sup>${n===1?'st':n===2?'nd':n===3?'rd':'th'}</sup>`}
 function racerResultTime(rank){return fmt((state.finishTime||state.elapsed)+Math.max(0,rank-state.rank)*1700+rank*420)}
+function cupStandingsOrder(){
+  return[...cupState.standings.values()].sort((a,b)=>b.points-a.points||b.wins-a.wins||b.podiums-a.podiums||a.positionSum-b.positionSum||a.lastRank-b.lastRank||a.index-b.index)
+}
+function recordCupRound(fullOrder){
+  const order=fullOrder.filter(racer=>racer!==miaNpc&&cupState.standings.has(racer.slug)),courseIndex=state.selectedCourse,player=racers[state.selected];
+  order.forEach((racer,index)=>{const standing=cupState.standings.get(racer.slug),rank=index+1,points=CUP_POINTS[index]||0;standing.points+=points;standing.wins+=rank===1?1:0;standing.podiums+=rank<=3?1:0;standing.positionSum+=rank;standing.lastRank=rank;standing.races.push({courseIndex,rank,points})});
+  const playerRank=order.indexOf(player)+1,playerPoints=CUP_POINTS[playerRank-1]||0,result={courseIndex,course:courseData[courseIndex],order,playerRank,playerPoints,time:state.finishTime,coins:state.raceWalletEarned,rewards:[...state.raceRewards]};
+  cupState.results.push(result);cupState.totalTime+=state.finishTime;cupState.totalCoins+=state.raceWalletEarned;
+  const standings=cupStandingsOrder();canvas.dataset.cupRound=String(cupState.results.length);canvas.dataset.cupLastPlayerRank=String(playerRank);canvas.dataset.cupLastPlayerPoints=String(playerPoints);canvas.dataset.cupStandings=standings.slice(0,8).map(entry=>`${entry.racer.slug}:${entry.points}`).join(',');canvas.dataset.cupLeader=standings[0]?.racer.slug||'none';return result
+}
+function cupRowsWithPlayer(entries,limit){
+  const player=racers[state.selected],top=entries.slice(0,limit);if(top.some(entry=>(entry.racer||entry)===player))return top;const playerEntry=entries.find(entry=>(entry.racer||entry)===player);return playerEntry?[...top.slice(0,Math.max(0,limit-1)),playerEntry]:top
+}
+function renderCupFace(canvas,racer){
+  const draw=()=>{try{drawResultFaceSprite(canvas,racer)}catch(error){console.warn(`Cup result face failed: ${racer.slug}`,error)}};if(racer.frames)draw();else ensureContestantSprite(racer).then(draw).catch(error=>console.warn(`Cup face load failed: ${racer.slug}`,error))
+}
+function renderCupRows(host,entries,{total=false,limit=7}={}){
+  const rows=cupRowsWithPlayer(entries,limit),player=racers[state.selected];host.innerHTML=rows.map((entry,index)=>{const racer=entry.racer||entry,rank=total?cupStandingsOrder().indexOf(entry)+1:entries.indexOf(entry)+1,value=total?`${entry.points} PT`:`+${CUP_POINTS[rank-1]||0} PT`;return`<div class="cup-result-row ${racer===player?'player':''}" style="--row:${index};--racer-color:${racer.color}" data-racer="${racer.slug}" data-rank="${rank}"><strong>${rank}</strong><canvas width="64" height="64" aria-label="${racer.name}"></canvas><span>${racer.name}</span><b>${value}</b></div>`}).join('');
+  host.querySelectorAll('canvas').forEach((canvas,index)=>renderCupFace(canvas,(rows[index].racer||rows[index])))
+}
+function renderCupStandings(){
+  const latest=cupState.results.at(-1),completed=cupState.results.length,nextIndex=cupState.courseIndexes[completed],standings=cupStandingsOrder();if(!latest)return;
+  $('cupStandingsArt').src=latest.course.art;$('cupStandingsArt').alt='';$('cupRoundLabel').textContent=`RACE ${completed} / ${CUP_RACE_COUNT} COMPLETE`;$('cupLastCourse').textContent=latest.course.short;$('cupRoundTime').textContent=fmt(latest.time);$('cupRoundCoins').textContent=`+${latest.coins} COINS`;
+  $('cupProgress').innerHTML=cupState.courseIndexes.map((courseIndex,index)=>{const course=courseData[courseIndex],result=cupState.results[index],done=index<completed,next=index===completed;return`<article class="${done?'done':''} ${next?'next':''}"><img src="${course.art}" alt=""><span><small>RACE ${index+1}</small><strong>${course.short}</strong></span><b>${result?`+${result.playerPoints}`:next?'NEXT':'—'}</b></article>`}).join('');
+  renderCupRows($('cupRoundRows'),latest.order,{limit:6});renderCupRows($('cupTotalRows'),standings,{total:true,limit:8});
+  const next=courseData[nextIndex];$('cupNextCourseName').textContent=next?`RACE ${completed+1} · ${next.short}`:'FINAL RESULT';$('cupStandings').dataset.completed=String(completed);$('cupStandings').dataset.nextCourse=next?courseScenerySlugs[nextIndex]:'final';$('cupStandings').dataset.playerStanding=String(standings.findIndex(entry=>entry.racer===racers[state.selected])+1);$('cupStandings').dataset.leader=standings[0]?.racer.slug||'none';
+  playSfx('resultStamp',{intensity:.78})
+}
+function prepareCupFinalResult(){
+  const standings=cupStandingsOrder(),playerRacer=racers[state.selected],playerEntry=standings.find(entry=>entry.racer===playerRacer),costumeReward=unlockCupCostume(playerRacer);if(costumeReward)state.raceRewards.push(costumeReward);cupState.final=true;state.finishOrder=standings.map(entry=>entry.racer);state.rank=standings.indexOf(playerEntry)+1;state.finishTime=cupState.totalTime;state.raceWalletEarned=cupState.totalCoins;state.raceWalletStart=cupState.walletStart;state.resultRecord={cup:true,first:false,newBest:false,previous:null,best:state.finishTime,delta:0,practice:false};canvas.dataset.cupFinal='true';canvas.dataset.cupFinalRank=String(state.rank);canvas.dataset.cupFinalPoints=String(playerEntry?.points||0);canvas.dataset.cupFinalOrder=standings.map(entry=>entry.racer.slug).join(',');canvas.dataset.cupFinalPointOrder=standings.map(entry=>entry.points).join(',');canvas.dataset.cupCostumeUnlock=costumeReward?.costume||'none';$('finish').classList.add('cup-final');$('finishRank').innerHTML=ordinal(state.rank);$('finishTitle').textContent=state.rank===1?'CUP CHAMPION!':'CUP COMPLETE!';$('finishTime').textContent=fmt(state.finishTime);$('finishCoins').textContent=`+${state.raceWalletEarned} COINS · TOTAL ${playerProgress.coins}`
+}
 function raceRecordKey(){return `${state.selectedCourse}:${activeCourse?.short||'course'}:${state.raceDifficulty}`}
 function commitRaceRecord(time){
   const safeTime=Math.max(1,Math.round(Number(time)||0));if(activeCourse?.debugOnly)return{first:false,newBest:false,previous:null,best:safeTime,delta:0,practice:true};
@@ -2129,7 +2372,10 @@ function commitRaceRecord(time){
 function nextUnlockProgress(){
   const index=racers.findIndex((_,i)=>racerUnlockCost(i)>0&&!isRacerUnlocked(i));if(index<0)return{complete:true,progress:1,label:'ALL RACERS READY',ready:true};const cost=racerUnlockCost(index),coins=playerProgress.coins,progress=clamp(coins/cost,0,1);return{complete:false,index,cost,coins,progress,label:`${racers[index].name} · ${Math.min(coins,cost)} / ${cost}`,ready:coins>=cost}
 }
-function resultRewardItems(){const suffix=state.rank===1?'ST':state.rank===2?'ND':state.rank===3?'RD':'TH';return[{type:'place',label:`${state.rank}${suffix} PLACE`,detail:'完走順位ボーナス',coins:state.finishCoinBonus,new:false},...state.raceRewards]}
+function resultRewardItems(){
+  if(cupState.final){const entry=cupState.standings.get(racers[state.selected].slug);return[{type:'cup',label:`${entry?.points||0} CUP POINTS`,detail:`3戦総合 ${state.rank}位・${entry?.wins||0}勝`,points:entry?.points||0,coins:0,new:state.rank===1},...state.raceRewards]}
+  const suffix=state.rank===1?'ST':state.rank===2?'ND':state.rank===3?'RD':'TH';return[{type:'place',label:`${state.rank}${suffix} PLACE`,detail:'完走順位ボーナス',coins:state.finishCoinBonus,new:false},...state.raceRewards]
+}
 const resultTallyState={serial:0,raf:0,stage:'idle'};
 function cancelResultTally(){resultTallyState.serial++;resultTallyState.stage='idle';cancelAnimationFrame(resultTallyState.raf);resultTallyState.raf=0}
 function resultTallyAlive(serial){return serial===resultTallyState.serial&&state.mode==='finish'}
@@ -2140,8 +2386,8 @@ function setResultTallyStage(name){
   document.querySelectorAll('.result-tally-row').forEach(row=>row.classList.remove('active'));const row=document.querySelector(`[data-result-stage="${name}"]`);if(row){row.classList.add('revealed','active');uiMotionDirector.reward(row)}resultTallyState.stage=name;canvas.dataset.resultTallyStage=name;return row
 }
 function prepareResultTally(){
-  const record=state.resultRecord||{first:true,newBest:true,best:state.finishTime,delta:0},unlock=nextUnlockProgress();document.querySelectorAll('.result-tally-row').forEach(row=>row.classList.remove('revealed','active','new-record','unlock-ready'));$('resultTallyTime').textContent='00:00.000';$('resultTallyTimeNote').textContent='OFFICIAL';$('resultTallyCoins').textContent='+0';$('resultTallyWallet').textContent=`TOTAL ${state.raceWalletStart||0}`;$('resultTallyUnlock').textContent=unlock.label;$('resultTallyUnlockBar').parentElement.style.setProperty('--unlock-progress','0%');
-  if(record.practice){$('resultTallyRecord').textContent='PRACTICE RUN';$('resultTallyRecordNote').textContent='DEBUG'}else if(record.first){$('resultTallyRecord').textContent='FIRST RECORD';$('resultTallyRecordNote').textContent='NEW'}else if(record.newBest){$('resultTallyRecord').textContent=`BEST ${fmt(record.best)}`;$('resultTallyRecordNote').textContent=`-${fmt(Math.abs(record.delta))}`}else{$('resultTallyRecord').textContent=`BEST ${fmt(record.best)}`;$('resultTallyRecordNote').textContent=`+${fmt(Math.max(0,record.delta))}`}
+  const record=state.resultRecord||{first:true,newBest:true,best:state.finishTime,delta:0},unlock=nextUnlockProgress(),cup=cupState.final,playerCup=cupState.standings.get(racers[state.selected].slug),timeLabel=document.querySelector('[data-result-stage="time"] small'),recordLabel=document.querySelector('[data-result-stage="record"] small');document.querySelectorAll('.result-tally-row').forEach(row=>row.classList.remove('revealed','active','new-record','unlock-ready'));if(timeLabel)timeLabel.textContent=cup?'3-RACE TOTAL':'RACE TIME';if(recordLabel)recordLabel.textContent=cup?'CUP SCORE':'COURSE RECORD';$('resultTallyTime').textContent='00:00.000';$('resultTallyTimeNote').textContent=cup?'3 COURSES':'OFFICIAL';$('resultTallyCoins').textContent='+0';$('resultTallyWallet').textContent=`TOTAL ${state.raceWalletStart||0}`;$('resultTallyUnlock').textContent=unlock.label;$('resultTallyUnlockBar').parentElement.style.setProperty('--unlock-progress','0%');
+  if(cup){$('resultTallyRecord').textContent=`${playerCup?.points||0} POINTS`;$('resultTallyRecordNote').textContent=`${playerCup?.wins||0} WINS`}else if(record.practice){$('resultTallyRecord').textContent='PRACTICE RUN';$('resultTallyRecordNote').textContent='DEBUG'}else if(record.first){$('resultTallyRecord').textContent='FIRST RECORD';$('resultTallyRecordNote').textContent='NEW'}else if(record.newBest){$('resultTallyRecord').textContent=`BEST ${fmt(record.best)}`;$('resultTallyRecordNote').textContent=`-${fmt(Math.abs(record.delta))}`}else{$('resultTallyRecord').textContent=`BEST ${fmt(record.best)}`;$('resultTallyRecordNote').textContent=`+${fmt(Math.max(0,record.delta))}`}
   $('finishTime').textContent='00:00.000';$('finishCoins').textContent=`+0 COINS · TOTAL ${state.raceWalletStart||0}`;$('finishTime').classList.add('result-counting');$('finishCoins').classList.add('result-counting');$('clearDifficultyBadge').classList.add('result-queued');$('clearDifficultyBadge').classList.remove('result-reveal');document.querySelectorAll('.reward-chip').forEach(chip=>{chip.classList.add('result-queued');chip.classList.remove('result-reveal')});canvas.dataset.resultTallyModel='staged-result-reward-v1';canvas.dataset.resultTallyStage='prepared'
 }
 async function runResultTallySequence(){
@@ -2187,7 +2433,7 @@ function paintPodiumFrame(canvas,sourceFrame,rank,sourceLabel='game-sprite-front
 function drawPodiumRacerSprite(canvas,racer,rank){
   if(!canvas||!racer)return false;
   const sourceFrame=racer.frames?.[PODIUM_FRONT_FRAME_INDEX];
-  return paintPodiumFrame(canvas,sourceFrame,rank,racer===miaNpc?'mia-game-sprite-front':'game-sprite-front');
+  return paintPodiumFrame(canvas,sourceFrame,rank,racer===miaNpc?'mia-game-sprite-front':`game-sprite-front:${activeCostumeId(racer)}`);
 }
 function paintPodiumPlaceholder(canvas,racer,rank){
   const c=canvas?.getContext('2d');if(!canvas||!c)return false;const color=racer?.color||'#73eaff',cx=canvas.width/2,base=canvas.height*.96,scale=rank===1?1.08:1;
@@ -2239,15 +2485,15 @@ function renderPodiumRacer(slot,racer,rank,ceremonyId=podiumCeremonySerial){
 function renderResultCeremony(){
   const ceremonyId=++podiumCeremonySerial;
   canvas.dataset.podiumSequenceModel='visible-screen-first-v2';canvas.dataset.podiumCeremony=String(ceremonyId);
-  const recorded=Array.isArray(state.finishOrder)?state.finishOrder.filter(Boolean):[],remaining=raceOrder().filter(racer=>!recorded.includes(racer)),sorted=[...recorded,...remaining],rows=$('resultRows');
+  const cup=cupState.final,recorded=Array.isArray(state.finishOrder)?state.finishOrder.filter(Boolean):[],remaining=cup?[]:raceOrder().filter(racer=>!recorded.includes(racer)),sorted=[...recorded,...remaining],rows=$('resultRows');
   const topRows=sorted.slice(0,6);
-  rows.innerHTML=topRows.map((r,i)=>{const rank=i+1,isPlayer=r===racers[state.selected],isMia=r===miaNpc;return`<div class="result-row ${isPlayer?'player':''}${isMia?' boss':''}" style="--delay:${Math.max(0,6-rank)*70}ms"><strong>${ordinal(rank)}</strong><canvas class="result-face" width="72" height="72" aria-label="${r.name}"></canvas><span>${r.name}${isMia?' · BOSS':''}</span><b>${isMia?'':racerResultTime(rank)}</b></div>`}).join('');
+  rows.innerHTML=topRows.map((r,i)=>{const rank=i+1,isPlayer=r===racers[state.selected],isMia=r===miaNpc,score=cup?cupState.standings.get(r.slug)?.points:0;return`<div class="result-row ${isPlayer?'player':''}${isMia?' boss':''}" style="--delay:${Math.max(0,6-rank)*70}ms"><strong>${ordinal(rank)}</strong><canvas class="result-face" width="72" height="72" aria-label="${r.name}"></canvas><span>${r.name}${isMia?' · BOSS':''}</span><b>${cup?`${score||0} PTS`:isMia?'':racerResultTime(rank)}</b></div>`}).join('');
   rows.querySelectorAll('.result-face').forEach((canvas,i)=>{const racer=topRows[i],draw=()=>{try{drawResultFaceSprite(canvas,racer)}catch(error){console.warn(`Result face failed: ${racer.slug}`,error)}};if(racer.frames)draw();else ensureContestantSprite(racer).then(draw).catch(error=>console.warn(`Result face load failed: ${racer.slug}`,error))});
   [1,2,3].forEach(rank=>renderPodiumRacer($(`podiumSlot${rank}`),sorted[rank-1],rank,ceremonyId));
   const profile=DIFFICULTY_PROFILES[state.raceDifficulty]||DIFFICULTY_PROFILES.normal,badge=$('clearDifficultyBadge'),defeatedMia=state.raceRewards.some(reward=>reward.type==='mia'),rewardItems=resultRewardItems();
-  badge.className=`clear-difficulty-badge ${state.raceDifficulty}`;badge.innerHTML=`<small>${profile.kicker}</small><strong>${profile.label} CLEAR</strong><span>${state.raceDifficulty==='hard'?'CHALLENGE COMPLETE':'DIFFICULTY BADGE'}</span>`;
-  $('resultRewards').innerHTML=rewardItems.map((reward,index)=>`<div class="reward-chip ${reward.type}" data-reward-stage="${index}"><span>${reward.new?'NEW':index===0?'RANK':''}</span><div><strong>${reward.label}</strong><small>${reward.detail}</small></div><b>+${reward.coins}</b></div>`).join('');
-  $('resultCourseName').textContent=activeCourse.short;$('awardCard').innerHTML=`<small>${profile.label} GRAND PRIX 表彰状</small><strong>${racers[state.selected].name}</strong><span>第 ${state.rank} 位　${defeatedMia?'ミア・シャルム撃破！':state.rank<=3?'見事な表彰台です！':'最後までよく走り切りました！'}</span>`;
+  badge.className=`clear-difficulty-badge ${state.raceDifficulty}`;badge.innerHTML=cup?`<small>${profile.label} CHAMPIONSHIP</small><strong>3 COURSE CUP</strong><span>${state.rank===1?'CUP CHAMPION':'CUP COMPLETE'}</span>`:`<small>${profile.kicker}</small><strong>${profile.label} CLEAR</strong><span>${state.raceDifficulty==='hard'?'CHALLENGE COMPLETE':'DIFFICULTY BADGE'}</span>`;
+  $('resultRewards').innerHTML=rewardItems.map((reward,index)=>`<div class="reward-chip ${reward.type}" data-reward-stage="${index}"><span>${reward.new?'NEW':index===0?cup?'CUP':'RANK':''}</span><div><strong>${reward.label}</strong><small>${reward.detail}</small></div><b>${reward.type==='costume'?'OUTFIT':reward.points!==undefined?`${reward.points}PT`:`+${reward.coins}`}</b></div>`).join('');
+  $('resultCourseName').textContent=cup?'3 COURSE CUP · FINAL':activeCourse.short;$('awardCard').innerHTML=cup?`<small>${profile.label} 3 COURSE CUP 表彰状</small><strong>${racers[state.selected].name}</strong><span>総合 第 ${state.rank} 位　${cupState.standings.get(racers[state.selected].slug)?.points||0} POINTS</span>`:`<small>${profile.label} GRAND PRIX 表彰状</small><strong>${racers[state.selected].name}</strong><span>第 ${state.rank} 位　${defeatedMia?'ミア・シャルム撃破！':state.rank<=3?'見事な表彰台です！':'最後までよく走り切りました！'}</span>`;
   prepareResultTally();runResultTallySequence();
 }
 function showGoalFx(rank){
@@ -2262,8 +2508,14 @@ function showGoalFx(rank){
 function finishRace(){
   if(state.finish)return;if(raceTutorialState.active)completeRaceTutorial();state.finish=true;state.finishTime=state.elapsed;state.finishCoast=0;state.finishOrder=raceOrder();state.rank=state.finishOrder.indexOf(racers[state.selected])+1;state.running=true;
   const bonus=FINISH_COIN_REWARDS[state.rank]??10;state.finishCoinBonus=bonus;state.resultRecord=commitRaceRecord(state.finishTime);state.raceRewards=calculateRaceRewards(state.finishOrder);const challengeBonus=state.raceRewards.reduce((sum,reward)=>sum+reward.coins,0),totalBonus=bonus+challengeBonus;state.raceWalletEarned+=totalBonus;addWalletCoins(totalBonus);canvas.dataset.finishCoinReward=String(bonus);canvas.dataset.resultRecord=state.resultRecord.newBest||state.resultRecord.first?'new':'existing';pauseRaceMusic();window.NyanAudio?.stopEngine();playSfx('finish',{intensity:state.rank===1?1.25:1});setDebugPanel(false);$('mobileControls').classList.add('hidden');showGoalFx(state.rank);
+  if(cupState.active)recordCupRound(state.finishOrder);
   $('finishRank').innerHTML=ordinal(state.rank);$('finishTitle').textContent=state.rank===1?'VICTORY!':'RACE CLEAR!';$('finishTime').textContent=fmt(state.finishTime);$('finishCoins').textContent=`+${state.raceWalletEarned} COINS · TOTAL ${playerProgress.coins}`;
-  clearTimeout(finishRace.timer);finishRace.timer=setTimeout(()=>{state.running=false;state.mode='finish';$('hud').classList.add('hidden');$('resultRows').replaceChildren();[1,2,3].forEach(rank=>resetPodiumRacer($(`podiumSlot${rank}`)));showScreen('finish');requestAnimationFrame(()=>requestAnimationFrame(()=>{try{renderResultCeremony()}catch(error){console.error('Result ceremony render failed',error);const fallback=raceOrder().slice(0,3),rescueId=++podiumCeremonySerial;fallback.forEach((racer,index)=>renderPodiumRacer($(`podiumSlot${index+1}`),racer,index+1,rescueId))}}))},1350)
+  clearTimeout(finishRace.timer);finishRace.timer=setTimeout(()=>{
+    state.running=false;$('hud').classList.add('hidden');
+    if(cupState.active&&cupState.results.length<CUP_RACE_COUNT){state.mode='cupStandings';showScreen('cupStandings');requestAnimationFrame(()=>renderCupStandings());return}
+    if(cupState.active)prepareCupFinalResult();
+    state.mode='finish';$('resultRows').replaceChildren();[1,2,3].forEach(rank=>resetPodiumRacer($(`podiumSlot${rank}`)));showScreen('finish');requestAnimationFrame(()=>requestAnimationFrame(()=>{try{renderResultCeremony()}catch(error){console.error('Result ceremony render failed',error);const fallback=(state.finishOrder||raceOrder()).slice(0,3),rescueId=++podiumCeremonySerial;fallback.forEach((racer,index)=>renderPodiumRacer($(`podiumSlot${index+1}`),racer,index+1,rescueId))}}))
+  },1350)
 }
 
 function coverImage(image,shift=0,crop=null){
@@ -2812,7 +3064,7 @@ function drawOpponents(){
 function drawProjectiles(){for(const shot of state.projectiles){const rel=shot.z-state.distance;if(rel<-12||rel>650)continue;const p=projectTrackEntity(shot.z,shot.lane),alpha=distanceFadeAlpha(rel,420,630);if(!p.visible||alpha<=.02)continue;const miaThrown=shot.kind==='miaBone'||shot.kind==='miaCan',frame=shot.kind==='miaBone'?catCanFrames[8]:shot.kind==='miaCan'?catCanFrames[9]:catCanFrames[5]||itemFrames[1],size=(miaThrown?70:68)*Math.max(.34,p.scale),rotation=miaThrown?(shot.age||0)*(shot.kind==='miaBone'?9.5:13)*(shot.approachSide||1):-.25;drawThroughTunnelPortal(shot.z,()=>{drawKartShadow(p.x,p.y+2,Math.max(3,size*.28),.18*alpha);drawFrameCentered(frame,p.x,p.y-size*.18,size,alpha,rotation)})}}
 function drawPlayer(){
   const mobileRace=matchMedia('(pointer:coarse)').matches||innerWidth<820,r=racers[state.selected],hard=mobileRace?(state.drift>.4?1.75:Math.abs(state.steer)>.78?2.25:1.7):(state.drift>.4?2:Math.abs(state.steer)>.78?3:2),col=Math.max(0,Math.min(6,3+Math.round(state.steer*hard))),frame=r.frames?.[col];
-  canvas.dataset.player=r.slug;canvas.dataset.frame=String(col);canvas.dataset.racerFrameOrder=RACER_FRAME_REMAPS[r.slug]?'remapped-14-direction':'native-14-direction';canvas.dataset.racerFrameMap=(RACER_FRAME_REMAPS[r.slug]||Array.from({length:14},(_,index)=>index)).join(',');canvas.dataset.speed=String(Math.round(state.speed));canvas.dataset.distance=state.distance.toFixed(1);canvas.dataset.drift=String(state.driftLevel);canvas.dataset.centrifugal=state.centrifugal.toFixed(3);canvas.dataset.jump=state.jumpY.toFixed(1);canvas.dataset.airborne=String(state.airborne);
+  canvas.dataset.player=r.slug;canvas.dataset.playerCostume=activeCostumeId(r);canvas.dataset.frame=String(col);canvas.dataset.racerFrameOrder=RACER_FRAME_REMAPS[r.slug]?'remapped-14-direction':'native-14-direction';canvas.dataset.racerFrameMap=(RACER_FRAME_REMAPS[r.slug]||Array.from({length:14},(_,index)=>index)).join(',');canvas.dataset.speed=String(Math.round(state.speed));canvas.dataset.distance=state.distance.toFixed(1);canvas.dataset.drift=String(state.driftLevel);canvas.dataset.centrifugal=state.centrifugal.toFixed(3);canvas.dataset.jump=state.jumpY.toFixed(1);canvas.dataset.airborne=String(state.airborne);
   const shakeFactor=motionLevel(settings.screenShake),cameraDrop=jumpCameraDrop(),base=roadPoint(2.5),x=innerWidth*.5+state.steer*18+(Math.random()-.5)*state.shake*shakeFactor,groundY=Math.min(innerHeight*.9,base.y)+state.suspension+(Math.random()-.5)*state.shake*shakeFactor,shadowY=groundY+cameraDrop-state.suspension*.45,y=groundY-state.jumpY,bob=Math.sin(state.elapsed*(.012+state.speed*.00008))*(1.2+state.speed*.008)*motionLevel(settings.cameraMotion),squash=1-Math.min(.055,Math.abs(state.suspension)*.0035),targetHeight=mobileRace?Math.min(214,Math.max(156,innerHeight*.34)):Math.min(innerHeight*.29,218),height=targetHeight*squash,jumpScale=1-Math.min(.23,(state.jumpY+cameraDrop*.55)/190);
   drawKartShadow(x,shadowY,Math.min(92,height*.4)*jumpScale,Math.max(.08,.42-Math.min(.25,(state.jumpY+cameraDrop*.55)*.003)));drawSignatureAura(r,x,y+bob,height,1);if(state.boosting||state.invincible>0){const row=state.invincible>0?4:0,v=animatedFxFrame(itemFxFrames,row,(state.elapsed*.0022)%1),effectY=state.invincible>0?y-height*.46:y-height*.12;drawFrameCentered(v,x,effectY,state.invincible>0?218:176,state.invincible>0?.78:.92,state.invincible>0?0:Math.PI)}
   drawFrameHeight(frame,x,y+bob,height,signatureSpriteAlpha(r,1),-state.steer*(state.drift>0?.085:.04)+state.centrifugal*.018);
@@ -2899,7 +3151,7 @@ function turntableState(t){const phase=(t/500)%RACER_TURN_STEPS.length,index=Mat
 function drawTurnFrame(pctx,preview,frame,alpha){if(!frame||alpha<=.001)return;const scale=Math.min(preview.width/frame.sw,preview.height/frame.sh)*1.06,dw=frame.sw*scale,dh=frame.sh*scale;pctx.globalAlpha=alpha;pctx.drawImage(frame.image,frame.sx,frame.sy,frame.sw,frame.sh,(preview.width-dw)/2,preview.height-dh-5,dw,dh)}
 function drawMenu(t){coverImage(environment,Math.sin(t*.00015)*.5,environmentCrop);ctx.fillStyle=state.mode==='course'?'rgba(6,4,25,.48)':'rgba(9,4,36,.42)';ctx.fillRect(0,0,innerWidth,innerHeight)}
 function render(t){ctx.clearRect(0,0,innerWidth,innerHeight);if(state.mode==='race')drawRace();else{drawMenu(t);if(state.mode==='course')drawCourseShowcaseMap(t)}}
-function loop(t){const dt=Math.min(.033,(t-(state.last||t))/1000);state.last=t;if(window.__NYAN_REPLAY_AUDIT_ACTIVE__){requestAnimationFrame(loop);return}updateAdaptiveQuality(t);pollGamepad();update(dt);updateAudioScene();render(t);if($('debugLiveMetrics'))$('debugLiveMetrics').textContent=`FPS ${canvas.dataset.qaFps||canvas.dataset.adaptiveFps||'--'} / P95 ${canvas.dataset.qaFrameP95||canvas.dataset.adaptiveP90||'--'}ms / ${activePerformanceKey().toUpperCase()}`;requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(.033,(t-(state.last||t))/1000);state.last=t;if(window.__NYAN_REPLAY_AUDIT_ACTIVE__){requestAnimationFrame(loop);return}updateAdaptiveQuality(t);pollGamepad();update(dt);updateAudioScene();updateWardrobeRotation(t);render(t);if($('debugLiveMetrics'))$('debugLiveMetrics').textContent=`FPS ${canvas.dataset.qaFps||canvas.dataset.adaptiveFps||'--'} / P95 ${canvas.dataset.qaFrameP95||canvas.dataset.adaptiveP90||'--'}ms / ${activePerformanceKey().toUpperCase()}`;requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 
 let setRankAnimationTimer=null;

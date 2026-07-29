@@ -76,6 +76,7 @@ def runtime_sources() -> list[Path]:
     paths += [ASSETS / "select-heroes" / f"{slug}.png" for slug in CAT_SLUGS]
     paths += [ASSETS / "select-chibis" / f"{slug}.png" for slug in CAT_SLUGS]
     paths += [ASSETS / "skill-cutins" / f"{slug}.png" for slug in CAT_SLUGS]
+    paths += sorted((ASSETS / "costumes").glob("*/*/*.png"))
     paths += [ASSETS / "ui" / f"{name}.png" for name in UI]
     paths += [ASSETS / "trackside" / f"{name}.png" for name in TRACKSIDE]
     return paths
@@ -87,6 +88,8 @@ def has_alpha(image: Image.Image) -> bool:
 
 def policy(source: Path, image: Image.Image) -> tuple[str, int]:
     group = source.parent.name
+    if "costumes" in source.parts:
+        return ("lossless", 100) if source.stem == "sprite" else ("high-quality-alpha", 94)
     if group in {"sprites", "select-heroes"}:
         return "lossless", 100
     if group == "select-chibis":
