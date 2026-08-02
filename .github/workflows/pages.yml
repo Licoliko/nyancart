@@ -30,7 +30,7 @@ jobs:
 
       - name: Build optimized release package
         shell: pwsh
-        run: ./tools/build_distribution.ps1
+        run: ./tools/build_distribution.ps1 -SkipZip
 
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4

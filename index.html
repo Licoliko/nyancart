@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#100b2b" />
   <title>NYAN CART</title>
-  <link rel="stylesheet" href="style.css?v=60" />
+  <link rel="stylesheet" href="style.css?v=67" />
 </head>
 <body>
   <main id="app">
@@ -52,15 +52,6 @@
       </div>
       <div id="setGrid" class="set-card-rail" aria-label="レーサーセット一覧" role="listbox" tabindex="0"></div>
       <div id="setNotice" class="set-notice" aria-live="polite"></div>
-      <div id="unlockFx" class="unlock-fx hidden" aria-live="polite">
-        <div id="unlockConfetti" class="unlock-confetti"></div>
-        <div class="unlock-card">
-          <p class="eyebrow">NEW RACER UNLOCKED</p>
-          <img id="unlockHero" alt="">
-          <h2 id="unlockName">NYAN RACER</h2>
-          <p id="unlockCopy">専用セットが開放されました！</p>
-        </div>
-      </div>
       <div class="set-action-bar">
         <button id="openWardrobe" class="wardrobe-open-btn" type="button"><span>OUTFIT LOCKER</span><small id="wardrobeCurrentLabel">STANDARD</small></button>
         <button id="confirmSet" class="set-confirm-btn"><span>COURSE SELECT</span><small>このセットで決定</small></button>
@@ -169,6 +160,11 @@
           <button id="reducedEffectsToggle" class="setting-toggle" type="button" aria-pressed="false">エフェクト軽量化 OFF</button>
           <button id="preloadAssetsToggle" class="setting-toggle" type="button" aria-pressed="true">レース素材先読み ON</button>
           <p id="performanceDescription" class="settings-help">端末に合わせて解像度・描画量を自動調整します。</p>
+          <div class="delivery-profile-setting">
+            <button id="deliveryProfileToggle" class="setting-toggle" type="button" aria-pressed="true">配信プロファイル AUTO</button>
+            <p id="deliveryDescription" class="settings-help">GitHub Pagesでは必要な素材だけを順番に読み込みます。</p>
+            <button id="downloadFullAssets" class="delivery-download" type="button"><span>FULL QUALITYを端末へ保存</span><small id="deliveryDownloadStatus">任意ダウンロード</small><i><b id="deliveryDownloadBar"></b></i></button>
+          </div>
           <p class="settings-help">遠くは霞ませ、近くの装飾だけくっきり表示します。重い場合はOFFにできます。</p>
           <div class="motion-settings">
             <div><small>MOTION COMFORT</small><strong>酔い軽減を個別設定</strong></div>
@@ -375,17 +371,26 @@
       <div id="debugPanel" class="debug-panel hidden">
         <div><strong>DEBUG</strong><button id="debugClose" type="button" aria-label="デバッグメニューを閉じる">×</button></div>
         <button id="debugCourseBounds" type="button" aria-pressed="false">コース枠 OFF</button>
+        <button id="debugPerformanceToggle" type="button" aria-pressed="false">FPS診断表示 OFF</button>
+        <div id="debugPerformancePanel" class="performance-diagnostics" data-grade="--">
+          <header><small>Q-044 LIVE DIAGNOSTICS</small><strong id="debugPerformanceGrade">MEASURING</strong></header>
+          <div><span><small>FPS AVG</small><b id="debugPerformanceFps">--</b></span><span><small>P95 FRAME</small><b id="debugPerformanceP95">--</b></span><span><small>34ms OVER</small><b id="debugPerformanceLong">--</b></span><span><small>MEMORY</small><b id="debugPerformanceMemory">--</b></span></div>
+          <p id="debugPerformanceAdvice">レース開始後に診断します。</p>
+        </div>
+        <button id="debugPerformanceExport" type="button" disabled>FPS診断JSONを書き出す</button>
         <button id="debugQualityCheck" type="button">品質チェック F8</button>
         <button id="debugBalanceCheck" type="button">NORMALバランステスト</button>
         <button id="debugReplayCheck" type="button">11コース連続実走検査</button>
         <small id="debugLiveMetrics">FPS -- / P95 --</small>
       </div>
+      <div id="performanceBadge" class="performance-badge hidden" data-grade="--" aria-live="polite"><small>LIVE PERFORMANCE</small><strong id="performanceBadgeFps">-- FPS</strong><span id="performanceBadgeFrame">P95 --</span></div>
       <div class="boost-wrap"><div id="driftKeyHint" class="boost-key">SHIFT</div><div><div id="boostBar" class="boost-bar"><i></i></div><small>MINI TURBO</small></div></div>
       <div class="speedometer"><canvas id="speedGauge" width="240" height="240" aria-label="スピードメーター"></canvas><div class="speed-digital"><strong id="speed">0</strong><small>KM/H</small></div></div>
       <div id="countdown" class="countdown"></div>
       <div id="rankChange" class="rank-change"></div>
       <div id="lockOnWarning" class="lock-on-warning" aria-live="assertive">
         <i class="lock-direction left">‹</i>
+        <canvas id="lockOnFace" class="lock-on-face" width="112" height="112" aria-label=""></canvas>
         <div><small>MISSILE LOCK</small><strong>ROCKET INCOMING</strong><span id="lockOnDetail">BEHIND</span></div>
         <i class="lock-direction right">›</i>
       </div>
@@ -457,7 +462,7 @@
 
     <section id="miaIntrusion" class="mia-intrusion hidden" aria-live="assertive" aria-label="ミア・シャルム乱入">
       <div class="mia-intrusion-card">
-        <img src="assets/ui/mia-charme-intrusion-gpt2-v2.webp" alt="空中からカートで乱入するミア・シャルム">
+        <img data-delivery-src="assets/ui/mia-charme-intrusion-gpt2-v2.webp" loading="lazy" decoding="async" alt="空中からカートで乱入するミア・シャルム">
         <div class="mia-intrusion-copy">
           <small>BOSS CHALLENGER</small>
           <h2>ミア・シャルム</h2>
@@ -474,7 +479,7 @@
         <div class="result-summary-copy">
           <p class="eyebrow">TWINKLE CIRCUIT</p>
           <h2 id="finishTitle">FINISH!</h2>
-          <div class="result-summary-meta"><p id="finishTime" class="finish-time">00:00.000</p><p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p></div>
+          <div class="result-summary-meta"><p id="finishTime" class="finish-time">00:00.000</p><p id="finishCoins" class="finish-coins">+0 COINS · TOTAL 0</p><div id="resultPerformance" class="result-performance" data-grade="--"><small>PERF</small><strong id="resultPerformanceGrade">--</strong><span id="resultPerformanceSummary">NO DATA</span></div></div>
         </div>
       </div>
       <div class="result-board">
@@ -545,6 +550,16 @@
       <div class="actions"><button data-key="brake" class="brake-touch" aria-label="ブレーキ"></button><button data-key="item" class="item-touch" aria-label="猫缶ギアを使用"></button><button data-key="drift" class="boost-touch" aria-label="ドリフト"></button><button data-key="accel" class="accel-touch" aria-label="アクセル"></button></div>
     </div>
 
+    <div id="unlockFx" class="unlock-fx hidden" aria-live="polite" data-unlock-type="racer">
+      <div id="unlockConfetti" class="unlock-confetti"></div>
+      <div class="unlock-card">
+        <p id="unlockEyebrow" class="eyebrow">NEW RACER UNLOCKED</p>
+        <img id="unlockHero" alt="">
+        <h2 id="unlockName">NYAN RACER</h2>
+        <p id="unlockCopy">専用セットが開放されました！</p>
+      </div>
+    </div>
+
     <section id="qualityReport" class="quality-report hidden" aria-hidden="true" aria-labelledby="qualityTitle">
       <header>
         <div><p class="eyebrow">NYAN CART PRODUCT CHECK</p><h2 id="qualityTitle">品質チェックレポート</h2><p id="qualityProgress">検査を開始します</p></div>
@@ -552,7 +567,7 @@
       </header>
       <div class="quality-body">
         <div id="qualitySummary" class="quality-summary"></div>
-        <section class="quality-section"><h3>LIVE PERFORMANCE</h3><div id="qualityRuntime" class="quality-runtime"></div></section>
+        <section class="quality-section"><h3>Q-044 LIVE PERFORMANCE</h3><div id="qualityRuntime" class="quality-runtime"></div><div id="qualityPerformanceHistory" class="performance-history"></div></section>
         <section id="balanceAudit" class="quality-section balance-audit">
           <header><div><h3>NORMAL RACE BALANCE</h3><p id="balanceProgress">未実行 — 11コース×29キャラ×5シードを高速集計します。</p></div><div><button id="balanceExportCsv" type="button" disabled>CSV</button><button id="balanceExportJson" type="button" disabled>JSON</button></div></header>
           <div id="balanceSummary" class="balance-summary"><div><strong>--</strong><span>RUNS</span></div><div><strong>--</strong><span>WIN RATE</span></div><div><strong>--</strong><span>PODIUM</span></div><div><strong>--</strong><span>AVG RANK</span></div></div>
@@ -570,9 +585,10 @@
       </div>
     </section>
   </main>
+  <script src="delivery.js?v=1"></script>
   <script src="assets/sprite-bounds.js?v=3"></script>
   <script src="audio.js?v=16"></script>
-  <script src="game.js?v=134"></script>
-  <script src="quality.js?v=88"></script>
+  <script src="game.js?v=147"></script>
+    <script src="quality.js?v=105"></script>
 </body>
 </html>

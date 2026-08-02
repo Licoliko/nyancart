@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 213,
-  "sourceBytes": 298186785,
-  "outputBytes": 103879634,
-  "savedBytes": 194307151,
-  "savedPercent": 65.16,
+  "files": 261,
+  "sourceBytes": 356890928,
+  "outputBytes": 119622558,
+  "savedBytes": 237268370,
+  "savedPercent": 66.48,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -1448,15 +1448,37 @@
       "savedBytes": 2005885
     },
     {
+      "source": "assets/costumes/aroma-balinese/noir-rose-perfumer/select.png",
+      "output": "assets/costumes/aroma-balinese/noir-rose-perfumer/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1408534,
+      "outputBytes": 375000,
+      "savedBytes": 1033534
+    },
+    {
+      "source": "assets/costumes/aroma-balinese/noir-rose-perfumer/sprite.png",
+      "output": "assets/costumes/aroma-balinese/noir-rose-perfumer/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1249095,
+      "outputBytes": 339588,
+      "savedBytes": 909507
+    },
+    {
       "source": "assets/costumes/aruka-sham/cup-champion/select.png",
       "output": "assets/costumes/aruka-sham/cup-champion/select.webp",
       "width": 1024,
       "height": 1536,
       "policy": "high-quality-alpha",
       "quality": 94,
-      "sourceBytes": 1251564,
-      "outputBytes": 248668,
-      "savedBytes": 1002896
+      "sourceBytes": 1310501,
+      "outputBytes": 294802,
+      "savedBytes": 1015699
     },
     {
       "source": "assets/costumes/aruka-sham/cup-champion/sprite.png",
@@ -1470,15 +1492,147 @@
       "savedBytes": 315979
     },
     {
+      "source": "assets/costumes/bell-savanna/sunset-huntress/select.png",
+      "output": "assets/costumes/bell-savanna/sunset-huntress/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 733374,
+      "outputBytes": 198266,
+      "savedBytes": 535108
+    },
+    {
+      "source": "assets/costumes/bell-savanna/sunset-huntress/sprite.png",
+      "output": "assets/costumes/bell-savanna/sunset-huntress/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1124029,
+      "outputBytes": 353652,
+      "savedBytes": 770377
+    },
+    {
+      "source": "assets/costumes/ciel-norwegian/storm-navigator/select.png",
+      "output": "assets/costumes/ciel-norwegian/storm-navigator/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1163364,
+      "outputBytes": 276356,
+      "savedBytes": 887008
+    },
+    {
+      "source": "assets/costumes/ciel-norwegian/storm-navigator/sprite.png",
+      "output": "assets/costumes/ciel-norwegian/storm-navigator/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1091479,
+      "outputBytes": 325848,
+      "savedBytes": 765631
+    },
+    {
+      "source": "assets/costumes/cleo-mau/azure-sun-empress/select.png",
+      "output": "assets/costumes/cleo-mau/azure-sun-empress/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 844902,
+      "outputBytes": 216702,
+      "savedBytes": 628200
+    },
+    {
+      "source": "assets/costumes/cleo-mau/azure-sun-empress/sprite.png",
+      "output": "assets/costumes/cleo-mau/azure-sun-empress/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1290241,
+      "outputBytes": 392638,
+      "savedBytes": 897603
+    },
+    {
+      "source": "assets/costumes/flora-turkishvan/moonlit-botanica/select.png",
+      "output": "assets/costumes/flora-turkishvan/moonlit-botanica/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1115613,
+      "outputBytes": 252646,
+      "savedBytes": 862967
+    },
+    {
+      "source": "assets/costumes/flora-turkishvan/moonlit-botanica/sprite.png",
+      "output": "assets/costumes/flora-turkishvan/moonlit-botanica/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1243427,
+      "outputBytes": 368554,
+      "savedBytes": 874873
+    },
+    {
+      "source": "assets/costumes/fumika-scotty/sunrise-airmail/select.png",
+      "output": "assets/costumes/fumika-scotty/sunrise-airmail/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1228030,
+      "outputBytes": 266458,
+      "savedBytes": 961572
+    },
+    {
+      "source": "assets/costumes/fumika-scotty/sunrise-airmail/sprite.png",
+      "output": "assets/costumes/fumika-scotty/sunrise-airmail/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1123427,
+      "outputBytes": 296984,
+      "savedBytes": 826443
+    },
+    {
+      "source": "assets/costumes/garnet-bengal/white-tiger-siege/select.png",
+      "output": "assets/costumes/garnet-bengal/white-tiger-siege/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 755209,
+      "outputBytes": 187950,
+      "savedBytes": 567259
+    },
+    {
+      "source": "assets/costumes/garnet-bengal/white-tiger-siege/sprite.png",
+      "output": "assets/costumes/garnet-bengal/white-tiger-siege/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1510567,
+      "outputBytes": 422328,
+      "savedBytes": 1088239
+    },
+    {
       "source": "assets/costumes/ghost-rex/phantom-gala/select.png",
       "output": "assets/costumes/ghost-rex/phantom-gala/select.webp",
       "width": 1024,
       "height": 1536,
       "policy": "high-quality-alpha",
       "quality": 94,
-      "sourceBytes": 934336,
-      "outputBytes": 175202,
-      "savedBytes": 759134
+      "sourceBytes": 1535838,
+      "outputBytes": 333292,
+      "savedBytes": 1202546
     },
     {
       "source": "assets/costumes/ghost-rex/phantom-gala/sprite.png",
@@ -1492,15 +1646,37 @@
       "savedBytes": 948103
     },
     {
+      "source": "assets/costumes/honey-british/lavender-hive-royal/select.png",
+      "output": "assets/costumes/honey-british/lavender-hive-royal/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 794761,
+      "outputBytes": 205860,
+      "savedBytes": 588901
+    },
+    {
+      "source": "assets/costumes/honey-british/lavender-hive-royal/sprite.png",
+      "output": "assets/costumes/honey-british/lavender-hive-royal/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1339009,
+      "outputBytes": 383996,
+      "savedBytes": 955013
+    },
+    {
       "source": "assets/costumes/kohaku-taiga/sunset-rally/select.png",
       "output": "assets/costumes/kohaku-taiga/sunset-rally/select.webp",
       "width": 1024,
       "height": 1536,
       "policy": "high-quality-alpha",
       "quality": 94,
-      "sourceBytes": 775386,
-      "outputBytes": 144444,
-      "savedBytes": 630942
+      "sourceBytes": 1006190,
+      "outputBytes": 238666,
+      "savedBytes": 767524
     },
     {
       "source": "assets/costumes/kohaku-taiga/sunset-rally/sprite.png",
@@ -1520,9 +1696,9 @@
       "height": 1536,
       "policy": "high-quality-alpha",
       "quality": 94,
-      "sourceBytes": 768263,
-      "outputBytes": 134718,
-      "savedBytes": 633545
+      "sourceBytes": 865394,
+      "outputBytes": 205354,
+      "savedBytes": 660040
     },
     {
       "source": "assets/costumes/kurone-night/moonlight-ace/sprite.png",
@@ -1536,15 +1712,147 @@
       "savedBytes": 788025
     },
     {
+      "source": "assets/costumes/liber-birman/dawn-celestial/select.png",
+      "output": "assets/costumes/liber-birman/dawn-celestial/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1186322,
+      "outputBytes": 278014,
+      "savedBytes": 908308
+    },
+    {
+      "source": "assets/costumes/liber-birman/dawn-celestial/sprite.png",
+      "output": "assets/costumes/liber-birman/dawn-celestial/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1359616,
+      "outputBytes": 370944,
+      "savedBytes": 988672
+    },
+    {
+      "source": "assets/costumes/marron-maine/winter-express/select.png",
+      "output": "assets/costumes/marron-maine/winter-express/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1081833,
+      "outputBytes": 249638,
+      "savedBytes": 832195
+    },
+    {
+      "source": "assets/costumes/marron-maine/winter-express/sprite.png",
+      "output": "assets/costumes/marron-maine/winter-express/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1209523,
+      "outputBytes": 352082,
+      "savedBytes": 857441
+    },
+    {
+      "source": "assets/costumes/masuka-chartreux/crimson-vine-royal/select.png",
+      "output": "assets/costumes/masuka-chartreux/crimson-vine-royal/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1378672,
+      "outputBytes": 325782,
+      "savedBytes": 1052890
+    },
+    {
+      "source": "assets/costumes/masuka-chartreux/crimson-vine-royal/sprite.png",
+      "output": "assets/costumes/masuka-chartreux/crimson-vine-royal/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1385662,
+      "outputBytes": 377744,
+      "savedBytes": 1007918
+    },
+    {
+      "source": "assets/costumes/matsuri-japanese-bobtail/aqua-summer-matsuri/select.png",
+      "output": "assets/costumes/matsuri-japanese-bobtail/aqua-summer-matsuri/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1445437,
+      "outputBytes": 365074,
+      "savedBytes": 1080363
+    },
+    {
+      "source": "assets/costumes/matsuri-japanese-bobtail/aqua-summer-matsuri/sprite.png",
+      "output": "assets/costumes/matsuri-japanese-bobtail/aqua-summer-matsuri/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1344314,
+      "outputBytes": 425684,
+      "savedBytes": 918630
+    },
+    {
+      "source": "assets/costumes/milfi-ragdoll/rose-tea-party/select.png",
+      "output": "assets/costumes/milfi-ragdoll/rose-tea-party/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 751078,
+      "outputBytes": 178336,
+      "savedBytes": 572742
+    },
+    {
+      "source": "assets/costumes/milfi-ragdoll/rose-tea-party/sprite.png",
+      "output": "assets/costumes/milfi-ragdoll/rose-tea-party/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1184866,
+      "outputBytes": 323654,
+      "savedBytes": 861212
+    },
+    {
+      "source": "assets/costumes/moka-oriental/aqua-forensic/select.png",
+      "output": "assets/costumes/moka-oriental/aqua-forensic/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 829529,
+      "outputBytes": 195056,
+      "savedBytes": 634473
+    },
+    {
+      "source": "assets/costumes/moka-oriental/aqua-forensic/sprite.png",
+      "output": "assets/costumes/moka-oriental/aqua-forensic/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1329499,
+      "outputBytes": 360758,
+      "savedBytes": 968741
+    },
+    {
       "source": "assets/costumes/nerine-korat/aqua-parade/select.png",
       "output": "assets/costumes/nerine-korat/aqua-parade/select.webp",
       "width": 1024,
       "height": 1536,
       "policy": "high-quality-alpha",
       "quality": 94,
-      "sourceBytes": 922983,
-      "outputBytes": 181932,
-      "savedBytes": 741051
+      "sourceBytes": 827421,
+      "outputBytes": 208738,
+      "savedBytes": 618683
     },
     {
       "source": "assets/costumes/nerine-korat/aqua-parade/sprite.png",
@@ -1556,6 +1864,226 @@
       "sourceBytes": 1219753,
       "outputBytes": 362374,
       "savedBytes": 857379
+    },
+    {
+      "source": "assets/costumes/popo-munch/berry-clockwork/select.png",
+      "output": "assets/costumes/popo-munch/berry-clockwork/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1009878,
+      "outputBytes": 248084,
+      "savedBytes": 761794
+    },
+    {
+      "source": "assets/costumes/popo-munch/berry-clockwork/sprite.png",
+      "output": "assets/costumes/popo-munch/berry-clockwork/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1290125,
+      "outputBytes": 382166,
+      "savedBytes": 907959
+    },
+    {
+      "source": "assets/costumes/reska-americancurl/arctic-rescue/select.png",
+      "output": "assets/costumes/reska-americancurl/arctic-rescue/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1352137,
+      "outputBytes": 293394,
+      "savedBytes": 1058743
+    },
+    {
+      "source": "assets/costumes/reska-americancurl/arctic-rescue/sprite.png",
+      "output": "assets/costumes/reska-americancurl/arctic-rescue/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1267579,
+      "outputBytes": 368334,
+      "savedBytes": 899245
+    },
+    {
+      "source": "assets/costumes/rhythm-sphynx/pulse-idol/select.png",
+      "output": "assets/costumes/rhythm-sphynx/pulse-idol/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 778370,
+      "outputBytes": 201912,
+      "savedBytes": 576458
+    },
+    {
+      "source": "assets/costumes/rhythm-sphynx/pulse-idol/sprite.png",
+      "output": "assets/costumes/rhythm-sphynx/pulse-idol/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1189286,
+      "outputBytes": 347406,
+      "savedBytes": 841880
+    },
+    {
+      "source": "assets/costumes/rinka-somali/sky-festival/select.png",
+      "output": "assets/costumes/rinka-somali/sky-festival/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1216981,
+      "outputBytes": 306258,
+      "savedBytes": 910723
+    },
+    {
+      "source": "assets/costumes/rinka-somali/sky-festival/sprite.png",
+      "output": "assets/costumes/rinka-somali/sky-festival/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1538145,
+      "outputBytes": 455966,
+      "savedBytes": 1082179
+    },
+    {
+      "source": "assets/costumes/shino-cornish/azure-fox-shinobi/select.png",
+      "output": "assets/costumes/shino-cornish/azure-fox-shinobi/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1131212,
+      "outputBytes": 251688,
+      "savedBytes": 879524
+    },
+    {
+      "source": "assets/costumes/shino-cornish/azure-fox-shinobi/sprite.png",
+      "output": "assets/costumes/shino-cornish/azure-fox-shinobi/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1214952,
+      "outputBytes": 344038,
+      "savedBytes": 870914
+    },
+    {
+      "source": "assets/costumes/soyi-tonkinese/snow-silk-couture/select.png",
+      "output": "assets/costumes/soyi-tonkinese/snow-silk-couture/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1274416,
+      "outputBytes": 296844,
+      "savedBytes": 977572
+    },
+    {
+      "source": "assets/costumes/soyi-tonkinese/snow-silk-couture/sprite.png",
+      "output": "assets/costumes/soyi-tonkinese/snow-silk-couture/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1323368,
+      "outputBytes": 375362,
+      "savedBytes": 948006
+    },
+    {
+      "source": "assets/costumes/stella-russianblue/rose-quartz-nova/select.png",
+      "output": "assets/costumes/stella-russianblue/rose-quartz-nova/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1070649,
+      "outputBytes": 276058,
+      "savedBytes": 794591
+    },
+    {
+      "source": "assets/costumes/stella-russianblue/rose-quartz-nova/sprite.png",
+      "output": "assets/costumes/stella-russianblue/rose-quartz-nova/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1357453,
+      "outputBytes": 369244,
+      "savedBytes": 988209
+    },
+    {
+      "source": "assets/costumes/sucre-persian/midnight-patissier/select.png",
+      "output": "assets/costumes/sucre-persian/midnight-patissier/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1532367,
+      "outputBytes": 366342,
+      "savedBytes": 1166025
+    },
+    {
+      "source": "assets/costumes/sucre-persian/midnight-patissier/sprite.png",
+      "output": "assets/costumes/sucre-persian/midnight-patissier/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1425443,
+      "outputBytes": 422732,
+      "savedBytes": 1002711
+    },
+    {
+      "source": "assets/costumes/tick-abyssinian/ivory-chronomancer/select.png",
+      "output": "assets/costumes/tick-abyssinian/ivory-chronomancer/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1496815,
+      "outputBytes": 346570,
+      "savedBytes": 1150245
+    },
+    {
+      "source": "assets/costumes/tick-abyssinian/ivory-chronomancer/sprite.png",
+      "output": "assets/costumes/tick-abyssinian/ivory-chronomancer/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1156681,
+      "outputBytes": 353984,
+      "savedBytes": 802697
+    },
+    {
+      "source": "assets/costumes/yukine-silky/aurora-nocturne/select.png",
+      "output": "assets/costumes/yukine-silky/aurora-nocturne/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1434347,
+      "outputBytes": 316984,
+      "savedBytes": 1117363
+    },
+    {
+      "source": "assets/costumes/yukine-silky/aurora-nocturne/sprite.png",
+      "output": "assets/costumes/yukine-silky/aurora-nocturne/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1249715,
+      "outputBytes": 358078,
+      "savedBytes": 891637
     },
     {
       "source": "assets/ui/course-map-v2.png",

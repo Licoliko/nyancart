@@ -1,5 +1,6 @@
 param(
-    [string]$PackageName = "NYAN_CART"
+    [string]$PackageName = "NYAN_CART",
+    [switch]$SkipZip
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,7 +23,7 @@ if (-not ($candidate.TrimEnd([char[]]"\/") + $separator).StartsWith($resolvedOut
 if (Test-Path $packageRoot) {
     Remove-Item -LiteralPath $packageRoot -Recurse -Force
 }
-if (Test-Path $zipPath) {
+if ((-not $SkipZip) -and (Test-Path $zipPath)) {
     Remove-Item -LiteralPath $zipPath -Force
 }
 New-Item -ItemType Directory -Path $packageRoot | Out-Null
@@ -41,7 +42,7 @@ $catSlugs = @(
 $portraitSlugs = $catSlugs[0..11]
 
 $files = [Collections.Generic.List[string]]::new()
-$files.AddRange([string[]]@("index.html", "style.css", "audio.js", "game.js", "quality.js", "README.md"))
+$files.AddRange([string[]]@("index.html", "style.css", "delivery.js", "service-worker.js", "audio.js", "game.js", "quality.js", "README.md"))
 $files.Add("assets/sprite-bounds.js")
 $files.Add("assets/runtime-image-manifest.json")
 $files.AddRange([string[]]@(
@@ -127,12 +128,18 @@ $manifest = Get-ChildItem -LiteralPath $packageRoot -Recurse -File |
 $manifestPath = Join-Path $packageRoot "DISTRIBUTION_MANIFEST.txt"
 [IO.File]::WriteAllLines($manifestPath, $manifest, [Text.UTF8Encoding]::new($false))
 
-Compress-Archive -LiteralPath $packageRoot -DestinationPath $zipPath -CompressionLevel Optimal
+if (-not $SkipZip) {
+    Compress-Archive -LiteralPath $packageRoot -DestinationPath $zipPath -CompressionLevel Optimal
+}
 
 $packageFiles = Get-ChildItem -LiteralPath $packageRoot -Recurse -File
 $packageBytes = ($packageFiles | Measure-Object Length -Sum).Sum
 Write-Output "Package: $packageRoot"
-Write-Output "ZIP: $zipPath"
+if (-not $SkipZip) {
+    Write-Output "ZIP: $zipPath"
+}
 Write-Output "Files: $($packageFiles.Count)"
 Write-Output "Uncompressed bytes: $packageBytes"
-Write-Output "ZIP bytes: $((Get-Item $zipPath).Length)"
+if (-not $SkipZip) {
+    Write-Output "ZIP bytes: $((Get-Item $zipPath).Length)"
+}

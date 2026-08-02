@@ -25,15 +25,113 @@ def alpha_bbox(image: Image.Image) -> tuple[int, int, int, int]:
     )
 
 
+def remove_small_islands(image: Image.Image) -> Image.Image:
+    """Remove detached generation flecks without touching the main kart art."""
+
+    width, height = image.size
+    alpha = image.getchannel("A")
+    mask = bytearray(1 if value >= 12 else 0 for value in alpha.tobytes())
+    visited = bytearray(width * height)
+    components: list[list[int]] = []
+
+    for start, opaque in enumerate(mask):
+        if not opaque or visited[start]:
+            continue
+        visited[start] = 1
+        stack = [start]
+        component: list[int] = []
+        while stack:
+            index = stack.pop()
+            component.append(index)
+            x = index % width
+            y = index // width
+            for dy in (-1, 0, 1):
+                next_y = y + dy
+                if next_y < 0 or next_y >= height:
+                    continue
+                row = next_y * width
+                for dx in (-1, 0, 1):
+                    if dx == 0 and dy == 0:
+                        continue
+                    next_x = x + dx
+                    if next_x < 0 or next_x >= width:
+                        continue
+                    neighbor = row + next_x
+                    if mask[neighbor] and not visited[neighbor]:
+                        visited[neighbor] = 1
+                        stack.append(neighbor)
+        components.append(component)
+
+    if len(components) <= 1:
+        return image
+
+    largest_component = max(components, key=len)
+    largest = len(largest_component)
+    # Generated sheets occasionally let a few pixels from the neighbouring
+    # kart cross a cell boundary.  A slightly stronger component threshold
+    # removes those detached slivers while keeping wheels, ribbons and other
+    # meaningful pieces of the current kart.
+    minimum = max(96, round(largest * 0.008))
+    kept = bytearray(width * height)
+    for component in components:
+        xs = [index % width for index in component]
+        touches_cell_edge = min(xs) <= 1 or max(xs) >= width - 2
+        required = max(minimum, round(largest * 0.03)) if touches_cell_edge else minimum
+        if component is largest_component or len(component) >= required:
+            for index in component:
+                kept[index] = 1
+
+    alpha_values = bytearray(alpha.tobytes())
+    for index, keep in enumerate(kept):
+        if not keep:
+            alpha_values[index] = 0
+    cleaned = image.copy()
+    cleaned.putalpha(Image.frombytes("L", image.size, bytes(alpha_values)))
+    return cleaned
+
+
+def find_row_split(sheet: Image.Image) -> int:
+    """Find the transparent gutter between the generated sprite rows.
+
+    GPT-generated grids are not always divided at exactly half the image
+    height.  Splitting at the mathematical midpoint can therefore shave the
+    ears or hair from the lower row.  Prefer the longest completely empty run
+    around the middle; otherwise use the least occupied scanline.
+    """
+
+    alpha = sheet.getchannel("A")
+    start = round(sheet.height * 0.35)
+    end = round(sheet.height * 0.65)
+    occupancy: list[tuple[int, int]] = []
+    for y in range(start, end):
+        row = alpha.crop((0, y, sheet.width, y + 1))
+        occupancy.append((sum(value >= 8 for value in row.tobytes()), y))
+
+    empty_rows = [y for count, y in occupancy if count == 0]
+    if empty_rows:
+        runs: list[list[int]] = [[empty_rows[0]]]
+        for y in empty_rows[1:]:
+            if y == runs[-1][-1] + 1:
+                runs[-1].append(y)
+            else:
+                runs.append([y])
+        middle = sheet.height / 2
+        run = min(runs, key=lambda values: (-len(values), abs(sum(values) / len(values) - middle)))
+        return round((run[0] + run[-1]) / 2)
+
+    return min(occupancy, key=lambda entry: (entry[0], abs(entry[1] - sheet.height / 2)))[1]
+
+
 def split_frames(sheet: Image.Image) -> list[Image.Image]:
     frames: list[Image.Image] = []
+    split_y = find_row_split(sheet)
+    row_bounds = ((0, split_y), (split_y, sheet.height))
     for row in range(ROWS):
-        top = round(row * sheet.height / ROWS)
-        bottom = round((row + 1) * sheet.height / ROWS)
+        top, bottom = row_bounds[row]
         for column in range(COLS):
             left = round(column * sheet.width / COLS)
             right = round((column + 1) * sheet.width / COLS)
-            frame = sheet.crop((left, top, right, bottom))
+            frame = remove_small_islands(sheet.crop((left, top, right, bottom)))
             frames.append(frame.crop(alpha_bbox(frame)))
     return frames
 
@@ -65,6 +163,11 @@ def normalize(
 ) -> None:
     source = Image.open(input_path).convert("RGBA")
     frames = split_frames(source)
+    # Both rows intentionally share the same exact left/right profile.
+    # Locking these two cells prevents image-generation drift from turning a
+    # profile into a front/rear three-quarter view.
+    frames[7] = frames[0].copy()
+    frames[13] = frames[6].copy()
     max_width = max(frame.width for frame in frames)
     max_height = max(frame.height for frame in frames)
     # Keep the same generous horizontal gutter as the established racer
