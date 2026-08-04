@@ -67,6 +67,9 @@ def remove_small_islands(image: Image.Image) -> Image.Image:
 
     largest_component = max(components, key=len)
     largest = len(largest_component)
+    largest_xs = [index % width for index in largest_component]
+    largest_left = min(largest_xs)
+    largest_right = max(largest_xs)
     # Generated sheets occasionally let a few pixels from the neighbouring
     # kart cross a cell boundary.  A slightly stronger component threshold
     # removes those detached slivers while keeping wheels, ribbons and other
@@ -75,9 +78,22 @@ def remove_small_islands(image: Image.Image) -> Image.Image:
     kept = bytearray(width * height)
     for component in components:
         xs = [index % width for index in component]
-        touches_cell_edge = min(xs) <= 1 or max(xs) >= width - 2
+        component_left = min(xs)
+        component_right = max(xs)
+        touches_cell_edge = component_left <= 1 or component_right >= width - 2
         required = max(minimum, round(largest * 0.03)) if touches_cell_edge else minimum
-        if component is largest_component or len(component) >= required:
+        # Generated 7x2 sheets occasionally place a sizeable slice of the
+        # neighbouring kart inside the current mathematical cell.  Those
+        # slices are not necessarily tiny, but they always sit wholly beyond
+        # the horizontal span of the current kart's main component.  Retain
+        # detached details only when they remain inside that ownership span.
+        belongs_to_main_kart = (
+            component_right >= largest_left
+            and component_left <= largest_right
+        )
+        if component is largest_component or (
+            len(component) >= required and belongs_to_main_kart
+        ):
             for index in component:
                 kept[index] = 1
 

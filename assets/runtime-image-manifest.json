@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 261,
-  "sourceBytes": 356890928,
-  "outputBytes": 119622558,
-  "savedBytes": 237268370,
-  "savedPercent": 66.48,
+  "files": 275,
+  "sourceBytes": 373238636,
+  "outputBytes": 126914630,
+  "savedBytes": 246324006,
+  "savedPercent": 66.0,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -1492,6 +1492,50 @@
       "savedBytes": 315979
     },
     {
+      "source": "assets/costumes/aruka-sham/grid-queen/select.png",
+      "output": "assets/costumes/aruka-sham/grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 782577,
+      "outputBytes": 174196,
+      "savedBytes": 608381
+    },
+    {
+      "source": "assets/costumes/aruka-sham/grid-queen/sprite.png",
+      "output": "assets/costumes/aruka-sham/grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1215863,
+      "outputBytes": 339350,
+      "savedBytes": 876513
+    },
+    {
+      "source": "assets/costumes/bell-savanna/savanna-grid-queen/select.png",
+      "output": "assets/costumes/bell-savanna/savanna-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1038906,
+      "outputBytes": 235072,
+      "savedBytes": 803834
+    },
+    {
+      "source": "assets/costumes/bell-savanna/savanna-grid-queen/sprite.png",
+      "output": "assets/costumes/bell-savanna/savanna-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1067464,
+      "outputBytes": 824870,
+      "savedBytes": 242594
+    },
+    {
       "source": "assets/costumes/bell-savanna/sunset-huntress/select.png",
       "output": "assets/costumes/bell-savanna/sunset-huntress/select.webp",
       "width": 1024,
@@ -1580,6 +1624,28 @@
       "savedBytes": 874873
     },
     {
+      "source": "assets/costumes/fumika-scotty/airmail-grid-queen/select.png",
+      "output": "assets/costumes/fumika-scotty/airmail-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1505432,
+      "outputBytes": 321410,
+      "savedBytes": 1184022
+    },
+    {
+      "source": "assets/costumes/fumika-scotty/airmail-grid-queen/sprite.png",
+      "output": "assets/costumes/fumika-scotty/airmail-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1185766,
+      "outputBytes": 925850,
+      "savedBytes": 259916
+    },
+    {
       "source": "assets/costumes/fumika-scotty/sunrise-airmail/select.png",
       "output": "assets/costumes/fumika-scotty/sunrise-airmail/select.webp",
       "width": 1024,
@@ -1646,6 +1712,28 @@
       "savedBytes": 948103
     },
     {
+      "source": "assets/costumes/ghost-rex/phantom-grid-queen/select.png",
+      "output": "assets/costumes/ghost-rex/phantom-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1631172,
+      "outputBytes": 330326,
+      "savedBytes": 1300846
+    },
+    {
+      "source": "assets/costumes/ghost-rex/phantom-grid-queen/sprite.png",
+      "output": "assets/costumes/ghost-rex/phantom-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1255001,
+      "outputBytes": 887624,
+      "savedBytes": 367377
+    },
+    {
       "source": "assets/costumes/honey-british/lavender-hive-royal/select.png",
       "output": "assets/costumes/honey-british/lavender-hive-royal/select.webp",
       "width": 1024,
@@ -1688,6 +1776,50 @@
       "sourceBytes": 1136425,
       "outputBytes": 349134,
       "savedBytes": 787291
+    },
+    {
+      "source": "assets/costumes/kohaku-taiga/tiger-grid-queen/select.png",
+      "output": "assets/costumes/kohaku-taiga/tiger-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1221931,
+      "outputBytes": 260632,
+      "savedBytes": 961299
+    },
+    {
+      "source": "assets/costumes/kohaku-taiga/tiger-grid-queen/sprite.png",
+      "output": "assets/costumes/kohaku-taiga/tiger-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1126637,
+      "outputBytes": 892580,
+      "savedBytes": 234057
+    },
+    {
+      "source": "assets/costumes/kurone-night/lunar-grid-queen/select.png",
+      "output": "assets/costumes/kurone-night/lunar-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1077997,
+      "outputBytes": 222194,
+      "savedBytes": 855803
+    },
+    {
+      "source": "assets/costumes/kurone-night/lunar-grid-queen/sprite.png",
+      "output": "assets/costumes/kurone-night/lunar-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1044636,
+      "outputBytes": 786256,
+      "savedBytes": 258380
     },
     {
       "source": "assets/costumes/kurone-night/moonlight-ace/select.png",
@@ -1842,6 +1974,28 @@
       "sourceBytes": 1329499,
       "outputBytes": 360758,
       "savedBytes": 968741
+    },
+    {
+      "source": "assets/costumes/nerine-korat/aqua-grid-queen/select.png",
+      "output": "assets/costumes/nerine-korat/aqua-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1080838,
+      "outputBytes": 268778,
+      "savedBytes": 812060
+    },
+    {
+      "source": "assets/costumes/nerine-korat/aqua-grid-queen/sprite.png",
+      "output": "assets/costumes/nerine-korat/aqua-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1113488,
+      "outputBytes": 822934,
+      "savedBytes": 290554
     },
     {
       "source": "assets/costumes/nerine-korat/aqua-parade/select.png",
