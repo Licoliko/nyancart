@@ -407,21 +407,32 @@ const courseRaceMusicTitles=Object.freeze({sweets:'CARAMEL OVERDRIVE',steam:'CLO
 const unassignedCourseRaceMusic=Object.freeze(courseScenerySlugs.filter(slug=>!courseRaceMusicFiles[slug]));
 const raceMusicFiles=[...new Set([...defaultRaceMusicFiles,...Object.values(courseRaceMusicFiles)])];
 window.NyanDelivery?.setFullAssetSources?.(raceMusicFiles);
-const raceMusic=raceMusicFiles.map(src=>{const audio=new Audio();audio.preload='none';audio.loop=true;audio.dataset.source=src;return audio});
+const raceMusic=raceMusicFiles.map(src=>{const audio=new Audio();audio.preload='none';audio.loop=true;audio.playsInline=true;audio.dataset.source=src;return audio});
 const raceMusicByFile=new Map(raceMusicFiles.map((src,index)=>[src,raceMusic[index]]));
-let raceBgm=null,raceMusicIndex=0,musicError='';
+let raceBgm=null,raceMusicIndex=0,musicError='',raceMusicPrimedSource='',raceMusicNeedsGesture=false,raceMusicPlayAttempt=0;
 const coursePreviewAudio=new Audio();
 coursePreviewAudio.preload='metadata';
-let coursePreviewCourse=-1,coursePreviewTimer=0;
+coursePreviewAudio.playsInline=true;
+let coursePreviewCourse=-1,coursePreviewTimer=0,coursePreviewStatus='ready',coursePreviewError='',coursePreviewPlayAttempt=0;
 function courseMusicInfo(index=state.selectedCourse){const slug=courseScenerySlugs[index]||'sweets',source=courseRaceMusicFiles[slug]||defaultRaceMusicFiles[index%defaultRaceMusicFiles.length];return{slug,source,title:courseRaceMusicTitles[slug]||defaultRaceMusicTitles[source]||source.split('/').pop().replace(/\.[^.]+$/,'')}}
 function updateCourseMusicPreviewUI(index=state.selectedCourse){
-  const button=$('courseMusicPreview');if(!button)return;const info=courseMusicInfo(index),playing=coursePreviewCourse===index&&!coursePreviewAudio.paused;button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',`${info.title}を${playing?'停止':'試聴'}`);button.classList.toggle('playing',playing);button.querySelector('.course-music-preview-icon').textContent=playing?'Ⅱ':'▶';$('courseMusicTitle').textContent=info.title;$('courseMusicState').textContent=playing?'NOW PLAYING':'PREVIEW';const screen=$('courseSelect');screen.dataset.musicPreviewModel='course-select-preview-v1';screen.dataset.musicPreviewTrack=info.source.split('/').pop();screen.dataset.musicPreviewTitle=info.title;screen.dataset.musicPreviewState=playing?'playing':'ready';screen.dataset.musicDedicatedCount=String(courseScenerySlugs.length-unassignedCourseRaceMusic.length);screen.dataset.musicUnassigned=unassignedCourseRaceMusic.join(',')
+  const button=$('courseMusicPreview');if(!button)return;const info=courseMusicInfo(index),active=coursePreviewCourse===index,playing=active&&coursePreviewStatus==='playing'&&!coursePreviewAudio.paused,status=active?coursePreviewStatus:'ready',labels={ready:'PREVIEW',loading:'LOADING',playing:'NOW PLAYING','tap-required':'TAP AGAIN',muted:'SOUND OFF',error:'RETRY'};button.setAttribute('aria-pressed',String(playing));button.setAttribute('aria-label',status==='tap-required'?`${info.title}の音声を有効にして再試聴`:status==='muted'?'設定でサウンドをONにしてください':`${info.title}を${playing?'停止':'試聴'}`);button.classList.toggle('playing',playing);button.classList.toggle('loading',status==='loading');button.classList.toggle('needs-gesture',status==='tap-required');button.classList.toggle('preview-error',status==='error'||status==='muted');button.querySelector('.course-music-preview-icon').textContent=playing?'Ⅱ':status==='loading'?'…':status==='tap-required'?'♪':status==='error'?'!':'▶';$('courseMusicTitle').textContent=info.title;$('courseMusicState').textContent=labels[status]||'PREVIEW';const screen=$('courseSelect');screen.dataset.musicPreviewModel='course-select-mobile-audio-v2';screen.dataset.musicPreviewTrack=info.source.split('/').pop();screen.dataset.musicPreviewTitle=info.title;screen.dataset.musicPreviewState=status;screen.dataset.musicPreviewError=active&&coursePreviewError?coursePreviewError:'none';screen.dataset.musicPreviewCourse=active?String(index):'none';screen.dataset.musicPreviewSource=active?(coursePreviewAudio.currentSrc||coursePreviewAudio.src||info.source):info.source;screen.dataset.musicPreviewCanPlay=coursePreviewAudio.canPlayType('audio/mpeg')||'no';screen.dataset.musicPreviewReadyState=String(coursePreviewAudio.readyState);screen.dataset.musicPreviewNetworkState=String(coursePreviewAudio.networkState);screen.dataset.musicPreviewMediaError=String(coursePreviewAudio.error?.code||0);screen.dataset.musicDedicatedCount=String(courseScenerySlugs.length-unassignedCourseRaceMusic.length);screen.dataset.musicUnassigned=unassignedCourseRaceMusic.join(',')
 }
 function stopCourseMusicPreview(reset=true){
-  clearTimeout(coursePreviewTimer);coursePreviewTimer=0;coursePreviewAudio.pause();if(reset){try{coursePreviewAudio.currentTime=0}catch{}}coursePreviewCourse=-1;updateCourseMusicPreviewUI()
+  clearTimeout(coursePreviewTimer);coursePreviewTimer=0;coursePreviewPlayAttempt++;coursePreviewAudio.pause();if(reset){try{coursePreviewAudio.currentTime=0}catch{}}coursePreviewCourse=-1;coursePreviewStatus='ready';coursePreviewError='';updateCourseMusicPreviewUI()
+}
+function unlockGameAudioFromGesture(source='ui'){
+  window.NyanAudio?.unlock?.();canvas.dataset.audioGestureUnlock=source;canvas.dataset.audioGestureAt=String(Math.round(performance.now()));return!settings.muted
+}
+function requestCourseMusicPreview(index,{restart=false}={}){
+  const info=courseMusicInfo(index),attempt=++coursePreviewPlayAttempt;clearTimeout(coursePreviewTimer);coursePreviewTimer=0;coursePreviewCourse=index;coursePreviewStatus=settings.muted?'muted':'loading';coursePreviewError=settings.muted?'MutedError':'';coursePreviewAudio.muted=!!settings.muted;coursePreviewAudio.volume=settings.muted?0:(settings.masterVolume/100)*(settings.musicVolume/100);
+  if(coursePreviewAudio.dataset.loadedSource!==info.source){coursePreviewAudio.pause();coursePreviewAudio.src=info.source;coursePreviewAudio.dataset.loadedSource=info.source;observeDeliveryAsset(info.source,'selected-course');restart=true}
+  if(restart)try{coursePreviewAudio.currentTime=0}catch{}
+  updateCourseMusicPreviewUI(index);if(settings.muted)return;
+  const playing=coursePreviewAudio.play();playing?.then(()=>{if(attempt!==coursePreviewPlayAttempt||coursePreviewCourse!==index)return;coursePreviewStatus='playing';coursePreviewError='';updateCourseMusicPreviewUI(index);coursePreviewTimer=setTimeout(()=>stopCourseMusicPreview(),25000)}).catch(error=>{if(attempt!==coursePreviewPlayAttempt||coursePreviewCourse!==index)return;coursePreviewError=error?.name||'play-failed';coursePreviewStatus=coursePreviewError==='NotAllowedError'?'tap-required':'error';updateCourseMusicPreviewUI(index)})
 }
 function toggleCourseMusicPreview(){
-  const index=state.selectedCourse,info=courseMusicInfo(index);if(coursePreviewCourse===index&&!coursePreviewAudio.paused){stopCourseMusicPreview();playSfx('uiBack',{intensity:.35});return}stopCourseMusicPreview();coursePreviewCourse=index;observeDeliveryAsset(info.source,'selected-course');coursePreviewAudio.src=info.source;coursePreviewAudio.volume=settings.muted?0:(settings.masterVolume/100)*(settings.musicVolume/100);coursePreviewAudio.currentTime=0;const playing=coursePreviewAudio.play();updateCourseMusicPreviewUI(index);playSfx('uiConfirm',{intensity:.45});playing?.then(()=>{if(coursePreviewCourse!==index)return;updateCourseMusicPreviewUI(index);coursePreviewTimer=setTimeout(()=>stopCourseMusicPreview(),25000)}).catch(error=>{coursePreviewCourse=-1;updateCourseMusicPreviewUI(index);$('courseMusicState').textContent=error?.name==='NotAllowedError'?'TAP TO PLAY':'LOAD ERROR'})
+  const index=state.selectedCourse,same=coursePreviewCourse===index;if(same&&coursePreviewStatus==='playing'&&!coursePreviewAudio.paused){stopCourseMusicPreview();playSfx('uiBack',{intensity:.35});return}unlockGameAudioFromGesture('course-preview');if(!same)stopCourseMusicPreview();requestCourseMusicPreview(index,{restart:!same||coursePreviewStatus==='error'});playSfx('uiConfirm',{intensity:.45})
 }
 
 const DIFFICULTY_PROFILES={
@@ -882,10 +893,28 @@ function showCourseLoading(index){
 }
 async function completeCourseLoading(){const overlay=$('courseLoading');if(!overlay)return;overlay.classList.remove('error');overlay.classList.add('ready');overlay.setAttribute('aria-busy','false');playSfx('loadReady',{intensity:.78});await sleep(matchMedia('(prefers-reduced-motion: reduce)').matches?90:480);overlay.className='course-loading hidden'}
 function failCourseLoading(error=null){const overlay=$('courseLoading');if(!overlay)return;const group=error?.assetGroup;overlay.classList.add('error');overlay.classList.remove('ready');overlay.setAttribute('aria-busy','false');overlay.dataset.failedGroup=group||'unknown';$('courseLoadingTask').textContent=group?`${group}を読み込めませんでした。失敗状態を破棄したので再試行できます。`:'素材を読み込めませんでした。失敗状態を破棄したので再試行できます。';$('courseLoadingRetry').classList.remove('hidden')}
-function syncMusicButton(){const button=$('musicToggle');if(!button)return;const paused=!raceBgm||raceBgm.paused,silent=paused||settings.muted,title=canvas.dataset.bgmTitle;button.classList.toggle('muted',silent);button.textContent=silent?'♪':'♫';button.setAttribute('aria-label',title?`BGM「${title}」を${paused?'再生':'停止'}`:paused?'BGMを再生':'BGMを停止')}
-function playRaceMusic(){stopCourseMusicPreview();if(raceBgm)raceBgm.pause();const courseKey=courseScenerySlugs[state.selectedCourse],override=courseRaceMusicFiles[courseKey],source=override||defaultRaceMusicFiles[raceMusicIndex++%defaultRaceMusicFiles.length];raceBgm=raceMusicByFile.get(source)||raceMusic[0];if(raceBgm.dataset.loadedSource!==source){raceBgm.src=source;raceBgm.dataset.loadedSource=source;observeDeliveryAsset(source,'selected-course')}raceBgm.currentTime=0;musicError='';canvas.dataset.bgmCourse=courseKey||'debug';canvas.dataset.bgmTrack=source.split('/').pop();canvas.dataset.bgmTitle=courseRaceMusicTitles[courseKey]||defaultRaceMusicTitles[source]||source.split('/').pop().replace(/\.[^.]+$/,'');canvas.dataset.bgmMode=override?'course-exclusive':'grand-prix-rotation';const playing=raceBgm.play();syncMusicButton();playing?.then(syncMusicButton).catch(error=>{musicError=error?.name||'play-failed';syncMusicButton()})}
+function syncMusicButton(){const button=$('musicToggle');if(!button)return;const paused=!raceBgm||raceBgm.paused,silent=paused||settings.muted,title=canvas.dataset.bgmTitle;button.classList.toggle('muted',silent);button.classList.toggle('needs-gesture',raceMusicNeedsGesture&&!settings.muted);button.textContent=silent?'♪':'♫';button.setAttribute('aria-label',raceMusicNeedsGesture?'タップしてサウンドを有効にする':title?`BGM「${title}」を${paused?'再生':'停止'}`:paused?'BGMを再生':'BGMを停止')}
+function raceMusicSelection(){const courseKey=courseScenerySlugs[state.selectedCourse],override=courseRaceMusicFiles[courseKey],source=override||defaultRaceMusicFiles[raceMusicIndex%defaultRaceMusicFiles.length];return{courseKey,override,source}}
+function selectRaceMusicElement(source){const next=raceMusicByFile.get(source)||raceMusic[0];if(raceBgm&&raceBgm!==next)raceBgm.pause();raceBgm=next;if(raceBgm.dataset.loadedSource!==source){raceBgm.src=source;raceBgm.dataset.loadedSource=source;observeDeliveryAsset(source,'selected-course')}return raceBgm}
+function setRaceMusicBlocked(error){musicError=error?.name||'play-failed';raceMusicNeedsGesture=musicError==='NotAllowedError';canvas.dataset.bgmUnlock=raceMusicNeedsGesture?'tap-required':'error';syncMusicButton();if(raceMusicNeedsGesture)toast('♪ 画面をタップしてサウンド ON')}
+function setRaceMusicPlaying(){musicError='';raceMusicNeedsGesture=false;canvas.dataset.bgmUnlock='ready';syncMusicButton()}
+function monitorRaceMusicPlay(playing){const attempt=++raceMusicPlayAttempt;syncMusicButton();playing?.then(()=>{if(attempt===raceMusicPlayAttempt)setRaceMusicPlaying()}).catch(error=>{if(attempt!==raceMusicPlayAttempt)return;if(raceBgm&&!raceBgm.paused)setRaceMusicPlaying();else setRaceMusicBlocked(error)})}
+// Mobile Safari/Chrome only permit media playback while handling a real tap.
+// Start the selected track silently before the asynchronous race package load,
+// then reveal it at the start of the race without issuing a new autoplay request.
+function primeRaceMusicForStart(){
+  if(settings.muted)return;
+  unlockGameAudioFromGesture('race-prime');
+  const {source}=raceMusicSelection(),audio=selectRaceMusicElement(source),attempt=++raceMusicPlayAttempt;raceMusicPrimedSource=source;musicError='';raceMusicNeedsGesture=false;audio.muted=true;audio.volume=0;try{audio.currentTime=0}catch{};const playing=audio.play();canvas.dataset.bgmUnlock='priming';syncMusicButton();playing?.catch(error=>{if(attempt===raceMusicPlayAttempt)setRaceMusicBlocked(error)})
+}
+function playRaceMusic(){
+  stopCourseMusicPreview();const {courseKey,override,source}=raceMusicSelection(),audio=selectRaceMusicElement(source);if(!override)raceMusicIndex++;
+  canvas.dataset.bgmCourse=courseKey||'debug';canvas.dataset.bgmTrack=source.split('/').pop();canvas.dataset.bgmTitle=courseRaceMusicTitles[courseKey]||defaultRaceMusicTitles[source]||source.split('/').pop().replace(/\.[^.]+$/,'');canvas.dataset.bgmMode=override?'course-exclusive':'grand-prix-rotation';audio.volume=settings.muted?0:(settings.masterVolume/100)*(settings.musicVolume/100);
+  if(raceMusicPrimedSource===source&&!audio.paused){raceMusicPlayAttempt++;try{audio.currentTime=0}catch{}audio.muted=!!settings.muted;setRaceMusicPlaying();return}
+  audio.muted=!!settings.muted;try{audio.currentTime=0}catch{}monitorRaceMusicPlay(audio.play())
+}
 function pauseRaceMusic(){if(raceBgm)raceBgm.pause();syncMusicButton()}
-function resumeRaceMusic(){if(raceBgm&&state.mode==='race'){const playing=raceBgm.play();playing?.then(syncMusicButton).catch(error=>{musicError=error?.name||'play-failed';syncMusicButton()})}}
+function resumeRaceMusic(){if(raceBgm&&state.mode==='race'){raceBgm.muted=!!settings.muted;raceBgm.volume=settings.muted?0:(settings.masterVolume/100)*(settings.musicVolume/100);monitorRaceMusicPlay(raceBgm.play())}}
 function playSfx(name,options){window.NyanAudio?.play(name,options)}
 let nearbyRivalAudioSlugs=new Set();
 function nearbyRivalAudioPayload(){
@@ -1033,27 +1062,33 @@ const COSTUME_CATALOG=Object.freeze({
   ]),
   'popo-munch':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'ぜんまいマウスカートと調和する、ポポのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/popo-munch.webp',sprite:'assets/sprites/popo-munch.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'berry-clockwork',name:'BERRY CLOCKWORK',kicker:'SWEET GEAR COLLECTION',description:'ラズベリーとクリームに真鍮の歯車を添えた、甘い時計仕掛け仕様。大きなぜんまいが再加速の瞬間を飾ります。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/popo-munch/berry-clockwork/select.webp',sprite:'assets/costumes/popo-munch/berry-clockwork/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'berry-clockwork',name:'BERRY CLOCKWORK',kicker:'SWEET GEAR COLLECTION',description:'ラズベリーとクリームに真鍮の歯車を添えた、甘い時計仕掛け仕様。大きなぜんまいが再加速の瞬間を飾ります。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/popo-munch/berry-clockwork/select.webp',sprite:'assets/costumes/popo-munch/berry-clockwork/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'clockwork-grid-queen',name:'CLOCKWORK GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'クリームとオリーブ、真鍮の歯車チェッカーで仕立てた時計仕掛けのグリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'ポポで、いずれかのコースを3位以内で完走',select:'assets/costumes/popo-munch/clockwork-grid-queen/select.webp',sprite:'assets/costumes/popo-munch/clockwork-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'marron-maine':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'重厚な列車カートに合わせた、マロンのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/marron-maine.webp',sprite:'assets/sprites/marron-maine.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'winter-express',name:'WINTER EXPRESS',kicker:'ROYAL RAIL COLLECTION',description:'ネイビーと白、バーガンディを金縁で引き締めた冬の車掌仕様。機関車型カートの威厳をさらに高めます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/marron-maine/winter-express/select.webp',sprite:'assets/costumes/marron-maine/winter-express/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'winter-express',name:'WINTER EXPRESS',kicker:'ROYAL RAIL COLLECTION',description:'ネイビーと白、バーガンディを金縁で引き締めた冬の車掌仕様。機関車型カートの威厳をさらに高めます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/marron-maine/winter-express/select.webp',sprite:'assets/costumes/marron-maine/winter-express/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'express-grid-queen',name:'EXPRESS GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'バーガンディとチャコール、アンティークゴールドのチェッカーを重ねた特急車掌グリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'マロンで、いずれかのコースを3位以内で完走',select:'assets/costumes/marron-maine/express-grid-queen/select.webp',sprite:'assets/costumes/marron-maine/express-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'milfi-ragdoll':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'ティーカップカートと調和する、ミルフィのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/milfi-ragdoll.webp',sprite:'assets/sprites/milfi-ragdoll.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'rose-tea-party',name:'ROSE TEA PARTY',kicker:'ROYAL TEA COLLECTION',description:'ローズピンクとクリームを金細工で包んだ、華やかなティーパーティー仕様。リボンと猫足ティーカップが優雅にきらめきます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/milfi-ragdoll/rose-tea-party/select.webp',sprite:'assets/costumes/milfi-ragdoll/rose-tea-party/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'rose-tea-party',name:'ROSE TEA PARTY',kicker:'ROYAL TEA COLLECTION',description:'ローズピンクとクリームを金細工で包んだ、華やかなティーパーティー仕様。リボンと猫足ティーカップが優雅にきらめきます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/milfi-ragdoll/rose-tea-party/select.webp',sprite:'assets/costumes/milfi-ragdoll/rose-tea-party/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'tea-grid-queen',name:'TEA SALON GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'アイボリーとパウダーブルー、金のティーサロンチェッカーで仕立てた上品なグリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'ミルフィで、いずれかのコースを3位以内で完走',select:'assets/costumes/milfi-ragdoll/tea-grid-queen/select.webp',sprite:'assets/costumes/milfi-ragdoll/tea-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'yukine-silky':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'氷晶カートに合わせた、ユキネのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/yukine-silky.webp',sprite:'assets/sprites/yukine-silky.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'aurora-nocturne',name:'AURORA NOCTURNE',kicker:'CRYSTAL NIGHT COLLECTION',description:'漆黒とネイビーへシアンと紫のオーロラを重ねた夜氷仕様。銀の雪結晶と光るランナーが雪原を照らします。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/yukine-silky/aurora-nocturne/select.webp',sprite:'assets/costumes/yukine-silky/aurora-nocturne/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'aurora-nocturne',name:'AURORA NOCTURNE',kicker:'CRYSTAL NIGHT COLLECTION',description:'漆黒とネイビーへシアンと紫のオーロラを重ねた夜氷仕様。銀の雪結晶と光るランナーが雪原を照らします。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/yukine-silky/aurora-nocturne/select.webp',sprite:'assets/costumes/yukine-silky/aurora-nocturne/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'aurora-grid-queen',name:'AURORA GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'氷白と淡いブルー、銀とオーロラのチェッカーを重ねた雪晶グリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'ユキネで、いずれかのコースを3位以内で完走',select:'assets/costumes/yukine-silky/aurora-grid-queen/select.webp',sprite:'assets/costumes/yukine-silky/aurora-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'rhythm-sphynx':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'DJターンテーブルカートに合わせた、リズムのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/rhythm-sphynx.webp',sprite:'assets/sprites/rhythm-sphynx.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'pulse-idol',name:'PULSE IDOL',kicker:'CYBER STAGE COLLECTION',description:'パールホワイトにホットピンクとシアンを走らせた、未来のステージ衣装。ホログラム調のイコライザーがドリフトのビートを彩ります。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/rhythm-sphynx/pulse-idol/select.webp',sprite:'assets/costumes/rhythm-sphynx/pulse-idol/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'pulse-idol',name:'PULSE IDOL',kicker:'CYBER STAGE COLLECTION',description:'パールホワイトにホットピンクとシアンを走らせた、未来のステージ衣装。ホログラム調のイコライザーがドリフトのビートを彩ります。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/rhythm-sphynx/pulse-idol/select.webp',sprite:'assets/costumes/rhythm-sphynx/pulse-idol/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'neon-grid-queen',name:'NEON GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'ブラックとディープパープルへシアンとマゼンタの光るチェッカーを走らせたDJグリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'リズムで、いずれかのコースを3位以内で完走',select:'assets/costumes/rhythm-sphynx/neon-grid-queen/select.webp',sprite:'assets/costumes/rhythm-sphynx/neon-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'tick-abyssinian':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'精密な時計仕掛けカートに合わせた、ティックのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/tick-abyssinian.webp',sprite:'assets/sprites/tick-abyssinian.webp',source:'ORIGINAL'}),
-    Object.freeze({id:'ivory-chronomancer',name:'IVORY CHRONOMANCER',kicker:'TIMEKEEPER COLLECTION',description:'アイボリーと深いティールをアンティークゴールドで結んだ時の術師仕様。淡い時計光が精密機関を浮かび上がらせます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/tick-abyssinian/ivory-chronomancer/select.webp',sprite:'assets/costumes/tick-abyssinian/ivory-chronomancer/sprite.webp',source:'GPT IMAGE 2.0'})
+    Object.freeze({id:'ivory-chronomancer',name:'IVORY CHRONOMANCER',kicker:'TIMEKEEPER COLLECTION',description:'アイボリーと深いティールをアンティークゴールドで結んだ時の術師仕様。淡い時計光が精密機関を浮かび上がらせます。性能は通常衣装と同じです。',unlockLabel:'最初から使用できます',select:'assets/costumes/tick-abyssinian/ivory-chronomancer/select.webp',sprite:'assets/costumes/tick-abyssinian/ivory-chronomancer/sprite.webp',source:'GPT IMAGE 2.0'}),
+    Object.freeze({id:'chrono-grid-queen',name:'CHRONO GRID QUEEN',kicker:'NYAN GRAND PRIX GRID COLLECTION',description:'アイボリーと黒、アンティークゴールドの時針チェッカーで仕立てた端正なグリッドクイーン仕様。性能は通常衣装と同じです。',unlockLabel:'ティックで、いずれかのコースを3位以内で完走',select:'assets/costumes/tick-abyssinian/chrono-grid-queen/select.webp',sprite:'assets/costumes/tick-abyssinian/chrono-grid-queen/sprite.webp',source:'GPT IMAGE 2.0'})
   ]),
   'flora-turkishvan':Object.freeze([
     Object.freeze({id:'standard',name:'STANDARD',kicker:'ORIGINAL RACING SUIT',description:'花咲くレディバードカートと調和する、フローラのいつものレーシングスタイル。',unlockLabel:'最初から使用できます',select:'assets/select-chibis/flora-turkishvan.webp',sprite:'assets/sprites/flora-turkishvan.webp',source:'ORIGINAL'}),
@@ -1852,7 +1887,8 @@ function startCupNextRace(){
 async function startRace(){
   if(startRace.loading)return;startRace.loading=true;
   const fromResult=state.mode==='finish',fromCupStandings=state.mode==='cupStandings',button=fromCupStandings?$('cupNextRace'):fromResult?$('retry'):$('confirmDifficulty'),small=button.querySelector('small'),readyText=fromCupStandings?'次のコースへ':fromResult?'RETRY':state.raceMode==='cup'?'第1戦をスタート':'この難易度でスタート';button.disabled=true;small.textContent='RACE DATA LOADING...';showCourseLoading(state.selectedCourse);
-  try{await Promise.all([preloadRacePackage(state.selectedCourse,!fromResult,renderCourseLoadingProgress),sleep(420)])}catch(error){startRace.loading=false;button.disabled=false;small.textContent='読み込みを再試行';failCourseLoading(error);toast('ASSET LOAD ERROR');return}
+  primeRaceMusicForStart();
+  try{await Promise.all([preloadRacePackage(state.selectedCourse,!fromResult,renderCourseLoadingProgress),sleep(420)])}catch(error){if(raceBgm){raceBgm.pause();raceBgm.muted=!!settings.muted}startRace.loading=false;button.disabled=false;small.textContent='読み込みを再試行';failCourseLoading(error);toast('ASSET LOAD ERROR');return}
   button.disabled=false;small.textContent=readyText;activateCourse(state.selectedCourse);
   window.NyanDelivery?.markPhase?.('race-core');resetRace();$('finish').querySelector('.eyebrow').textContent=cupState.active?`3 COURSE CUP · RACE ${cupState.results.length+1}/${CUP_RACE_COUNT}`:activeCourse.short;state.mode='race';showScreen(null,{immediate:true});$('hud').classList.remove('hidden');canvas.dataset.raceMode=cupState.active?'cup':'single';canvas.dataset.cupRound=String(cupState.active?cupState.results.length+1:0);preloadRaceEnhancements(state.selectedCourse);
   const selected=racers[state.selected];window.NyanAudio?.startEngine(selected.slug,selected.set.stats);
@@ -2231,13 +2267,15 @@ function toast(text){$('toast').textContent=text;$('toast').classList.add('show'
 addEventListener('keydown',e=>{
   if(captureAction){e.preventDefault();if(e.code==='Backspace'){captureAction=null;renderKeyConfig();$('keyCaptureHelp').textContent='キー変更をキャンセルしました。'}else finishKeyCapture(captureAction,e.code);return}
   if(state.mode==='soundTest'&&e.code==='Escape'){e.preventDefault();closeSoundTest();return}
-  if(state.mode==='race'&&raceBgm?.paused&&!miaNpc.cutInActive)resumeRaceMusic();
+  if(state.mode==='race'&&raceBgm?.paused&&raceMusicNeedsGesture&&!miaNpc.cutInActive)resumeRaceMusic();
   const action=actionForCode(e.code);if(!action)return;keyboardActions[action]=true;e.preventDefault();
   if(action==='right')state.steer=Math.max(state.steer,.42);if(action==='left')state.steer=Math.min(state.steer,-.42);
   if(action==='accelerate'&&!e.repeat)handleStartCharge();if(action==='item'&&!e.repeat){if(state.mode==='course')toggleCourseMusicPreview();else useItem()}if(action==='pause'&&!e.repeat)togglePause();
 });
 addEventListener('keyup',e=>{const action=actionForCode(e.code);if(action)keyboardActions[action]=false});
-addEventListener('pointerdown',()=>{if(state.mode==='race'&&raceBgm?.paused&&!miaNpc.cutInActive)resumeRaceMusic()},{passive:true});
+function unlockBlockedRaceMusicFromGesture(event){unlockGameAudioFromGesture(event.type);if(event.target.closest?.('#musicToggle,#courseMusicPreview'))return;canvas.dataset.bgmGesture=`${event.type}:${event.target.closest?.('[data-key]')?.dataset.key||event.target.id||event.target.tagName}`;canvas.dataset.bgmGestureState=`${state.mode}:${!!raceBgm}:${raceMusicNeedsGesture}:${miaNpc.cutInActive}`;if(state.mode==='race'&&raceBgm&&raceMusicNeedsGesture&&!miaNpc.cutInActive)resumeRaceMusic()}
+addEventListener('pointerdown',unlockBlockedRaceMusicFromGesture,{passive:true,capture:true});
+addEventListener('click',unlockBlockedRaceMusicFromGesture,{passive:true,capture:true});
 document.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key,action=k==='accel'?'accelerate':k;b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture?.(e.pointerId);b.classList.add('pressed');touchActions[action]=true;if(action==='item')useItem();if(action==='accelerate')handleStartCharge()});['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();b.classList.remove('pressed');touchActions[action]=false}))});
 document.querySelectorAll('.mobile-controls button').forEach(b=>['contextmenu','selectstart','dragstart'].forEach(ev=>b.addEventListener(ev,e=>e.preventDefault())));
 $('mobileControls').addEventListener('contextmenu',e=>e.preventDefault());

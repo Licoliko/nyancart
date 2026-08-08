@@ -1,10 +1,10 @@
 {
   "format": "NYAN CART runtime image optimization v1",
-  "files": 275,
-  "sourceBytes": 373238636,
-  "outputBytes": 126914630,
-  "savedBytes": 246324006,
-  "savedPercent": 66.0,
+  "files": 287,
+  "sourceBytes": 388107246,
+  "outputBytes": 130681590,
+  "savedBytes": 257425656,
+  "savedPercent": 66.33,
   "assets": [
     {
       "source": "assets/environment/sweets-circuit-v1.png",
@@ -1866,6 +1866,28 @@
       "savedBytes": 988672
     },
     {
+      "source": "assets/costumes/marron-maine/express-grid-queen/select.png",
+      "output": "assets/costumes/marron-maine/express-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1258087,
+      "outputBytes": 291110,
+      "savedBytes": 966977
+    },
+    {
+      "source": "assets/costumes/marron-maine/express-grid-queen/sprite.png",
+      "output": "assets/costumes/marron-maine/express-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1130369,
+      "outputBytes": 325452,
+      "savedBytes": 804917
+    },
+    {
       "source": "assets/costumes/marron-maine/winter-express/select.png",
       "output": "assets/costumes/marron-maine/winter-express/select.webp",
       "width": 1024,
@@ -1952,6 +1974,28 @@
       "sourceBytes": 1184866,
       "outputBytes": 323654,
       "savedBytes": 861212
+    },
+    {
+      "source": "assets/costumes/milfi-ragdoll/tea-grid-queen/select.png",
+      "output": "assets/costumes/milfi-ragdoll/tea-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1478382,
+      "outputBytes": 317298,
+      "savedBytes": 1161084
+    },
+    {
+      "source": "assets/costumes/milfi-ragdoll/tea-grid-queen/sprite.png",
+      "output": "assets/costumes/milfi-ragdoll/tea-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1147639,
+      "outputBytes": 313956,
+      "savedBytes": 833683
     },
     {
       "source": "assets/costumes/moka-oriental/aqua-forensic/select.png",
@@ -2042,6 +2086,28 @@
       "savedBytes": 907959
     },
     {
+      "source": "assets/costumes/popo-munch/clockwork-grid-queen/select.png",
+      "output": "assets/costumes/popo-munch/clockwork-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1295061,
+      "outputBytes": 294780,
+      "savedBytes": 1000281
+    },
+    {
+      "source": "assets/costumes/popo-munch/clockwork-grid-queen/sprite.png",
+      "output": "assets/costumes/popo-munch/clockwork-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1259307,
+      "outputBytes": 361548,
+      "savedBytes": 897759
+    },
+    {
       "source": "assets/costumes/reska-americancurl/arctic-rescue/select.png",
       "output": "assets/costumes/reska-americancurl/arctic-rescue/select.webp",
       "width": 1024,
@@ -2062,6 +2128,28 @@
       "sourceBytes": 1267579,
       "outputBytes": 368334,
       "savedBytes": 899245
+    },
+    {
+      "source": "assets/costumes/rhythm-sphynx/neon-grid-queen/select.png",
+      "output": "assets/costumes/rhythm-sphynx/neon-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1029291,
+      "outputBytes": 228888,
+      "savedBytes": 800403
+    },
+    {
+      "source": "assets/costumes/rhythm-sphynx/neon-grid-queen/sprite.png",
+      "output": "assets/costumes/rhythm-sphynx/neon-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1114009,
+      "outputBytes": 313686,
+      "savedBytes": 800323
     },
     {
       "source": "assets/costumes/rhythm-sphynx/pulse-idol/select.png",
@@ -2196,6 +2284,28 @@
       "savedBytes": 1002711
     },
     {
+      "source": "assets/costumes/tick-abyssinian/chrono-grid-queen/select.png",
+      "output": "assets/costumes/tick-abyssinian/chrono-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1483116,
+      "outputBytes": 351546,
+      "savedBytes": 1131570
+    },
+    {
+      "source": "assets/costumes/tick-abyssinian/chrono-grid-queen/sprite.png",
+      "output": "assets/costumes/tick-abyssinian/chrono-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1380454,
+      "outputBytes": 382180,
+      "savedBytes": 998274
+    },
+    {
       "source": "assets/costumes/tick-abyssinian/ivory-chronomancer/select.png",
       "output": "assets/costumes/tick-abyssinian/ivory-chronomancer/select.webp",
       "width": 1024,
@@ -2216,6 +2326,28 @@
       "sourceBytes": 1156681,
       "outputBytes": 353984,
       "savedBytes": 802697
+    },
+    {
+      "source": "assets/costumes/yukine-silky/aurora-grid-queen/select.png",
+      "output": "assets/costumes/yukine-silky/aurora-grid-queen/select.webp",
+      "width": 1024,
+      "height": 1536,
+      "policy": "high-quality-alpha",
+      "quality": 94,
+      "sourceBytes": 1077601,
+      "outputBytes": 248226,
+      "savedBytes": 829375
+    },
+    {
+      "source": "assets/costumes/yukine-silky/aurora-grid-queen/sprite.png",
+      "output": "assets/costumes/yukine-silky/aurora-grid-queen/sprite.webp",
+      "width": 2107,
+      "height": 524,
+      "policy": "lossless",
+      "quality": 100,
+      "sourceBytes": 1215294,
+      "outputBytes": 338290,
+      "savedBytes": 877004
     },
     {
       "source": "assets/costumes/yukine-silky/aurora-nocturne/select.png",
